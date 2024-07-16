@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="450.0" style="-fx-background-color: lightcyan;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controlador.VentanaPulsoController">
+   <children>
+      <ImageView fitHeight="306.0" fitWidth="450.0" pickOnBounds="true">
+         <image>
+            <Image url="@../../../images/FondoAzul.png" />
+         </image>
+      </ImageView>
+      <Label alignment="CENTER" layoutY="21.0" prefHeight="17.0" prefWidth="450.0" text="Pulse Configuration">
+         <font>
+            <Font name="Arial Black" size="18.0" />
+         </font></Label>
+      <Separator layoutY="48.0" prefHeight="5.0" prefWidth="450.0" />
+      <Label fx:id="lblA0" layoutX="23.0" layoutY="174.0" text="A0:" />
+      <TextField fx:id="txtA0" layoutX="46.0" layoutY="170.0" prefHeight="25.0" prefWidth="40.0" />
+      <TextField fx:id="txtC" layoutX="124.0" layoutY="170.0" prefHeight="25.0" prefWidth="40.0" />
+      <Label fx:id="lblT0" layoutX="186.0" layoutY="174.0" text="T0:" />
+      <TextField fx:id="txtT0" layoutX="207.0" layoutY="170.0" prefHeight="25.0" prefWidth="40.0" />
+      <Label fx:id="lblW0" layoutX="269.0" layoutY="174.0" text="W0:" />
+      <TextField fx:id="txtW0" layoutX="296.0" layoutY="170.0" prefHeight="25.0" prefWidth="40.0" />
+      <Label fx:id="lblM" layoutX="361.0" layoutY="174.0" text="M:" />
+      <TextField fx:id="txtM" layoutX="381.0" layoutY="170.0" prefHeight="25.0" prefWidth="40.0" />
+      <Button fx:id="btnAplicar" layoutX="202.0" layoutY="225.0" mnemonicParsing="false" onAction="#btnAplicarAction"  text="Apply" />
+      <ImageView fitHeight="95.0" fitWidth="352.0" layoutX="51.0" layoutY="65.0" pickOnBounds="true">
+         <image>
+            <Image url="@../../../images/pulsoGaussiano.png" />
+         </image>
+         <effect>
+            <Lighting>
+               <bumpInput>
+                  <Shadow />
+               </bumpInput>
+               <light>
+                  <Light.Distant azimuth="229.19" color="#e9eeed" elevation="103.6" />
+               </light>
+            </Lighting>
+         </effect>
+      </ImageView>
+      <Button fx:id="btnGraficar" layoutX="333.0" layoutY="258.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="84.0" style="-fx-background-color: #7fff00;" onAction="#btnGraficarAction"  text="PLOT PULSE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <effect>
+            <DropShadow color="#111bd0">
+               <input>
+                  <InnerShadow color="#598d71" />
+               </input>
+            </DropShadow>
+         </effect>
+         <font>
+            <Font name="Calibri" size="12.0" />
+         </font>
+         <textFill>
+            <LinearGradient endX="1.0" endY="1.0" startX="1.0" startY="0.9428571428571428">
+               <stops>
+                  <Stop color="BLACK" />
+                  <Stop color="WHITE" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </textFill>
+      </Button>
+      <Label fx:id="lblC" layoutX="108.0" layoutY="174.0" text="C:" />
+   </children>
+   <effect>
+      <InnerShadow />
+   </effect>
+</AnchorPane>
