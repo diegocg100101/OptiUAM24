@@ -16,6 +16,8 @@ import javafx.stage.StageStyle;
  * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Diego Cantoral
+ * @author Ilse López
  * @see Application
  */
 public class OptiUAM24 extends Application {

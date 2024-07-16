@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="550.0" style="-fx-background-color: lightcyan;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controlador.VentanaSplitterController">
+   <children>
+      <ImageView fitHeight="306.0" fitWidth="550.0" pickOnBounds="true">
+         <image>
+            <Image url="@../../../images/FondoAzul.png" />
+         </image>
+      </ImageView>
+      <Label alignment="CENTER" layoutX="-1.0" layoutY="18.0" prefHeight="17.0" prefWidth="550.0" text="Splitter Configuration">
+         <font>
+            <Font name="Arial Black" size="18.0" />
+         </font></Label>
+      <Separator layoutY="45.0" prefHeight="4.0" prefWidth="550.0" />
+      <Label layoutX="31.0" layoutY="68.0" text="Number of inputs:" />
+      <Label layoutX="167.0" layoutY="68.0" text="1" />
+      <Label layoutX="31.0" layoutY="105.0" text="Wavelength:" />
+      <RadioButton fx:id="rbtn1310" layoutX="162.0" layoutY="105.0" mnemonicParsing="false" selected="true" text="1310 nm">
+         <toggleGroup>
+            <ToggleGroup fx:id="LongitudOnda" />
+         </toggleGroup></RadioButton>
+      <RadioButton fx:id="rbtn1550" layoutX="246.0" layoutY="105.0" mnemonicParsing="false" text="1550 nm" toggleGroup="$LongitudOnda" />
+      <Label layoutX="31.0" layoutY="147.0" text="Number of outputs:" />
+      <ComboBox fx:id="cboxNumeroSalidas" layoutX="162.0" layoutY="143.0" prefHeight="25.0" prefWidth="60.0" />
+      <Label layoutX="31.0" layoutY="192.0" text="Insertion Loss:" />
+      <TextField fx:id="txtPerdidaInsercion" layoutX="162.0" layoutY="188.0" prefHeight="25.0" prefWidth="60.0" />
+      <Label layoutX="232.0" layoutY="192.0" text="dB" />
+      <Separator fx:id="separator" layoutX="330.0" layoutY="63.0" orientation="VERTICAL" prefHeight="160.0" prefWidth="7.0" />
+      <Label fx:id="lblSalida" layoutX="346.0" layoutY="73.0" text="Output" />
+      <ComboBox fx:id="cboxSalidas" layoutX="346.0" layoutY="101.0" onAction="#actCbox" prefHeight="25.0" prefWidth="30.0" />
+      <Label fx:id="lblConectarA" layoutX="422.0" layoutY="73.0" text="Connect to:" />
+      <ComboBox fx:id="cboxConectarA" layoutX="416.0" layoutY="101.0" prefHeight="25.0" prefWidth="97.0" />
+      <Button fx:id="btnDesconectar" layoutX="379.0" layoutY="143.0" mnemonicParsing="false" onAction="#Desconectar" text="Disconnect" />
+      <Button fx:id="btnCrear" layoutX="75.0" layoutY="247.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: #7fff00;" text="CREATE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <effect>
+            <DropShadow color="#111bd0">
+               <input>
+                  <InnerShadow color="#598d71" />
+               </input>
+            </DropShadow>
+         </effect>
+         <font>
+            <Font name="Calibri" size="12.0" />
+         </font>
+         <textFill>
+            <LinearGradient endX="1.0" endY="1.0" startX="1.0" startY="0.9428571428571428">
+               <stops>
+                  <Stop color="BLACK" />
+                  <Stop color="WHITE" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </textFill>
+      </Button>
+      <Button fx:id="btnModificar" layoutX="384.0" layoutY="247.0" mnemonicParsing="false" onAction="#modificar" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: violet;" text="MODIFY">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <effect>
+            <DropShadow color="#111bd0">
+               <input>
+                  <InnerShadow color="#598d71" />
+               </input>
+            </DropShadow>
+         </effect>
+         <font>
+            <Font name="Calibri" size="12.0" />
+         </font>
+         <textFill>
+            <LinearGradient endX="1.0" endY="1.0" startX="1.0" startY="0.9428571428571428">
+               <stops>
+                  <Stop color="BLACK" />
+                  <Stop color="WHITE" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </textFill>
+      </Button>
+   </children>
+   <effect>
+      <InnerShadow />
+   </effect>
+</AnchorPane>
