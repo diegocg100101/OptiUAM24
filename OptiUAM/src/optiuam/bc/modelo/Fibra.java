@@ -1,17 +1,18 @@
 
 package optiuam.bc.modelo;
 
+import java.util.LinkedList;
+
 /**
- * Clase Fibra la cual contiene los atributos principales de una fibra
- * @author Daniel Hernandez
- * Editado por:
+ * Clase Fibra la cual contiene los atributos principales de una fibra optica
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  * @see Componente
  */
 public class Fibra extends Componente {
     
-    /**Longitud de onda. 1360 max 1260 min 1310 nm window | 1580 max 1480 min 1550 nm window*/
+    /**Longitud de onda*/
     private int longitudOnda;
     /*Modo de la fibra. 0 monomodo | 1 multimodo*/
     private int modo;
@@ -25,8 +26,8 @@ public class Fibra extends Componente {
      * otro cualquier valor para ambas ondas*/
     private double dispersion; 
     /**Atenuacion. 
-     * for smf28 0.32 1310 nm window | 0.18 1550 nm window db/km;
-     * for mm50 1550 menor o igual a 0.36 dB/KM */            
+     * para smf28 0.32 1310 nm window | 0.18 1550 nm window db/km;
+     * para mm50 1550 menor o igual a 0.36 dB/KM */            
     private double atenuacion; 
     /**Identificador de la fibra. Es diferente al identificador del componente*/                           
     private int idFibra;
@@ -42,10 +43,11 @@ public class Fibra extends Componente {
     }
 
     /**
-    * Metodo constructor con parametros
+     * Metodo constructor con parametros
      * @param nombre Nombre del componente
      * @param id Identificador del componente
-     * @param elementoConectado Nombre del componente el cual se encuentra conectado con la fibra
+     * @param elementoConectado Nombre del componente el cual se encuentra 
+     * conectado con la fibra
      * @param conectado Indica si el componente esta conectado
      * @param longitudOnda Longitud de onda de la fibra
      * @param modo Modo de la fibra
@@ -54,9 +56,9 @@ public class Fibra extends Componente {
      * @param atenuacion Atenuacion de la fibra
      * @param dispersion Dispersion de la fibra
     */
-    public Fibra(String nombre,int id, String elementoConectado, boolean conectado, 
-            int longitudOnda, int modo, int tipo, double longitud_km, double atenuacion, 
-            double dispersion) {
+    public Fibra(String nombre,int id, String elementoConectado, 
+            boolean conectado, int longitudOnda, int modo, int tipo, 
+            double longitud_km, double atenuacion, double dispersion) {
         this.longitudOnda = longitudOnda;
         this.modo = modo;
         this.tipo = tipo;
@@ -93,7 +95,7 @@ public class Fibra extends Componente {
 
     /**
      * Metodo que modifica la longitud de onda de la fibra
-     * @param longitudOnda Longitud de onda. 1360 max 1260 min 1310 nm window | 1580 max 1480 min 1550 nm window
+     * @param longitudOnda Longitud de onda
      */
     public void setLongitudOnda(int longitudOnda) {
         this.longitudOnda = longitudOnda;
@@ -157,7 +159,8 @@ public class Fibra extends Componente {
 
     /**
      * Metodo que modifica la dispersion de la fibra
-     * @param dispersion Dispersion. smf28 1310 = 0 1550 = 18; mm50 1310 = 3.5; otro cualquier valor para ambas ondas
+     * @param dispersion Dispersion. smf28 1310 = 0 1550 = 18; mm50 1310 = 3.5; 
+     * otro cualquier valor para ambas ondas
      */
     public void setDispersion(double dispersion) {
         this.dispersion = dispersion;
@@ -173,7 +176,8 @@ public class Fibra extends Componente {
 
     /**
      * Metodo que modifica la atenuacion de la fibra
-     * @param atenuacion Atenuacion. for smf28 0.32 1310 nm window | 0.18 1550 nm window db/km; for mm50 1550 menor o igual a 0.36 dB/KM
+     * @param atenuacion Atenuacion. para smf28 0.32 1310 nm window | 0.18 
+     * 1550 nm window db/km; para mm50 1550 menor o igual a 0.36 dB/KM
      */
     public void setAtenuacion(double atenuacion) {
         this.atenuacion = atenuacion;
@@ -212,6 +216,25 @@ public class Fibra extends Componente {
     }
     
     /**
+     * Metodo que multiplica los valores de la señal actual con la atenuacion de
+     * la fibra
+     * @param valores Valores de la señal actual
+     * @return Valores con la atenuacion de la fibra
+     */
+    public LinkedList<Listas> valorMagnitudPerdida(LinkedList<Listas> valores){
+        int n=0;
+        while(n<valores.size()){
+            NumeroComplejo aux= valores.get(n).getComplejo();
+            float at = (float) (atenuacion * longitud_km);
+            aux=aux.producto(aux, (float) Math.pow(10, (-at/10)));
+            valores.get(n).setComplejo(aux);
+            valores.get(n).setMagnitud(aux.magnitud());
+            n++;
+        }
+        return valores; 
+    }
+    
+    /**
      * Metodo toString que retorna los atributos de una fibra
      * @return nombre, id, conectadoEntrada, elementoConectadoEntrada, 
      * conectadoSalida, elementoConectadoSalida, longitudOnda, modo,
@@ -220,7 +243,8 @@ public class Fibra extends Componente {
     @Override
     public String toString() {
         return super.toString() +  "," + longitudOnda + "," + modo + "," 
-                + tipo + "," + longitud_km + "," + dispersion + ","+ atenuacion+","+idFibra;
+                + tipo + "," + longitud_km + "," + dispersion + ","+ atenuacion+
+                ","+idFibra;
     }
     
 }

@@ -5,10 +5,9 @@ import javafx.scene.shape.Line;
 
 /**
  * Clase Componente la cual contiene los atributos principales de un elemento
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  */
 public class Componente {
     
@@ -20,10 +19,16 @@ public class Componente {
     protected String elementoConectadoEntrada="";
     /**Indica si el componente esta conectado por la entrada*/
     protected boolean conectadoEntrada;
+    /*Señal de entrada*/
+    protected Señal señalEntrada;
     /**Nombre del componente el cual se encuentra conectado por la salida*/
     protected String elementoConectadoSalida="" ;
     /**Indica si el componente esta conectado por la salida*/
     protected boolean conectadoSalida;
+    /*Señal de salida*/
+    protected Señal señalSalida;
+    /**Nombre del componente+id*/
+    protected String nombreid; 
     /**Conexion (linea) del componente*/
     protected Line linea;
     
@@ -72,7 +77,7 @@ public class Componente {
     }
 
     /**
-     * Metodo que modifica el nombre del componente
+     * Metodo que modifica el identificador del componente
      * @param id Identificador del componente
      */
     public void setId(int id) {
@@ -91,7 +96,8 @@ public class Componente {
     /**
      * Metodo que modifica el nombre del componente el cual se encuentra 
      * conectado por la entrada
-     * @param elementoConectadoEntrada Nombre del componente el cual se encuentra conectado por la entrada
+     * @param elementoConectadoEntrada Nombre del componente el cual se encuentra 
+     * conectado por la entrada
      */
     public void setElementoConectadoEntrada(String elementoConectadoEntrada) {
         this.elementoConectadoEntrada = elementoConectadoEntrada;
@@ -107,7 +113,8 @@ public class Componente {
 
     /**
      * Metodo que modifica si el componente esta conectado por la entrada
-     * @param conectadoEntrada Indica si el componente esta conectado por la entrada
+     * @param conectadoEntrada Indica si el componente esta conectado por la 
+     * entrada
      */
     public void setConectadoEntrada(boolean conectadoEntrada) {
         this.conectadoEntrada = conectadoEntrada;
@@ -125,7 +132,8 @@ public class Componente {
     /**
      * Metodo que modifica el nombre del componente el cual se encuentra 
      * conectado por la salida
-     * @param elementoConectadoSalida Indica si el componente esta conectado por la salida
+     * @param elementoConectadoSalida Indica si el componente esta conectado por 
+     * la salida
      */
     public void setElementoConectadoSalida(String elementoConectadoSalida) {
         this.elementoConectadoSalida = elementoConectadoSalida;
@@ -141,7 +149,8 @@ public class Componente {
 
     /**
      * Metodo que modifica si el componente esta conectado por la salida
-     * @param conectadoSalida Indica si el componente esta conectado por la salida
+     * @param conectadoSalida Indica si el componente esta conectado por la 
+     * salida
      */
     public void setConectadoSalida(boolean conectadoSalida) {
         this.conectadoSalida = conectadoSalida;
@@ -161,6 +170,54 @@ public class Componente {
      */
     public void setLinea(Line linea) {
         this.linea = linea;
+    }
+
+    /**
+     * Metodo que muestra la señal de entrada del componente
+     * @return señalEntrada
+     */
+    public Señal getSeñalEntrada() {
+        return señalEntrada;
+    }
+
+    /**
+     * Metodo que modifica la señal de entrada del componente
+     * @param señalEntrada Señal de entrada del componente
+     */
+    public void setSeñalEntrada(Señal señalEntrada) {
+        this.señalEntrada = señalEntrada;
+    }
+
+    /**
+     * Metodo que muestra la señal de salida del componente
+     * @return señalSalida
+     */
+    public Señal getSeñalSalida() {
+        return señalSalida;
+    }
+
+    /**
+     * Metodo que modifica la señal de salida del componente
+     * @param señalSalida Señal de salida del componente
+     */
+    public void setSeñalSalida(Señal señalSalida) {
+        this.señalSalida = señalSalida;
+    }
+
+    /**
+     * Metodo que muestra el nombre y el identificador del componente
+     * @return nombreid
+     */
+    public String getNombreid() {
+        return nombreid;
+    }
+
+    /**
+     * Metodo que modifica el nombre y el identificador del componente
+     * @param nombreid Nombre e identificador del componente
+     */
+    public void setNombreid(String nombreid) {
+        this.nombreid = nombreid;
     }
     
     /**

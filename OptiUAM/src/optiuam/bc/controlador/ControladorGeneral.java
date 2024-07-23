@@ -19,16 +19,14 @@ import optiuam.bc.modelo.Fuente;
 import optiuam.bc.modelo.MedidorEspectro;
 import optiuam.bc.modelo.MedidorPotencia;
 import optiuam.bc.modelo.Multiplexor;
-import optiuam.bc.modelo.Osciloscopio;
 import optiuam.bc.modelo.Splitter;
 
 /**
  * Clase ControladorGeneral la cual contiene los metodos y atributos necesarios 
  * para hacer funcionar el simulador
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  */
 public class ControladorGeneral {
     
@@ -45,7 +43,7 @@ public class ControladorGeneral {
 
     /**
      * Metodo constructor sin parametros encargado de inicializar los atributos
-     de elementos, dibujos y el contador del elemento
+     * de elementos, dibujos y el contador del elemento
      */
     public ControladorGeneral() {
         elementos = new LinkedList();
@@ -58,12 +56,14 @@ public class ControladorGeneral {
      * @param elementos Elementos creados en la simulacion
      * @param dibujos Elementos mostrados en el area de trabajo
      * @param contadorElemento Contador para asignar nombre a un elemento
-     * @param ventana_principal Utilizado para tener la comunicacion vista-controlador
+     * @param ventana_principal Utilizado para tener la comunicacion 
+     * vista-controlador
      * @param manejadorElementos Utilizado para crear los elementos graficos
      */
     public ControladorGeneral(LinkedList<Componente> elementos, 
             LinkedList<ElementoGrafico> dibujos, int contadorElemento, 
-            VentanaPrincipal ventana_principal, ElementoGrafico manejadorElementos) {
+            VentanaPrincipal ventana_principal, 
+            ElementoGrafico manejadorElementos) {
         this.elementos = elementos;
         this.dibujos = dibujos;
         this.contadorElemento = contadorElemento;
@@ -175,7 +175,6 @@ public class ControladorGeneral {
         VentanaPrincipal.idEspectro=0;
         VentanaPrincipal.idPotencia=0;
         VentanaPrincipal.idFBG=0;
-        VentanaPrincipal.idOsciloscopio=0;
         VentanaMultiplexorController.idMux=0;
         VentanaDemultiplexorController.idDemux=0;
     }
@@ -201,15 +200,13 @@ public class ControladorGeneral {
         if(ruta_archivo.contains(".opt")){
            ruta_archivo= ruta_archivo.split(".opt")[0];//se le quita el .opt
         }
-             
         try {
             File archivo = new File(ruta_archivo+".opt");
             if(!archivo.exists())
                 archivo.createNewFile();
             FileWriter fichero = null;
             PrintWriter pw = null;
-        try
-        {
+        try {
             fichero = new FileWriter(archivo);
             pw = new PrintWriter(fichero);
             pw.println(contadorElemento);
@@ -218,67 +215,72 @@ public class ControladorGeneral {
                 int aux1 = elementos.get(i).getId();
                 if(aux.contains("connector")){
                     Conector conector = (Conector) elementos.get(i);
-                    pw.println(conector.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(conector.toString() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("splice")){
                     Empalme empalme= (Empalme) elementos.get(i);
-                    pw.println(empalme.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(empalme.toString() + "," + 
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("fiber")){
                     Fibra fibra = (Fibra) elementos.get(i);
-                    pw.println(fibra.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(fibra.toString() + "," + 
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("splitter")){
                     Splitter splitter = (Splitter) elementos.get(i);
-                    pw.println(splitter.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(splitter.toString() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutX()+ "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("source")){
                     Fuente fuente = (Fuente) elementos.get(i);
-                    pw.println(fuente.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(fuente.toString() + "," + 
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("power")){
                     MedidorPotencia potencia= (MedidorPotencia) elementos.get(i);
-                    pw.println(potencia.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
-                }
-                else if(aux.contains("oscilloscope")){
-                    Osciloscopio osciloscopio= (Osciloscopio) elementos.get(i);
-                    pw.println(osciloscopio.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(potencia.toString() + "," + 
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("fbg")){
                     FBG fbg= (FBG) elementos.get(i);
-                    pw.println(fbg.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
-                }
-                else if(aux.contains("mux")){
-                    Multiplexor mux= (Multiplexor) elementos.get(i);
-                    pw.println(mux.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(fbg.toString() + "," + 
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("demux")){
                     Demultiplexor demux= (Demultiplexor) elementos.get(i);
-                    pw.println(demux.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(demux.toString() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
+                }
+                else if(aux.contains("mux")){
+                    Multiplexor mux= (Multiplexor) elementos.get(i);
+                    pw.println(mux.toString() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else{
                     MedidorEspectro espectro = (MedidorEspectro)elementos.get(i);
-                    pw.println(espectro.toString()+","+obtenerDibujo(aux1).getDibujo().getLayoutX()+
-                            ","+obtenerDibujo(aux1).getDibujo().getLayoutY());
+                    pw.println(espectro.toString() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
+        } 
+        finally {
            try {
-           // finally asegura que se cierra el fichero
-           if (null != fichero)
-              fichero.close();
+            if (null != fichero)
+               fichero.close();
            } catch (Exception e2) {
               e2.printStackTrace();
            }

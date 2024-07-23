@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Librerias">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/Librerias/jfreechart-1.0.19.jar!/" />
       <root url="jar://$PROJECT_DIR$/Librerias/jcommon-1.0.23.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Librerias/jfreechart-1.0.19.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

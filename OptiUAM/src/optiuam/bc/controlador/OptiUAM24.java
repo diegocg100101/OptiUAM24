@@ -10,21 +10,18 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- * Clase principal la cual se encarga de ejecutar pantalla de inicio del
+ * Clase principal la cual se encarga de ejecutar la pantalla de inicio del
  * simulador
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
- * @author Diego Cantoral
- * @author Ilse López
  * @see Application
  */
 public class OptiUAM24 extends Application {
     
     /**
     * Metodo start, encargado de mostrar la pantalla de inicio del simulador
-    * @throws java.lang.Exception Proporciona diferentes excepciones lanzadas bajo el paquete java lang
+    * @throws java.lang.Exception Proporciona diferentes excepciones lanzadas 
+    * bajo el paquete java lang
     */
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -43,7 +40,8 @@ public class OptiUAM24 extends Application {
     /**
      * Metodo main
      * @param args the command line arguments
-     * @throws java.lang.Exception Proporciona diferentes excepciones lanzadas bajo el paquete java lang
+     * @throws java.lang.Exception Proporciona diferentes excepciones lanzadas 
+     * bajo el paquete java lang
      */
     public static void main(String[] args) throws Exception {
         launch(args);

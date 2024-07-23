@@ -6,10 +6,9 @@ import java.util.LinkedList;
 /**
  * Clase Splitter la cual contiene los atributos principales de un divisor 
  * optico
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  * @see Componente
  */
 public class Splitter extends Componente {
@@ -24,7 +23,8 @@ public class Splitter extends Componente {
     private int longitudOnda;
     /**Conexiones del divisor optico*/
     private LinkedList<PuertoSalida> conexiones;
-    /**Identificador del divisor optico. Es diferente al identificador del componente*/
+    /**Identificador del divisor optico. Es diferente al identificador del 
+     * componente*/
     private int idS;
     /**Posicion en el eje X del divisor opticor*/
     private double posX; 
@@ -42,13 +42,15 @@ public class Splitter extends Componente {
      * Metodo constructor con parametros
      * @param nombre Nombre del componente
      * @param id Identificador del componente
-     * @param elementoConectado Nombre del componente el cual se encuentra conectado con el conector
+     * @param elementoConectado Nombre del componente el cual se encuentra 
+     * conectado con el conector
      * @param conectado Indica si el componente esta conectado
      * @param salidas Numero de salidas del divisor optico
      * @param perdidaInsercion Perdida de insercion del divisor optico
      * @param longitudOnda Longitud de onda del divisor optico
      */
-    public Splitter(String nombre, int id, String elementoConectado, boolean conectado,
+    public Splitter(String nombre, int id, String elementoConectado, 
+            boolean conectado,
             int salidas, double perdidaInsercion, int longitudOnda) {
         this.salidas = salidas;
         this.perdidaInsercion = perdidaInsercion;
@@ -106,7 +108,8 @@ public class Splitter extends Componente {
     }
     
     /**
-     * Metodo que muestra el identificador del divisor optico, no el del componente
+     * Metodo que muestra el identificador del divisor optico, no el del 
+     * componente
      * @return idS
      */
     public int getIdS() {
@@ -114,7 +117,8 @@ public class Splitter extends Componente {
     }
 
     /**
-     * Metodo que modifica el identificador del divisor optico, no el del componente
+     * Metodo que modifica el identificador del divisor optico, no el del 
+     * componente
      * @param idS Identificador del divisor optico
      */
     public void setIdS(int idS) {
@@ -179,7 +183,8 @@ public class Splitter extends Componente {
     }
 
     /**
-     * Metodo que modifica la conversion de los puertos salida del divisor optico
+     * Metodo que modifica la conversion de los puertos salida del divisor 
+     * optico
      * a un String
      * @param cSalidas Conversion de puertos salida
      */
@@ -212,6 +217,23 @@ public class Splitter extends Componente {
     }
     
     /**
+     * Metodo que multiplica los valores de la señal actual con la atenuacion 
+     * del divisor optico
+     * @param valores Valores de la señal actual
+     * @return Valores con la atenuacion del divisor optico
+     */
+    public LinkedList<Listas> valorMagnitudPerdida(LinkedList<Listas> valores){
+        int n=0;
+        while(n<valores.size()){
+            NumeroComplejo aux= valores.get(n).getComplejo();
+            aux.producto(aux, (float) Math.pow(10, (-perdidaInsercion/10)));
+            valores.get(n).setComplejo(aux);
+            n++;
+        }
+        return valores; 
+    }
+    
+    /**
      * Metodo toString que retorna los atributos de un divisor optico
      * @return nombre, id, conectadoEntrada, elementoConectadoEntrada, 
      * conectadoSalida, elementoConectadoSalida, salidas, 
@@ -223,8 +245,8 @@ public class Splitter extends Componente {
         for(int i=0;i<salidas-1; i++){
             cSalidas.append(conexiones.get(i).toString());
         }
-        return super.toString()+","+salidas+","+perdidaInsercion+","+longitudOnda+","+idS+","+cSalidas.toString();
-                
+        return super.toString()+","+salidas+","+perdidaInsercion+","+
+                longitudOnda+","+idS+","+cSalidas.toString();
     }
     
 }

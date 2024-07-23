@@ -7,6 +7,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.image.Image?>
@@ -15,33 +16,8 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: lightskyblue; -fx-border-color: darkblue;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controlador.VentanaPrincipal">
+<AnchorPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="975.0" style="-fx-background-color: lightskyblue; -fx-border-color: darkblue;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controlador.VentanaPrincipal">
    <children>
-      <MenuBar layoutY="0.0" maxHeight="27.0" style="-fx-background-color: lightblue;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <menus>
-          <Menu fx:id="menuFile" mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#menuItemNewAction" text="New" />
-                  <MenuItem fx:id="menuItemSave" mnemonicParsing="false" onAction="#menuItemSaveAction" text="Save" />
-                  <MenuItem fx:id="menuItemOpen" mnemonicParsing="false" onAction="#menuItemOpenAction" text="Open" />
-            </items>
-          </Menu>
-          <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
-              <items>
-                <MenuItem fx:id="menuItemHelp" mnemonicParsing="false" onAction="#menuHelpAction" text="Help" />
-              </items>
-          </Menu>
-          
-          <Menu fx:id="menuAbout" mnemonicParsing="false" text="About">
-            <items>
-                <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#menuAboutAction" text="About" />
-              </items>
-          </Menu>
-        </menus>
-         <effect>
-            <InnerShadow choke="0.08" color="#0e5cc3" radius="24.085" width="77.34" />
-         </effect>
-      </MenuBar>
       <TitledPane fx:id="componentMenu" animated="false" layoutX="1.0" layoutY="24.0" maxHeight="-Infinity" minHeight="154.0" minWidth="900.0" text="Components" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <content>
           <AnchorPane fx:id="desplegable" focusTraversable="false" style="-fx-background-color: lavender;">
@@ -189,7 +165,7 @@
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
-                  <Button fx:id="btn_mux" layoutX="660.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaMux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_mux" layoutX="577.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaMux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
                      <graphic>
                         <ImageView fx:id="viewMux" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -204,12 +180,12 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Label fx:id="lbl_mux" layoutX="663.0" layoutY="80.0" text="Multiplexer">
+                  <Label fx:id="lbl_mux" layoutX="580.0" layoutY="80.0" text="Multiplexer">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_demux" layoutX="743.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_demux" layoutX="658.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaDemux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
                      <graphic>
                         <ImageView fx:id="viewDemux" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -224,12 +200,12 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Label fx:id="lbl_demux" layoutX="739.0" layoutY="80.0" text="Demultiplexer">
+                  <Label fx:id="lbl_demux" layoutX="654.0" layoutY="80.0" text="Demultiplexer">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_fbg" layoutX="826.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearFBG" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_fbg" layoutX="739.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearFBG" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
                      <graphic>
                         <ImageView fx:id="viewFBG" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -244,31 +220,40 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Label fx:id="lbl_fbg" layoutX="848.0" layoutY="80.0" text="FBG">
+                  <Label fx:id="lbl_fbg" layoutX="761.0" layoutY="80.0" text="FBG">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_osciloscopio" layoutX="578.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearOsciloscopio" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Separator layoutX="840.0" layoutY="4.0" orientation="VERTICAL" prefHeight="128.0" prefWidth="11.0" />
+                  <Label fx:id="lbl_espectro2" layoutX="888.0" layoutY="80.0" text="Press to">
+                     <font>
+                        <Font name="Candara Bold Italic" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lbl_espectro11" layoutX="875.0" layoutY="92.0" text="Update Signs">
+                     <font>
+                        <Font name="Candara Bold Italic" size="12.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="btnRun" layoutX="876.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#start" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent; -fx-background-color: transparent;">
                      <graphic>
-                        <ImageView fx:id="viewOsciloscopio" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="viewRun" fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
                               <InnerShadow color="#b2b2b2" />
                            </effect>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
+                           <image>
+                              <Image url="@../../../images/upload.PNG" />
+                           </image>
                         </ImageView>
                      </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Label fx:id="lbl_osciloscopio" layoutX="579.0" layoutY="80.0" text="Oscilloscope">
-                     <font>
-                        <Font name="Candara Bold Italic" size="12.0" />
-                     </font>
-                  </Label>
                </children>
                <effect>
                   <InnerShadow color="#264275" height="9.14" radius="2.5875000000000004" width="3.21" />
@@ -283,7 +268,7 @@
          <content>
             <Pane id="Pane1" fx:id="Pane1" prefHeight="4000.0" prefWidth="4000.0" style="-fx-background-color: White;">
                <children>
-                  <ImageView fx:id="panel" accessibleText="Area de Trabajo." fitHeight="3000.0" fitWidth="3000.0" pickOnBounds="true" smooth="false">
+                  <ImageView fx:id="panel" accessibleText="Area de Trabajo." fitHeight="3000.0" fitWidth="3000.0" layoutX="-15.0" layoutY="-8.0" pickOnBounds="true" smooth="false">
                      <effect>
                         <InnerShadow color="#101c7c" />
                      </effect>
@@ -294,11 +279,60 @@
                         <Cursor fx:constant="DEFAULT" />
                      </cursor>
                   </ImageView>
+                  <MenuBar layoutX="-318.0" layoutY="72.0" maxHeight="27.0" style="-fx-background-color: lightblue;">
+                    <menus>
+                      <Menu fx:id="menuFile" mnemonicParsing="false" text="File">
+                        <items>
+                          <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#menuItemNewAction" text="New" />
+                              <MenuItem fx:id="menuItemSave" mnemonicParsing="false" onAction="#menuItemSaveAction" text="Save" />
+                              <MenuItem fx:id="menuItemOpen" mnemonicParsing="false" onAction="#menuItemOpenAction" text="Open" />
+                        </items>
+                      </Menu>
+                      <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
+                          <items>
+                            <MenuItem fx:id="menuItemHelp" mnemonicParsing="false" onAction="#menuHelpAction" text="Help" />
+                          </items>
+                      </Menu>
+                      
+                      <Menu fx:id="menuAbout" mnemonicParsing="false" text="About">
+                        <items>
+                            <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#menuAboutAction" text="About" />
+                          </items>
+                      </Menu>
+                    </menus>
+                     <effect>
+                        <InnerShadow choke="0.08" color="#0e5cc3" radius="24.085" width="77.34" />
+                     </effect>
+                  </MenuBar>
                </children></Pane>
          </content>
          <cursor>
             <Cursor fx:constant="CLOSED_HAND" />
          </cursor>
       </ScrollPane>
+      <MenuBar maxHeight="27.0" style="-fx-background-color: lightblue;" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="0.0">
+         <menus>
+            <Menu fx:id="menuFile1" mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem fx:id="menuItemNew1" mnemonicParsing="false" onAction="#menuItemNewAction" text="New" />
+                  <MenuItem fx:id="menuItemSave1" mnemonicParsing="false" onAction="#menuItemSaveAction" text="Save" />
+                  <MenuItem fx:id="menuItemOpen1" mnemonicParsing="false" onAction="#menuItemOpenAction" text="Open" />
+               </items>
+            </Menu>
+            <Menu fx:id="menuHelp1" mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem fx:id="menuItemHelp1" mnemonicParsing="false" onAction="#menuHelpAction" text="Help" />
+               </items>
+            </Menu>
+            <Menu fx:id="menuAbout1" mnemonicParsing="false" text="About">
+               <items>
+                  <MenuItem fx:id="menuItemAbout1" mnemonicParsing="false" onAction="#menuAboutAction" text="About" />
+               </items>
+            </Menu>
+         </menus>
+         <effect>
+            <InnerShadow choke="0.08" color="#0e5cc3" radius="24.085" width="77.34" />
+         </effect>
+      </MenuBar>
    </children>
 </AnchorPane>

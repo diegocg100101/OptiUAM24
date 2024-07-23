@@ -1,19 +1,21 @@
 
 package optiuam.bc.modelo;
 
+import java.util.LinkedList;
+
 /**
- * Clase Conector la cual contiene los atributos principales de un conector
- * @author Daniel Hernandez
- * Editado por:
+ * Clase Conector la cual contiene los atributos principales de un conector 
+ * optico
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  * @see Componente
  */
 public class Conector extends Componente {
     
-    /**Perdida de insercion. 0.5 max na min single fiber| 1.0 max na min multi fiber*/
+    /**Perdida de insercion*/
     private double perdidaInsercion;
-    /**Longitud de onda. 0.5 1360 max 1260 min 1310 nm window | 1580 max 1480 min 1550 nm window*/
+    /**Longitud de onda*/
     private int longitudOnda; 
     /*Modo del conector. Puede ser monomodo o multimodo*/
     private int modo;
@@ -34,14 +36,16 @@ public class Conector extends Componente {
      * Metodo constructor con parametros
      * @param nombre Nombre del componente
      * @param id Identificador del componente
-     * @param elementoConectado Nombre del componente el cual se encuentra conectado con el conector
+     * @param elementoConectado Nombre del componente el cual se encuentra
+     * conectado con el conector
      * @param conectado Indica si el componente esta conectado
      * @param longitudOnda Longitud de onda del conector
      * @param modo Modo del conector
      * @param perdidaInsercion Perdida de insercion del conector
     */
     public Conector(String nombre, int id, String elementoConectado, 
-            boolean conectado, int longitudOnda, int modo, double perdidaInsercion) {
+            boolean conectado, int longitudOnda, int modo, 
+            double perdidaInsercion) {
         this.perdidaInsercion = perdidaInsercion;
         this.longitudOnda = longitudOnda;
         this.modo = modo;
@@ -59,7 +63,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que modifica la perdida de insercion del conector
-     * @param perdidaInsercion Perdida de insercion. 0.5 max na min single fiber| 1.0 max na min multi fiber
+     * @param perdidaInsercion Perdida de insercion
      */
     public void setPerdidaInsercion(double perdidaInsercion) {
         this.perdidaInsercion = perdidaInsercion;
@@ -75,7 +79,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que modifica la longitud de onda del conector
-     * @param longitudOnda Longitud de onda. 0.5 1360 max 1260 min 1310 nm window | 1580 max 1480 min 1550 nm window
+     * @param longitudOnda Longitud de onda
      */
     public void setLongitudOnda(int longitudOnda) {
         this.longitudOnda = longitudOnda;
@@ -143,6 +147,24 @@ public class Conector extends Componente {
      */
     public void setPosY(double posY) {
         this.posY = posY;
+    }
+    
+    /**
+     * Metodo que multiplica los valores de la señal actual con la atenuacion del
+     * conector
+     * @param valores Valores de la señal actual
+     * @return Valores con la atenuacion del conector
+     */
+    public LinkedList<Listas> valorMagnitudPerdida(LinkedList<Listas> valores){
+        int n=0;
+        while(n<valores.size()){
+            NumeroComplejo aux= valores.get(n).getComplejo();
+            aux=aux.producto(aux, (float) Math.pow(10, (-perdidaInsercion/10)));
+            valores.get(n).setComplejo(aux);
+            valores.get(n).setMagnitud(aux.magnitud());
+            n++;
+        }
+        return valores; 
     }
     
     /**

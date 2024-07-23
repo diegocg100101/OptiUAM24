@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -50,24 +51,27 @@ import optiuam.bc.modelo.Conector;
 import optiuam.bc.modelo.Demultiplexor;
 import optiuam.bc.modelo.ElementoGrafico;
 import optiuam.bc.modelo.Empalme;
+import optiuam.bc.modelo.ExcepcionDivideCero;
 import optiuam.bc.modelo.FBG;
+import optiuam.bc.modelo.FFT2;
 import optiuam.bc.modelo.Fibra;
 import optiuam.bc.modelo.Fuente;
+import optiuam.bc.modelo.Listas;
 import optiuam.bc.modelo.MedidorEspectro;
 import optiuam.bc.modelo.MedidorPotencia;
 import optiuam.bc.modelo.Multiplexor;
-import optiuam.bc.modelo.Osciloscopio;
+import optiuam.bc.modelo.NumeroComplejo;
 import optiuam.bc.modelo.PuertoEntrada;
 import optiuam.bc.modelo.PuertoSalida;
+import optiuam.bc.modelo.Señal;
 import optiuam.bc.modelo.Splitter;
 
 /**
  * Clase VentanaPrincipal la cual se encarga de proporcionar la funcionalidad 
  * al simulador
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  */
 public class VentanaPrincipal implements Initializable {
 
@@ -81,10 +85,10 @@ public class VentanaPrincipal implements Initializable {
     static int idPotencia = 0;
     /**Identificador de la rejilla de Bragg (FBG)*/
     static int idFBG = 0;
-    /**Identificador del osciloscopio optico*/
-    static int idOsciloscopio = 0;
     /**Conexion (linea) entre componentes*/
     static Line linea;
+    /**Indica si el boton para actualizar señales fue presionado*/
+    static boolean btnStart;
     /**Icono de la fibra optica*/
     Image fibraI;
     /**Icono de la fuente optica*/
@@ -99,8 +103,6 @@ public class VentanaPrincipal implements Initializable {
     Image potenciaI;
     /**Icono del analizador de espectro*/
     Image espectroI;
-    /**Icono del analizador de espectro*/
-    Image osciloscopioI;
     /**Icono del multiplexor*/
     Image multiplexorI;
     /**Icono del demultiplexor*/
@@ -109,6 +111,7 @@ public class VentanaPrincipal implements Initializable {
     Image fbgI;
     /**Fondo del panel de trabajo*/
     Image fondo;
+    
     /**Permite visualizar el icono de la fibra*/
     @FXML
     ImageView viewFibra;
@@ -130,9 +133,6 @@ public class VentanaPrincipal implements Initializable {
     /**Permite visualizar el icono del analizador de espectro*/
     @FXML
     ImageView viewEspectro;
-    /**Permite visualizar el icono del osciloscopio*/
-    @FXML
-    ImageView viewOsciloscopio;
     /**Permite visualizar el icono del multiplexor*/
     @FXML
     ImageView viewMux;
@@ -163,9 +163,6 @@ public class VentanaPrincipal implements Initializable {
     /**Boton para abrir la ventana del analizador de espectro y crear uno*/
     @FXML
     Button btnEspectro;
-    /**Boton para abrir la ventana del osciloscopio y crear uno*/
-    @FXML
-    Button btnOsciloscopio;
     /**Boton para abrir la ventana del multiplexor y crear uno*/
     @FXML
     Button btnMux;
@@ -175,6 +172,9 @@ public class VentanaPrincipal implements Initializable {
     /**Boton para abrir la ventana de la rejilla de Bragg (FBG) y crear una*/
     @FXML
     Button btnFBG;
+    /**Boton para actualizar las señales creadas*/
+    @FXML
+    Button btnRun;
     /**Panel para agregar objetos*/    
     @FXML
     public Pane Pane1;
@@ -276,7 +276,6 @@ public class VentanaPrincipal implements Initializable {
         conectorI=new Image("images/ico_conector.png"); 
         potenciaI=new Image("images/ico_potencia.png"); 
         espectroI=new Image("images/ico_espectro.png"); 
-        osciloscopioI=new Image("images/ico_osciloscopio.png"); 
         empalmeI=new Image("images/ico_empalme.png"); 
         splitterI=new Image("images/ico_splitter.png"); 
         multiplexorI=new Image("images/ico_mux.png"); 
@@ -288,7 +287,6 @@ public class VentanaPrincipal implements Initializable {
         viewConector.setImage(conectorI);
         viewPotencia.setImage(potenciaI);
         viewEspectro.setImage(espectroI);
-        viewOsciloscopio.setImage(osciloscopioI);
         viewEmpalme.setImage(empalmeI);
         viewSplitter.setImage(splitterI);
         viewMux.setImage(multiplexorI);
@@ -307,9 +305,8 @@ public class VentanaPrincipal implements Initializable {
             Stage s = new Stage(StageStyle.UTILITY);
             FXMLLoader loader= new FXMLLoader(getClass().getResource("VentanaFibra.fxml"));
             Parent root = loader.load();
-            //Se crea una instancia del controlador de fibra.
             VentanaFibraController fibraController= (VentanaFibraController) loader.getController();
-            fibraController.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll);
+            fibraController.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll,this);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
@@ -318,12 +315,8 @@ public class VentanaPrincipal implements Initializable {
             s.setScene(scene);
             s.setResizable(false);
             s.showAndWait();
-            //System.out.print(controlador.getContadorElemento());
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -338,7 +331,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader= new FXMLLoader(getClass().getResource("VentanaFuente.fxml"));
             Parent root =loader.load();
             VentanaFuenteController fuenteControl=loader.getController();
-            fuenteControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll);
+            fuenteControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll,this);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
@@ -347,13 +340,8 @@ public class VentanaPrincipal implements Initializable {
             s.setScene(scene);
             s.setResizable(false);
             s.showAndWait();
-            
-            //System.out.print(controlador.getContadorElemento());
-            /*for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).toString());
-            }*/
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -368,7 +356,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader= new FXMLLoader(getClass().getResource("VentanaSplitter.fxml"));
             Parent root =loader.load();
             VentanaSplitterController splitterControl=loader.getController();
-            splitterControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll);
+            splitterControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll,this);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
@@ -377,12 +365,8 @@ public class VentanaPrincipal implements Initializable {
             s.setScene(scene);
             s.setResizable(false);
             s.showAndWait();
-            //System.out.print(controlador.getContadorElemento());
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -397,7 +381,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader= new FXMLLoader(getClass().getResource("VentanaConector.fxml"));
             Parent root =loader.load();
             VentanaConectorController conectorControl=loader.getController();
-            conectorControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll);
+            conectorControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll,this);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
@@ -406,12 +390,8 @@ public class VentanaPrincipal implements Initializable {
             s.setScene(scene);
             s.setResizable(false);
             s.show();
-            //System.out.print(controlador.getContadorElemento());
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -426,7 +406,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader= new FXMLLoader(getClass().getResource("VentanaEmpalme.fxml"));
             Parent root =loader.load();
             VentanaEmpalmeController empalmeControl=loader.getController();
-            empalmeControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll);
+            empalmeControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll,this);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
@@ -435,12 +415,8 @@ public class VentanaPrincipal implements Initializable {
             s.setScene(scene);
             s.setResizable(false);
             s.showAndWait();
-            //System.out.print(controlador.getContadorElemento());
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -455,7 +431,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader= new FXMLLoader(getClass().getResource("VentanaMultiplexor.fxml"));
             Parent root =loader.load();
             VentanaMultiplexorController muxControl=loader.getController();
-            muxControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll);
+            muxControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll,this);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
@@ -464,12 +440,8 @@ public class VentanaPrincipal implements Initializable {
             s.setScene(scene);
             s.setResizable(false);
             s.showAndWait();
-            //System.out.print(controlador.getContadorElemento());
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -477,7 +449,6 @@ public class VentanaPrincipal implements Initializable {
     /**
      * Metodo que abre la ventana para crear un demultiplexor
      */
-    /*
     @FXML
     public void abrirVentanaDemux() {
         try {
@@ -485,7 +456,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader= new FXMLLoader(getClass().getResource("VentanaDemultiplexor.fxml"));
             Parent root =loader.load();
             VentanaDemultiplexorController demuxControl=loader.getController();
-            demuxControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll);
+            demuxControl.init(controlador,VentanaPrincipal.stage,Pane1,this.scroll,this);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
@@ -494,16 +465,11 @@ public class VentanaPrincipal implements Initializable {
             s.setScene(scene);
             s.setResizable(false);
             s.showAndWait();
-            //System.out.print(controlador.getContadorElemento());
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    */
     
     /**
      * Metodo que crea un medidor de potencia
@@ -558,18 +524,16 @@ public class VentanaPrincipal implements Initializable {
                     s.initModality(Modality.APPLICATION_MODAL);
                     s.showAndWait();
                     s.setResizable(false);
-                } catch (IOException ex) {
+                } 
+                catch (IOException ex) {
                     Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (event1.getButton() == MouseButton.SECONDARY) {
+            } 
+            else if (event1.getButton() == MouseButton.SECONDARY) {
                 mostrarMenu(elem);
             }
         });
         controlador.setContadorElemento(controlador.getContadorElemento()+1);
-        for(int h=0; h<controlador.getElementos().size(); h++){
-            System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-            System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-        }
     }
     
     /**
@@ -614,7 +578,7 @@ public class VentanaPrincipal implements Initializable {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaEspectro.fxml"));
                     Parent root= loader.load();
                     VentanaEspectroController espcControl= loader.getController();
-                    espcControl.init(controlador, stage, Pane1, scroll,elem);
+                    espcControl.init(controlador, stage, Pane1, scroll,elem,this);
                     espcControl.init2(controlador, stage, Pane1, elem, espcControl);
                     Scene scene = new Scene(root);
                     Image ico = new Image("images/acercaDe.png");
@@ -622,91 +586,19 @@ public class VentanaPrincipal implements Initializable {
                     s.getIcons().add(ico);
                     s.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
                     s.setScene(scene);
-                    
-                    //s.initOwner(VentanaPrincipal.getStage());
                     s.initModality(Modality.APPLICATION_MODAL);
                     s.showAndWait();
                     s.setResizable(false);
-                } catch (IOException ex) {
+                } 
+                catch (IOException ex) {
                     Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (event1.getButton() == MouseButton.SECONDARY) {
+            } 
+            else if (event1.getButton() == MouseButton.SECONDARY) {
                 mostrarMenu(elem);
             }
         });
         controlador.setContadorElemento(controlador.getContadorElemento()+1);
-        for(int h=0; h<controlador.getElementos().size(); h++){
-            System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-            System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-        }
-    }
-    
-    /**
-     * Metodo que crea un osciloscopio optico
-     */
-    @FXML
-    public void crearOsciloscopio() {
-        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "\nOscilloscope created!",
-                aceptar);
-        alert.setTitle("Succes");
-        alert.setHeaderText(null);
-        alert.showAndWait();
-        
-        Osciloscopio osciloscopio = new Osciloscopio();
-        osciloscopio.setNombre("oscilloscope");
-        osciloscopio.setConectadoEntrada(false);
-        osciloscopio.setConectadoSalida(false);
-        osciloscopio.setIdOsciloscopio(idOsciloscopio);
-        idOsciloscopio++;
-        osciloscopio.setId(controlador.getContadorElemento());
-        controlador.getElementos().add(osciloscopio);
-        
-        Label dibujo= new Label();
-        dibujo.setGraphic(new ImageView(new Image("images/dibujo_osciloscopio.png")));
-        dibujo.setText("oscilloscope" + "_"+ osciloscopio.getIdOsciloscopio());
-        dibujo.setContentDisplay(ContentDisplay.TOP);
-
-        ElementoGrafico elem = new ElementoGrafico();
-        elem.setComponente(osciloscopio);
-        elem.setDibujo(dibujo);
-        elem.setId(controlador.getContadorElemento());
-        controlador.getDibujos().add(elem);
-        Pane1.getChildren().add(dibujo);
-        
-        eventos(elem);
-
-        elem.getDibujo().setOnMouseClicked((MouseEvent event1) -> {
-            if (event1.getButton() == MouseButton.PRIMARY) {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaOsciloscopio.fxml"));
-                    Parent root= loader.load();
-                    VentanaOsciloscopioController osciControl= loader.getController();
-                    osciControl.init(controlador, stage, Pane1, scroll,elem);
-                    Scene scene = new Scene(root);
-                    Image ico = new Image("images/acercaDe.png");
-                    Stage s = new Stage(StageStyle.UTILITY);
-                    s.getIcons().add(ico);
-                    s.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
-                    s.setScene(scene);
-                    
-                    //s.initOwner(VentanaPrincipal.getStage());
-                    s.initModality(Modality.APPLICATION_MODAL);
-                    s.showAndWait();
-                    s.setResizable(false);
-                } catch (IOException ex) {
-                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else if (event1.getButton() == MouseButton.SECONDARY) {
-                mostrarMenu(elem);
-            }
-        });
-        controlador.setContadorElemento(controlador.getContadorElemento()+1);
-        for(int h=0; h<controlador.getElementos().size(); h++){
-            System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-            System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-        }
     }
     
     /**
@@ -722,25 +614,25 @@ public class VentanaPrincipal implements Initializable {
         alert.setHeaderText(null);
         alert.showAndWait();
         
-        FBG rejilla = new FBG();
-        rejilla.setNombre("fbg"); 
-        rejilla.setConectadoEntrada(false);
-        rejilla.setConectadoSalida(false);
-        rejilla.setIdFBG(idFBG);
+        FBG fbg = new FBG();
+        fbg.setNombre("fbg"); 
+        fbg.setConectadoEntrada(false);
+        fbg.setConectadoSalida(false);
+        fbg.setIdFBG(idFBG);
         idFBG++;
-        rejilla.setId(controlador.getContadorElemento());
-        controlador.getElementos().add(rejilla);
+        fbg.setId(controlador.getContadorElemento());
+        controlador.getElementos().add(fbg);
         
         Label dibujo= new Label();
         dibujo.setGraphic(new ImageView(new Image("images/dibujo_fbg.png")));
-        dibujo.setText("fbg" + "_"+ rejilla.getIdFBG());
+        dibujo.setText("fbg" + "_"+ fbg.getIdFBG());
         dibujo.setContentDisplay(ContentDisplay.TOP);
 
         ElementoGrafico elem = new ElementoGrafico();
         PuertoSalida p= new PuertoSalida();
-        rejilla.getConexiones().add(p);
-        rejilla.setSalidas(2);
-        elem.setComponente(rejilla);
+        fbg.getConexiones().add(p);
+        fbg.setSalidas(2);
+        elem.setComponente(fbg);
         elem.setDibujo(dibujo);
         elem.setId(controlador.getContadorElemento());
         controlador.getDibujos().add(elem);
@@ -749,10 +641,6 @@ public class VentanaPrincipal implements Initializable {
         eventosFBG(elem);
 
         controlador.setContadorElemento(controlador.getContadorElemento()+1);
-        for(int h=0; h<controlador.getElementos().size(); h++){
-            System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-            System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-        }
     }
     
     /**
@@ -775,12 +663,13 @@ public class VentanaPrincipal implements Initializable {
                     }
                 }
                 if( outSideParentBoundsX(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                }else{
+                }
+                else{
                     elem.getDibujo().setLayoutX(Pane1.getChildren().get(j).getLayoutX()+event.getX()+1);
                 }
-
                 if(outSideParentBoundsY(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                }else{
+                }
+                else{
                     elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);
                 }
                 if(elem.getComponente().isConectadoSalida()==true){
@@ -792,40 +681,48 @@ public class VentanaPrincipal implements Initializable {
                     for(int it=0; it<controlador.getDibujos().size();it++){
                         if(elem.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())){
                             aux=controlador.getDibujos().get(it);
-                            //Aqui es que ya reviso que esta conectado a un elemento, se va a revisar que sea un fbg
-                            //y no esta conectado a su puerto default
-                            if(elem.getComponente().getElementoConectadoEntrada().contains("splitter")||elem.getComponente().getElementoConectadoEntrada().contains("demux")&&!aux.getComponente().getElementoConectadoSalida().equals(elem.getDibujo().getText())){
+                            if(elem.getComponente().getElementoConectadoEntrada().contains("splitter")&&!aux.getComponente().getElementoConectadoSalida().equals(elem.getDibujo().getText())){
                                 Splitter sp=(Splitter)aux.getComponente();
                                 for(int on=0; on<sp.getConexiones().size(); on++){
                                     if(sp.getConexiones().get(on).isConectadoSalida()){
                                         if(sp.getConexiones().get(on).getElementoConectadoSalida().equals(elem.getDibujo().getText())){
-                                            dibujarLineaAtrasSplitter(elem, aux, on);
+                                            dibujarLineaAtrasElem(elem, aux, on);
                                         }
                                     }
                                 }
-                            }else if(elem.getComponente().getElementoConectadoEntrada().contains("fbg")&&!aux.getComponente().getElementoConectadoSalida().equals(elem.getDibujo().getText())){
-                                FBG sp=(FBG)aux.getComponente();
-                                for(int on=0; on<sp.getConexiones().size(); on++){
-                                    if(sp.getConexiones().get(on).isConectadoSalida()){
-                                        if(sp.getConexiones().get(on).getElementoConectadoSalida().equals(elem.getDibujo().getText())){
-                                            dibujarLineaAtrasSplitter(elem, aux, on);
-                                            sp.getConexiones().get(0).getLinea().setVisible(false);
+                            }
+                            else if(elem.getComponente().getElementoConectadoEntrada().contains("demux")&&!aux.getComponente().getElementoConectadoSalida().equals(elem.getDibujo().getText())){
+                                Demultiplexor dem=(Demultiplexor)aux.getComponente();
+                                for(int on=0; on<dem.getConexiones().size(); on++){
+                                    if(dem.getConexiones().get(on).isConectadoSalida()){
+                                        if(dem.getConexiones().get(on).getElementoConectadoSalida().equals(elem.getDibujo().getText())){
+                                            dibujarLineaAtrasElem(elem, aux, on);
+                                        }
+                                    }
+                                }
+                            }
+                            //Aqui es que ya reviso que esta conectado a un elemento, se va a revisar que sea un fbg
+                            //y no esta conectado a su puerto default
+                            else if(elem.getComponente().getElementoConectadoEntrada().contains("fbg")&&!aux.getComponente().getElementoConectadoSalida().equals(elem.getDibujo().getText())){
+                                FBG fb=(FBG)aux.getComponente();
+                                for(int on=0; on<fb.getConexiones().size(); on++){
+                                    if(fb.getConexiones().get(on).isConectadoSalida()){
+                                        if(fb.getConexiones().get(on).getElementoConectadoSalida().equals(elem.getDibujo().getText())){
+                                            dibujarLineaAtrasElem(elem, aux, on);
+                                            fb.getConexiones().get(0).getLinea().setVisible(false);
                                             Line li=new Line();
-                                            sp.getConexiones().get(0).getLinea().setStartX(aux.getDibujo().getLayoutX()+25);
-                                            sp.getConexiones().get(0).getLinea().setStartY(aux.getDibujo().getLayoutY()+36);
-                                            sp.getConexiones().get(0).getLinea().setStrokeWidth(3);
-                                            sp.getConexiones().get(0).getLinea().setStroke(javafx.scene.paint.Color.BLACK);
-                                            sp.getConexiones().get(0).getLinea().setEndX(elem.getDibujo().getLayoutX());
-                                            sp.getConexiones().get(0).getLinea().setEndY(elem.getDibujo().getLayoutY()+26);
-                                            sp.getConexiones().get(0).getLinea().setVisible(true);
-                                            
-                                            //Pane1.getChildren().add(li); 
-                                            //aux.getComponente().setLinea(li);
-                                            //System.out.println("hola");
+                                            fb.getConexiones().get(0).getLinea().setStartX(aux.getDibujo().getLayoutX()+25);
+                                            fb.getConexiones().get(0).getLinea().setStartY(aux.getDibujo().getLayoutY()+36);
+                                            fb.getConexiones().get(0).getLinea().setStrokeWidth(3);
+                                            fb.getConexiones().get(0).getLinea().setStroke(javafx.scene.paint.Color.BLACK);
+                                            fb.getConexiones().get(0).getLinea().setEndX(elem.getDibujo().getLayoutX());
+                                            fb.getConexiones().get(0).getLinea().setEndY(elem.getDibujo().getLayoutY()+26);
+                                            fb.getConexiones().get(0).getLinea().setVisible(true);
                                         }
                                     }
                                 }
-                            }else{
+                            }
+                            else{
                                 aux.getComponente().getLinea().setVisible(false);
                                 dibujarLineaAtras(elem);
                             }
@@ -834,12 +731,12 @@ public class VentanaPrincipal implements Initializable {
                 }
             }
         });
-            elem.getDibujo().setOnMouseEntered((MouseEvent event) -> {
-                elem.getDibujo().setStyle("-fx-border-color: darkblue;");
-                elem.getDibujo().setCursor(Cursor.OPEN_HAND);
+        elem.getDibujo().setOnMouseEntered((MouseEvent event) -> {
+            elem.getDibujo().setStyle("-fx-border-color: darkblue;");
+            elem.getDibujo().setCursor(Cursor.OPEN_HAND);
         });
-            elem.getDibujo().setOnMouseExited((MouseEvent event) -> {
-                elem.getDibujo().setStyle("");
+        elem.getDibujo().setOnMouseExited((MouseEvent event) -> {
+            elem.getDibujo().setStyle("");
         });
     }
     
@@ -862,16 +759,18 @@ public class VentanaPrincipal implements Initializable {
                     }
                 }
                 if( outSideParentBoundsX(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                }else{
+                }
+                else{
                     elem.getDibujo().setLayoutX(Pane1.getChildren().get(j).getLayoutX()+event.getX()+1);
                 }
-
                 if(outSideParentBoundsY(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                }else{
-                elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);}
+                }
+                else{
+                    elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);
+                }
                 if(elem.getComponente().isConectadoSalida()==true){
                     elem.getComponente().getLinea().setVisible(false);
-                    dibujarLinea(elem);
+                    dibujarLineaFBG(elem);
                 }
                 if(elem.getComponente().isConectadoEntrada()){
                     ElementoGrafico aux;
@@ -902,7 +801,7 @@ public class VentanaPrincipal implements Initializable {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaFBG.fxml"));
                     Parent root= loader.load();
                     VentanaFBGController fbgControl = loader.getController();
-                    fbgControl.init(controlador, stage, Pane1, scroll, elem);
+                    fbgControl.init(controlador, stage, Pane1, scroll, elem,this);
                     fbgControl.init2(controlador, stage, Pane1,elem,fbgControl);
                     Scene scene = new Scene(root);
                     Image ico = new Image("images/acercaDe.png");
@@ -913,10 +812,12 @@ public class VentanaPrincipal implements Initializable {
                     s.initModality(Modality.APPLICATION_MODAL);
                     s.showAndWait();
                     s.setResizable(false);
-                } catch (IOException ex) {
+                } 
+                catch (IOException ex) {
                     Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }else if(event.getButton()==MouseButton.SECONDARY){
+            }
+            else if(event.getButton()==MouseButton.SECONDARY){
                 mostrarMenu(elem);
             }
         });
@@ -937,7 +838,6 @@ public class VentanaPrincipal implements Initializable {
                     Parent root= loader.load();
                     VentanaPotenciaController potControl= loader.getController();
                     potControl.init(controlador, stage, Pane1, scroll,elem);
-                    potControl.init2(controlador, stage, Pane1, elem, potControl);
                     Scene scene = new Scene(root);
                     Image ico = new Image("images/acercaDe.png");
                     Stage s = new Stage(StageStyle.UTILITY);
@@ -946,10 +846,12 @@ public class VentanaPrincipal implements Initializable {
                     s.setScene(scene);
                     s.showAndWait();
                     s.setResizable(false);
-                } catch (IOException ex) {
+                } 
+                catch (IOException ex) {
                     Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (event1.getButton() == MouseButton.SECONDARY) {
+            } 
+            else if (event1.getButton() == MouseButton.SECONDARY) {
                 mostrarMenu(elem);
             }
         });
@@ -965,62 +867,30 @@ public class VentanaPrincipal implements Initializable {
         eventos(elem);
             
         elem.getDibujo().setOnMouseClicked((MouseEvent event1) -> {
-        if (event1.getButton() == MouseButton.PRIMARY) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaEspectro.fxml"));
-                Parent root= loader.load();
-                VentanaEspectroController espcControl= loader.getController();
-                espcControl.init(controlador, stage, Pane1, scroll,elem);
-                espcControl.init2(controlador, stage, Pane1, elem, espcControl);
-                Scene scene = new Scene(root);
-                Image ico = new Image("images/acercaDe.png");
-                Stage s = new Stage(StageStyle.UTILITY);
-                s.getIcons().add(ico);
-                s.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
-                s.setScene(scene);
-                s.initModality(Modality.APPLICATION_MODAL);
-                s.showAndWait();
-                s.setResizable(false);
-            } catch (IOException ex) {
-                Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            if (event1.getButton() == MouseButton.PRIMARY) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaEspectro.fxml"));
+                    Parent root= loader.load();
+                    VentanaEspectroController espcControl= loader.getController();
+                    espcControl.init(controlador, stage, Pane1, scroll,elem,this);
+                    espcControl.init2(controlador, stage, Pane1, elem, espcControl);
+                    Scene scene = new Scene(root);
+                    Image ico = new Image("images/acercaDe.png");
+                    Stage s = new Stage(StageStyle.UTILITY);
+                    s.getIcons().add(ico);
+                    s.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
+                    s.setScene(scene);
+                    s.initModality(Modality.APPLICATION_MODAL);
+                    s.showAndWait();
+                    s.setResizable(false);
+                } 
+                catch (IOException ex) {
+                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } 
+            else if (event1.getButton() == MouseButton.SECONDARY) {
+                mostrarMenu(elem);
             }
-        } else if (event1.getButton() == MouseButton.SECONDARY) {
-            mostrarMenu(elem);
-        }
-        });
-    }
-    
-    /**
-     * Metodo que le proporciona eventos al osciloscopio despues de abrir 
-     * un trabajo
-     * @param dibujo Etiqueta donde sera colocado el osciloscopio
-     * @param elem Elemento grafico del osciloscopio
-     */
-    public void eventosOsciloscopio(Label dibujo, ElementoGrafico elem){
-        eventos(elem);
-            
-        elem.getDibujo().setOnMouseClicked((MouseEvent event1) -> {
-        if (event1.getButton() == MouseButton.PRIMARY) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaOsciloscopio.fxml"));
-                Parent root= loader.load();
-                VentanaOsciloscopioController osciControl= loader.getController();
-                osciControl.init(controlador, stage, Pane1, scroll,elem);
-                Scene scene = new Scene(root);
-                Image ico = new Image("images/acercaDe.png");
-                Stage s = new Stage(StageStyle.UTILITY);
-                s.getIcons().add(ico);
-                s.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
-                s.setScene(scene);
-                s.initModality(Modality.APPLICATION_MODAL);
-                s.showAndWait();
-                s.setResizable(false);
-            } catch (IOException ex) {
-                Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else if (event1.getButton() == MouseButton.SECONDARY) {
-            mostrarMenu(elem);
-        }
         });
     }
     
@@ -1042,7 +912,6 @@ public class VentanaPrincipal implements Initializable {
                 for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
                     if(dibujo.getComponente().getElementoConectadoSalida().equals(controlador.getDibujos().get(elemento).getDibujo().getText())){
                         Componente aux= controlador.getElementos().get(elemento);
-                        System.out.println();
                         aux.setElementoConectadoEntrada("");
                         dibujo.getComponente().getLinea().setVisible(false);
                     }
@@ -1072,25 +941,11 @@ public class VentanaPrincipal implements Initializable {
                         alert.setHeaderText(null);
                         alert.showAndWait();
                     }
-                    else if(dibujo.getDibujo().getText().contains("oscilloscope")){ 
-                        Osciloscopio aux= (Osciloscopio)controlador.getElementos().get(elemento);
-                        controlador.getDibujos().remove(dibujo);
-                        controlador.getElementos().remove(aux); 
-                        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                                "\nRemoved Oscilloscope!",
-                                aceptar);
-                        alert.setTitle("Succes");
-                        alert.setHeaderText(null);
-                        alert.showAndWait();
-                    }
                     else if(dibujo.getDibujo().getText().contains("fbg")){ 
-                        //FBG aux= (FBG)controlador.getElementos().get(elemento);
                         if(dibujo.getComponente().isConectadoSalida()==true){
                             for(int elemento1=0; elemento1<controlador.getElementos().size(); elemento1++){
                                 if(dibujo.getComponente().getElementoConectadoSalida().equals(controlador.getDibujos().get(elemento1).getDibujo().getText())){
                                     Componente aux1= controlador.getElementos().get(elemento1);
-                                    //System.out.println();
                                     aux1.setConectadoEntrada(false);
                                     aux1.setElementoConectadoEntrada("-");
                                     dibujo.getComponente().getLinea().setVisible(false);
@@ -1107,21 +962,19 @@ public class VentanaPrincipal implements Initializable {
                                 }
                             }
                         }
-                        FBG sp=(FBG)dibujo.getComponente();
-                        for(int cz=0; cz<sp.getConexiones().size(); cz++){
-                            if(sp.getConexiones().get(cz).isConectadoSalida()){
+                        FBG fbg=(FBG)dibujo.getComponente();
+                        for(int cz=0; cz<fbg.getConexiones().size(); cz++){
+                            if(fbg.getConexiones().get(cz).isConectadoSalida()){
                                 for(int elemento3=0; elemento3<controlador.getElementos().size(); elemento3++){
-                                    if(sp.getConexiones().get(cz).getElementoConectadoSalida().equals(controlador.getDibujos().get(elemento3).getDibujo().getText())){
+                                    if(fbg.getConexiones().get(cz).getElementoConectadoSalida().equals(controlador.getDibujos().get(elemento3).getDibujo().getText())){
                                         Componente aux3= controlador.getElementos().get(elemento3);
-                                        //System.out.println();
                                         aux3.setConectadoEntrada(false);
                                         aux3.setElementoConectadoEntrada("-");
-                                        sp.getConexiones().get(cz).getLinea().setVisible(false);
+                                        fbg.getConexiones().get(cz).getLinea().setVisible(false);
                                     }
                                 }
                             }
                         }
-
                         for(int elemento4=0; elemento4<controlador.getElementos().size(); elemento4++){
                             if(dibujo.getId()==controlador.getElementos().get(elemento4).getId()){
                                 FBG aux= (FBG)controlador.getElementos().get(elemento4);
@@ -1170,29 +1023,11 @@ public class VentanaPrincipal implements Initializable {
                                 "\n  Id: "+aux.getIdPotencia()+
                                 "\n  Input: "+aux.getElementoConectadoEntrada()/*+
                                 "\n  Output :"+aux.getElementoConectadoSalida()*/);
-                        //label.setStyle("-fx-background-color: lavender;");
                         Scene scene = new Scene(label, 190, 80);
                         s.setScene(scene);
                         s.setResizable(false);
                         s.showAndWait();
-                    }
-                    else if(dibujo.getDibujo().getText().contains("oscilloscope")){ 
-                        Stage s = new Stage(StageStyle.DECORATED);
-                        Image ico = new Image("images/dibujo_osciloscopio.png");
-                        s.getIcons().add(ico);
-                        s.setTitle("OptiUAM BC - Properties");
-                        s.initModality(Modality.APPLICATION_MODAL);
-                        Osciloscopio aux= (Osciloscopio)controlador.getElementos().get(elemento);
-                        Label label = new Label("  Name: "+aux.getNombre()+
-                                "\n  Id: "+aux.getIdOsciloscopio()+
-                                "\n  Input: "+aux.getElementoConectadoEntrada()/*+
-                                "\n  Output :"+aux.getElementoConectadoSalida()*/);
-                        //label.setStyle("-fx-background-color: lavender;");
-                        Scene scene = new Scene(label, 190, 80);
-                        s.setScene(scene);
-                        s.setResizable(false);
-                        s.showAndWait();
-                    }
+                    } 
                     else if(dibujo.getDibujo().getText().contains("fbg")){ 
                         Stage s = new Stage(StageStyle.DECORATED);
                         Image ico = new Image("images/dibujo_fbg.png");
@@ -1204,7 +1039,6 @@ public class VentanaPrincipal implements Initializable {
                                 "\n  Id: "+aux.getIdFBG()+
                                 "\n  Input: "+aux.getElementoConectadoEntrada()+
                                 "\n  Output :"+aux.getElementoConectadoSalida());
-                        //label.setStyle("-fx-background-color: lavender;");
                         Scene scene = new Scene(label, 190, 80);
                         s.setScene(scene);
                         s.setResizable(false);
@@ -1221,7 +1055,6 @@ public class VentanaPrincipal implements Initializable {
                                 "\n  Id: "+aux.getIdEspectro()+
                                 "\n  Input: "+aux.getElementoConectadoEntrada()/*+
                                 "\n  Output :"+aux.getElementoConectadoSalida()*/);
-                        //label.setStyle("-fx-background-color: lavender;");
                         Scene scene = new Scene(label, 190, 80);
                         s.setScene(scene);
                         s.setResizable(false);
@@ -1229,9 +1062,7 @@ public class VentanaPrincipal implements Initializable {
                     }
                 }
             }    
-            
         });
-
         contextMenu.getItems().add(menuItem3);
         contextMenu.getItems().add(menuItem4);
         dibujo.getDibujo().setContextMenu(contextMenu);
@@ -1263,7 +1094,8 @@ public class VentanaPrincipal implements Initializable {
             st.setScene(scene);
             st.showAndWait();
             st.setResizable(false);
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -1276,8 +1108,9 @@ public class VentanaPrincipal implements Initializable {
         try {
             File objetofile = new File ("ayuda.pdf");
             Desktop.getDesktop().open(objetofile);
-        } catch (IOException ex) {
-               System.out.println(ex);
+        } 
+        catch (IOException ex) {
+            System.out.println(ex);
         }
     }
     
@@ -1335,9 +1168,9 @@ public class VentanaPrincipal implements Initializable {
         String ruta_archivo="";
         try {
             ruta_archivo = manejador.getSelectedFile().getPath();
-            //System.out.println(ruta_archivo);
             controlador.guardarTrabajo(ruta_archivo);
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             //no se hace nada ya que esta excepcion se activa cuando se da click 
             //en cancelar o se cierra la ventana para cargar/guardar trabajo
         }
@@ -1355,22 +1188,17 @@ public class VentanaPrincipal implements Initializable {
         File archivo = null;
         FileReader fr = null;
         BufferedReader br = null;
-
         try {
-            // Apertura del fichero y creacion de BufferedReader para poder
-             // hacer una lectura comoda (disponer del metodo readLine()).
             archivo = new File (ruta);
             fr = new FileReader (archivo);
             br = new BufferedReader(fr);
-            
             ControladorGeneral con = new ControladorGeneral();
-                        
-           Node node= Pane1.getChildren().get(0);
-           Pane1.getChildren().clear();
-           Pane1.getChildren().add(node);
-           controlador.getElementos().clear();
-           controlador.getDibujos().clear();
-           // Lectura del fichero
+
+            Node node= Pane1.getChildren().get(0);
+            Pane1.getChildren().clear();
+            Pane1.getChildren().add(node);
+            controlador.getElementos().clear();
+            controlador.getDibujos().clear();
             String linea="";
             
             while((linea=br.readLine())!=null){
@@ -1394,6 +1222,7 @@ public class VentanaPrincipal implements Initializable {
                         Label dibujo = new Label();
                         dibujo.setGraphic(new ImageView(new Image("images/dibujo_conectorR.png")));
                         dibujo.setText(conector.getNombre() + "_"+ conector.getIdConector());
+                        conector.setNombreid(conector.getNombre() + "_"+ conector.getIdConector());
                         dibujo.setLayoutX(Double.parseDouble(partes[10]));
                         dibujo.setLayoutY(Double.parseDouble(partes[11]));
                         dibujo.setContentDisplay(ContentDisplay.TOP);
@@ -1403,7 +1232,7 @@ public class VentanaPrincipal implements Initializable {
                         elem.setDibujo(dibujo);
                         elem.setId(Integer.valueOf(partes[1]));
                         VentanaConectorController aux= new VentanaConectorController();
-                        aux.init(con, stage, Pane1, scroll);
+                        aux.init(con, stage, Pane1, scroll,this);
                         con.getDibujos().add(elem);
                         dibujo.setVisible(true);
                         
@@ -1424,7 +1253,6 @@ public class VentanaPrincipal implements Initializable {
                         empalme.setPerdidaInsercion(Double.valueOf(partes[7]));
                         empalme.setLongitudOnda(Integer.valueOf(partes[8]));
                         empalme.setIdEmpalme(Integer.valueOf(partes[9]));
-                        //System.out.println(empalme.getIdEmpalme());
                         con.getElementos().add(empalme);
                         
                         Label dibujo1 = new Label();
@@ -1439,14 +1267,13 @@ public class VentanaPrincipal implements Initializable {
                         elem1.setDibujo(dibujo1);
                         elem1.setId(Integer.valueOf(partes[1]));
                         VentanaEmpalmeController aux1= new VentanaEmpalmeController();
-                        aux1.init(con, stage, Pane1, scroll);
+                        aux1.init(con, stage, Pane1, scroll,this);
                         con.getDibujos().add(elem1);
                         dibujo1.setVisible(true);
                         
                         Pane1.getChildren().add(dibujo1);
                         aux1.eventos(elem1);
                         aux1.setIdEmpalme(Integer.valueOf(partes[9]+1));
-                        
                         break;
                         
                     case "fiber":
@@ -1464,7 +1291,6 @@ public class VentanaPrincipal implements Initializable {
                         fibra.setDispersion(Double.valueOf(partes[10]));
                         fibra.setAtenuacion(Double.valueOf(partes[11]));
                         fibra.setIdFibra(Integer.valueOf(partes[12]));
-                        //System.out.println(fibra.getIdFibra());
                         con.getElementos().add(fibra);
                         
                         Label dibujo2 = new Label();
@@ -1479,7 +1305,7 @@ public class VentanaPrincipal implements Initializable {
                         elem2.setDibujo(dibujo2);
                         elem2.setId(Integer.valueOf(partes[1]));
                         VentanaFibraController aux2= new VentanaFibraController();
-                        aux2.init(con, stage, Pane1, scroll);
+                        aux2.init(con, stage, Pane1, scroll,this);
                         con.getDibujos().add(elem2);
                         dibujo2.setVisible(true);
                         
@@ -1500,7 +1326,6 @@ public class VentanaPrincipal implements Initializable {
                         splitter.setPerdidaInsercion(Double.valueOf(partes[7]));
                         splitter.setLongitudOnda(Integer.valueOf(partes[8]));
                         splitter.setIdS(Integer.valueOf(partes[9]));
-                        //System.out.println(fbg.getIdS());
                         con.getElementos().add(splitter);
                         
                         Label dibujo3 = new Label();
@@ -1508,30 +1333,18 @@ public class VentanaPrincipal implements Initializable {
                         switch (splitter.getSalidas()) {
                             case 2:
                                 dibujo3.setGraphic(new ImageView(new Image("images/dibujo_splitter2.png")));
-                                dibujo3.setLayoutX(Double.parseDouble(partes[12]));
-                                dibujo3.setLayoutY(Double.parseDouble(partes[13]));
+                                dibujo3.setLayoutX(Double.parseDouble(partes[13]));
+                                dibujo3.setLayoutY(Double.parseDouble(partes[14]));
                                 break;
                             case 4:
                                 dibujo3.setGraphic(new ImageView(new Image("images/dibujo_splitter4.png")));
-                                dibujo3.setLayoutX(Double.parseDouble(partes[16]));
-                                dibujo3.setLayoutY(Double.parseDouble(partes[17]));
+                                dibujo3.setLayoutX(Double.parseDouble(partes[17]));
+                                dibujo3.setLayoutY(Double.parseDouble(partes[18]));
                                 break;
-                                
                             case 8:
                                 dibujo3.setGraphic(new ImageView(new Image("images/dibujo_splitter8.png")));
-                                dibujo3.setLayoutX(Double.parseDouble(partes[24]));
-                                dibujo3.setLayoutY(Double.parseDouble(partes[25]));
-                                break;
-                            case 16:
-                                dibujo3.setGraphic(new ImageView(new Image("images/dibujo_splitter16.png")));
-                                dibujo3.setLayoutX(Double.parseDouble(partes[40]));
-                                dibujo3.setLayoutY(Double.parseDouble(partes[41]));
-                                break;
-                            case 32:
-                                dibujo3.setGraphic(new ImageView(new Image("images/dibujo_splitter32.png")));
-                                break;
-                            case 64:
-                                dibujo3.setGraphic(new ImageView(new Image("images/dibujo_splitter64.png")));
+                                dibujo3.setLayoutX(Double.parseDouble(partes[25]));
+                                dibujo3.setLayoutY(Double.parseDouble(partes[26]));
                                 break;
                             default:
                                 break;
@@ -1540,7 +1353,6 @@ public class VentanaPrincipal implements Initializable {
                         dibujo3.setText(splitter.getNombre() + "_"+ splitter.getIdS());
                         dibujo3.setContentDisplay(ContentDisplay.TOP);
                         
-                        //String [] conexiones = linea.split(",");
                         for(int i=1;i<splitter.getSalidas(); i++){
                             PuertoSalida puerto= new PuertoSalida();
                             puerto.setConectadoSalida(Boolean.parseBoolean(partes[(9+(2*i)-1)]));
@@ -1552,7 +1364,7 @@ public class VentanaPrincipal implements Initializable {
                         elem3.setDibujo(dibujo3);
                         elem3.setId(Integer.valueOf(partes[1]));
                         VentanaSplitterController aux3= new VentanaSplitterController();
-                        aux3.init(con, stage, Pane1, scroll);
+                        aux3.init(con, stage, Pane1, scroll,this);
                         
                         con.getDibujos().add(elem3);
                         dibujo3.setVisible(true);
@@ -1575,7 +1387,7 @@ public class VentanaPrincipal implements Initializable {
                         fuente.setAnchura(Double.parseDouble(partes[8]));
                         fuente.setVelocidad(Double.parseDouble(partes[9]));
                         fuente.setLongitudOnda(Integer.parseInt(partes[10]));
-                        fuente.setPulso(Float.parseFloat(partes[11]), Float.parseFloat(partes[12]), Float.parseFloat(partes[13]), Float.parseFloat(partes[14]), Float.parseFloat(partes[15]));
+                        fuente.setPulso(Float.parseFloat(partes[11]), Float.parseFloat(partes[12]), Float.parseFloat(partes[13]), Float.parseFloat(partes[14]), (int) Float.parseFloat(partes[15]));
                         fuente.setIdFuente(Integer.parseInt(partes[16]));
                         con.getElementos().add(fuente);
                         
@@ -1591,7 +1403,7 @@ public class VentanaPrincipal implements Initializable {
                         elem4.setDibujo(dibujo4);
                         elem4.setId(Integer.valueOf(partes[1]));
                         VentanaFuenteController aux4= new VentanaFuenteController();
-                        aux4.init(con, stage, Pane1, scroll);
+                        aux4.init(con, stage, Pane1, scroll,this);
 
                         con.getDibujos().add(elem4);
                         dibujo4.setVisible(true);
@@ -1609,7 +1421,6 @@ public class VentanaPrincipal implements Initializable {
                         potencia.setConectadoSalida(Boolean.valueOf(partes[4]));
                         potencia.setElementoConectadoSalida(partes[5]);
                         potencia.setIdPotencia(Integer.valueOf(partes[6]));
-                        System.out.println(potencia.getIdPotencia());
                         con.getElementos().add(potencia);
                         
                         Label dibujo5 = new Label();
@@ -1640,7 +1451,6 @@ public class VentanaPrincipal implements Initializable {
                         espectro.setConectadoSalida(Boolean.valueOf(partes[4]));
                         espectro.setElementoConectadoSalida(partes[5]);
                         espectro.setIdEspectro(Integer.valueOf(partes[6]));
-                        System.out.println(espectro.getIdEspectro());
                         con.getElementos().add(espectro);
                         
                         Label dibujo6 = new Label();
@@ -1675,12 +1485,13 @@ public class VentanaPrincipal implements Initializable {
                         fbg.setTransmision(Double.parseDouble(partes[8]));
                         fbg.setDz(Double.parseDouble(partes[9]));
                         fbg.setLongitudOnda(Double.parseDouble(partes[10]));
-                        System.out.println(fbg.getIdFBG());
                         con.getElementos().add(fbg);
+                        
                         PuertoSalida ps=new PuertoSalida();
                         ps.setConectadoSalida(Boolean.parseBoolean(partes[11]));
                         ps.setElementoConectadoSalida(partes[12]);
                         fbg.getConexiones().add(ps);
+                        
                         Label dibujo7 = new Label();
                         dibujo7.setGraphic(new ImageView(new Image("images/dibujo_fbg.png")));
                         dibujo7.setText(fbg.getNombre() + "_"+ fbg.getIdFBG());
@@ -1698,38 +1509,6 @@ public class VentanaPrincipal implements Initializable {
                         Pane1.getChildren().add(dibujo7);
                         eventosFBG(elem7);
                         idFBG=fbg.getIdFBG()+1;
-                        /*------------------------------------------------------*/
-                        break;
-                    
-                        case "oscilloscope":
-                        Osciloscopio osciloscopio = new Osciloscopio();
-                        osciloscopio.setId(Integer.valueOf(partes[1]));
-                        osciloscopio.setNombre(nombre);
-                        osciloscopio.setConectadoEntrada(Boolean.valueOf(partes[2]));
-                        osciloscopio.setElementoConectadoEntrada(partes[3]);
-                        osciloscopio.setConectadoSalida(Boolean.valueOf(partes[4]));
-                        osciloscopio.setElementoConectadoSalida(partes[5]);
-                        osciloscopio.setIdOsciloscopio(Integer.valueOf(partes[6]));
-                        System.out.println(osciloscopio.getIdOsciloscopio());
-                        con.getElementos().add(osciloscopio);
-                        
-                        Label dibujo8 = new Label();
-                        dibujo8.setGraphic(new ImageView(new Image("images/dibujo_osciloscopio.png")));
-                        dibujo8.setText(osciloscopio.getNombre() + "_"+ osciloscopio.getIdOsciloscopio());
-                        dibujo8.setLayoutX(Double.parseDouble(partes[7]));
-                        dibujo8.setLayoutY(Double.parseDouble(partes[8]));
-                        dibujo8.setContentDisplay(ContentDisplay.TOP);
-                        
-                        ElementoGrafico elem8 = new ElementoGrafico();
-                        elem8.setComponente(osciloscopio);
-                        elem8.setDibujo(dibujo8);
-                        elem8.setId(Integer.valueOf(partes[1]));
-                        con.getDibujos().add(elem8);
-                        dibujo8.setVisible(true);
-                        
-                        Pane1.getChildren().add(dibujo8);
-                        eventosOsciloscopio(dibujo8, elem8);
-                        idOsciloscopio=osciloscopio.getIdOsciloscopio()+1;
                         break;
                     
                     case "mux":
@@ -1743,8 +1522,6 @@ public class VentanaPrincipal implements Initializable {
                         mux.setIdMux(Integer.valueOf(partes[6]));
                         mux.setEntradas(Integer.valueOf(partes[7]));
                         mux.setPerdidaInsercion(Double.valueOf(partes[8]));
-                        
-                        //System.out.println(fbg.getIdS());
                         con.getElementos().add(mux);
                         
                         Label dibujo9 = new Label();
@@ -1760,7 +1537,6 @@ public class VentanaPrincipal implements Initializable {
                                 dibujo9.setLayoutX(Double.parseDouble(partes[15]));
                                 dibujo9.setLayoutY(Double.parseDouble(partes[16]));
                                 break;
-                                
                             case 8:
                                 dibujo9.setGraphic(new ImageView(new Image("images/dibujo_mux8.png")));
                                 dibujo9.setLayoutX(Double.parseDouble(partes[23]));
@@ -1773,7 +1549,6 @@ public class VentanaPrincipal implements Initializable {
                         dibujo9.setText(mux.getNombre() + "_"+ mux.getIdMux());
                         dibujo9.setContentDisplay(ContentDisplay.TOP);
                         
-                        //String [] conexiones = linea.split(",");
                         for(int i=1;i<mux.getEntradas(); i++){
                             PuertoEntrada puerto= new PuertoEntrada();
                             puerto.setConectadoEntrada(Boolean.parseBoolean(partes[(8+(2*i)-1)]));
@@ -1785,7 +1560,7 @@ public class VentanaPrincipal implements Initializable {
                         elem9.setDibujo(dibujo9);
                         elem9.setId(Integer.valueOf(partes[1]));
                         VentanaMultiplexorController aux9= new VentanaMultiplexorController();
-                        aux9.init(con, stage, Pane1, scroll);
+                        aux9.init(con, stage, Pane1, scroll,this);
                         
                         con.getDibujos().add(elem9);
                         dibujo9.setVisible(true);
@@ -1793,6 +1568,67 @@ public class VentanaPrincipal implements Initializable {
                         Pane1.getChildren().add(dibujo9);
                         aux9.eventos(elem9);
                         aux9.setIdMux(mux.getIdMux()+1);
+                        break;
+                        
+                    case "demux":
+                        Demultiplexor demux = new Demultiplexor();
+                        demux.setId(Integer.valueOf(partes[1]));
+                        demux.setNombre(nombre);
+                        demux.setConectadoEntrada(Boolean.valueOf(partes[2]));
+                        demux.setElementoConectadoEntrada(partes[3]);
+                        demux.setConectadoSalida(Boolean.valueOf(partes[4]));
+                        demux.setElementoConectadoSalida(partes[5]);
+                        demux.setIdDemux(Integer.valueOf(partes[6]));
+                        demux.setSalidas(Integer.valueOf(partes[7]));
+                        demux.setPerdidaInsercion(Double.valueOf(partes[8]));
+                        
+                        con.getElementos().add(demux);
+                        
+                        Label dibujo10 = new Label();
+                        
+                        switch (demux.getSalidas()) {
+                            case 2:
+                                dibujo10.setGraphic(new ImageView(new Image("images/dibujo_demux2.png")));
+                                dibujo10.setLayoutX(Double.parseDouble(partes[12]));
+                                dibujo10.setLayoutY(Double.parseDouble(partes[13]));
+                                break;
+                            case 4:
+                                dibujo10.setGraphic(new ImageView(new Image("images/dibujo_demux4.png")));
+                                dibujo10.setLayoutX(Double.parseDouble(partes[16]));
+                                dibujo10.setLayoutY(Double.parseDouble(partes[17]));
+                                break;
+                                
+                            case 8:
+                                dibujo10.setGraphic(new ImageView(new Image("images/dibujo_demux8.png")));
+                                dibujo10.setLayoutX(Double.parseDouble(partes[24]));
+                                dibujo10.setLayoutY(Double.parseDouble(partes[25]));
+                                break;
+                            default:
+                                break;
+                        }
+                        
+                        dibujo10.setText(demux.getNombre() + "_"+ demux.getIdDemux());
+                        dibujo10.setContentDisplay(ContentDisplay.TOP);
+                        
+                        for(int i=1;i<demux.getSalidas(); i++){
+                            PuertoSalida puerto= new PuertoSalida();
+                            puerto.setConectadoSalida(Boolean.parseBoolean(partes[(8+(2*i)-1)]));
+                            puerto.setElementoConectadoSalida(partes[(8+(2*i))]);
+                            demux.getConexiones().add(puerto);
+                        }
+                        ElementoGrafico elem10 = new ElementoGrafico();
+                        elem10.setComponente(demux);
+                        elem10.setDibujo(dibujo10);
+                        elem10.setId(Integer.valueOf(partes[1]));
+                        VentanaDemultiplexorController aux10= new VentanaDemultiplexorController();
+                        aux10.init(con, stage, Pane1, scroll,this);
+                        
+                        con.getDibujos().add(elem10);
+                        dibujo10.setVisible(true);
+                        
+                        Pane1.getChildren().add(dibujo10);
+                        aux10.eventos(elem10);
+                        aux10.setIdDemux(demux.getIdDemux()+1);
                         break;
                         
                     default:
@@ -1804,15 +1640,14 @@ public class VentanaPrincipal implements Initializable {
         }
         catch(IOException | NumberFormatException e){
             e.printStackTrace();
-        }finally{
-         // En el finally cerramos el fichero, para asegurarnos
-         // que se cierra tanto si todo va bien como si salta 
-         // una excepcion.
+        }
+        finally{
             try{                    
                 if( null != fr ){   
                     fr.close();     
                 }                  
-            }catch (Exception e2){ 
+            }
+            catch (Exception e2){ 
                 e2.printStackTrace();
             }
         }
@@ -1832,9 +1667,9 @@ public class VentanaPrincipal implements Initializable {
         String ruta_archivo="";
         try {
             ruta_archivo = manejador.getSelectedFile().getPath();
-            //System.out.println(ruta_archivo);
             abrirTrabajo(ruta_archivo);
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             //no se hace nada ya que esta excepcion se activa cuando se da click 
             //en cancelar o se cierra la ventana para cargar/guardar trabajo
         }
@@ -1866,7 +1701,7 @@ public class VentanaPrincipal implements Initializable {
         elemG.getComponente().setLinea(line);
     }
     
- /**
+    /**
      * Metodo que permite visualizar la conexion hacia delante del FBG
      * con otro elemento
      * @param elemG Elemento grafico del divisor optico
@@ -1885,18 +1720,13 @@ public class VentanaPrincipal implements Initializable {
                         break;
                 }
                 ElementoGrafico aux= new ElementoGrafico();
-                //System.out.println("primer");
                 for(int ir=0; ir<controlador.getDibujos().size();ir++){
                     if(fbg.getConexiones().get(lap).getElementoConectadoSalida().equals(controlador.getDibujos().get(ir).getDibujo().getText())){
                         aux=controlador.getDibujos().get(ir);
-                        //aux.getComponente().setConectadoEntrada(true);
-                        //aux.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
-                    //System.out.println("cd");
                     line.setStrokeWidth(2);
                     line.setStroke(javafx.scene.paint.Color.BLACK);
                     line.setEndX(aux.getDibujo().getLayoutX()+12);
                     line.setEndY(aux.getDibujo().getLayoutY()+8);
-                    //splitter.actuaizarSalidas(salida);
                     line.setVisible(true);
                     Pane1.getChildren().add(line);
                     fbg.getConexiones().get(lap).setLinea(line);
@@ -1924,9 +1754,48 @@ public class VentanaPrincipal implements Initializable {
         line.setStroke(javafx.scene.paint.Color.BLACK);
         line.setStartX(aux.getDibujo().getLayoutX()+aux.getDibujo().getWidth());
         line.setStartY(aux.getDibujo().getLayoutY()+10);
+        line.setEndX(elem.getDibujo().getLayoutX()+12);
+        line.setEndY(elem.getDibujo().getLayoutY()+6);
+        
         if(elem.getDibujo().getText().contains("spectrum")){
-            line.setEndX(elem.getDibujo().getLayoutX()+12);
-            line.setEndY(elem.getDibujo().getLayoutY()+6);
+            MedidorEspectro esp = (MedidorEspectro) elem.getComponente();
+            if(esp.isConectadoEntrada() && esp.getElementoConectadoEntrada().startsWith("demux")){
+                Demultiplexor dem = (Demultiplexor) aux.getComponente();
+                if(dem.isConectadoSalida()){ 
+                    line.setStartX(aux.getDibujo().getLayoutX()+aux.getDibujo().getWidth()-5);
+                    line.setStartY(aux.getDibujo().getLayoutY()+20);
+                }
+                else{
+                    for(int lap=0; lap<dem.getSalidas()-1;lap++){
+                        if(dem.getConexiones().get(lap).isConectadoSalida()){
+                            switch (dem.getSalidas()) {
+                                case 2:
+                                    line.setStartX(aux.getDibujo().getLayoutX()+40);
+                                    line.setStartY(aux.getDibujo().getLayoutY()+20+13);
+                                    break;
+                                case 4:
+                                    line.setStartX(aux.getDibujo().getLayoutX()+40);
+                                    line.setStartY(aux.getDibujo().getLayoutY()+14+((lap+1)*10));
+                                    break;
+                                case 8:
+                                    line.setStartX(aux.getDibujo().getLayoutX()+8);
+                                    line.setStartY(aux.getDibujo().getLayoutY()+7+((lap+1)*9.4));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            else if(esp.isConectadoEntrada() && esp.getElementoConectadoEntrada().startsWith("mux")){
+                line.setStartX(aux.getDibujo().getLayoutX()+aux.getDibujo().getWidth());
+                line.setStartY(aux.getDibujo().getLayoutY()+25);
+            }
+            else{
+                line.setStartX(aux.getDibujo().getLayoutX()+aux.getDibujo().getWidth());
+                line.setStartY(aux.getDibujo().getLayoutY()+10);
+            }
         }
         else if(elem.getDibujo().getText().contains("power")){
             line.setEndX(elem.getDibujo().getLayoutX()+5);
@@ -1940,68 +1809,69 @@ public class VentanaPrincipal implements Initializable {
         line.setVisible(true);
         Pane1.getChildren().add(line); 
         aux.getComponente().setLinea(line);
-            
     }
     
     /**
      * Metodo utilizado para hacer visible la conexion entre elementos al abrir 
-     * un trabajo
+     * un tabajo
      */
     public void redibujarLinea(){
         for(int w=0; w<controlador.getDibujos().size();w++){
             ElementoGrafico elem=controlador.getDibujos().get(w);
             if(elem.getComponente().isConectadoSalida()){
                 if(elem.getDibujo().getText().contains("connector")){
-                    VentanaConectorController fue= new VentanaConectorController();
-                    fue.init(controlador, stage, Pane1, scroll);
-                    fue.dibujarLinea(elem);
+                    VentanaConectorController con= new VentanaConectorController();
+                    con.init(controlador, stage, Pane1, scroll,this);
+                    con.dibujarLinea(elem);
                 }
                 else if(elem.getDibujo().getText().contains("source")){
                     VentanaFuenteController fue= new VentanaFuenteController();
-                    fue.init(controlador, stage, Pane1, scroll);
+                    fue.init(controlador, stage, Pane1, scroll,this);
                     fue.dibujarLinea(elem);
                 }
                 else if(elem.getDibujo().getText().contains("fiber")){
-                    VentanaFibraController fue= new VentanaFibraController();
-                    fue.init(controlador, stage, Pane1, scroll);
-                    fue.dibujarLinea(elem);
+                    VentanaFibraController fib= new VentanaFibraController();
+                    fib.init(controlador, stage, Pane1, scroll,this);
+                    fib.dibujarLinea(elem);
                 }
                 else if(elem.getDibujo().getText().contains("splice")){
-                    VentanaEmpalmeController fue= new VentanaEmpalmeController();
-                    fue.init(controlador, stage, Pane1, scroll);
-                    fue.dibujarLinea(elem);
+                    VentanaEmpalmeController emp= new VentanaEmpalmeController();
+                    emp.init(controlador, stage, Pane1, scroll,this);
+                    emp.dibujarLinea(elem);
                     
                 }
-            }
-            if(elem.getDibujo().getText().contains("splitter")){
-                VentanaSplitterController fue= new VentanaSplitterController();
-                fue.init(controlador, stage, Pane1, scroll);
-                System.out.println("dibujar lineas splitter");
-                fue.dibujarLinea(elem);
-            }
-            if(elem.getDibujo().getText().contains("mux")){
-                VentanaMultiplexorController fue= new VentanaMultiplexorController();
-                fue.init(controlador, stage, Pane1, scroll);
-                System.out.println("dibujar lineas mux");
-                fue.dibujarLinea(elem);
-            }
-            if(elem.getDibujo().getText().contains("fbg")){
-                VentanaFBGController fue= new VentanaFBGController();
-                fue.init(controlador, stage, Pane1, scroll, elem);
-                System.out.println("dibujar lineas fbg");
-                fue.dibujarLineaFBG(elem);
+                else if(elem.getDibujo().getText().contains("splitter")){
+                    VentanaSplitterController spl= new VentanaSplitterController();
+                    spl.init(controlador, stage, Pane1, scroll,this);
+                    spl.dibujarLineaSp(elem);
+                }
+                else if(elem.getDibujo().getText().contains("mux")){
+                    VentanaMultiplexorController mux= new VentanaMultiplexorController();
+                    mux.init(controlador, stage, Pane1, scroll,this);
+                    mux.dibujarLinea(elem);
+                }
+                else if(elem.getDibujo().getText().contains("fbg")){
+                    VentanaFBGController fbg= new VentanaFBGController();
+                    fbg.init(controlador, stage, Pane1, scroll, elem,this);
+                    fbg.dibujarLineaFBG(elem);
+                }
+                else if(elem.getDibujo().getText().contains("demux")){
+                    VentanaDemultiplexorController demux= new VentanaDemultiplexorController();
+                    demux.init(controlador, stage, Pane1, scroll,this);
+                    demux.dibujarLineaDemux(elem);
+                }
             }
         }
     }
     
     /**
-     * Metodo que permite visualizar la conexion hacia atras del divisor optico 
-     * con el medidor de potencia
+     * Metodo que permite visualizar la conexion hacia atras del divisor optico, 
+     * demultiplexor o fbg
      * @param elem Elemento grafico del medidor de potencia
      * @param aux Elemento grafico del divisor optico
      * @param puerto Puerto salida del divisor optico
      */
-    public void dibujarLineaAtrasSplitter(ElementoGrafico elem, ElementoGrafico aux, int puerto){
+    public void dibujarLineaAtrasElem(ElementoGrafico elem, ElementoGrafico aux, int puerto){
         Line line= new Line(); 
         if("splitter".equals(aux.getComponente().getNombre())){
             Splitter sptt=(Splitter) aux.getComponente();
@@ -2022,18 +1892,6 @@ public class VentanaPrincipal implements Initializable {
                     line.setStartX(aux.getDibujo().getLayoutX()+80);
                     line.setStartY(aux.getDibujo().getLayoutY()+(10+(9*(puerto+1))));
                     break;
-                case 16:
-                    line.setStartX(aux.getDibujo().getLayoutX()+94);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(10+(5.1*(puerto+1))));
-                    break;
-                case 32:
-                    line.setStartX(aux.getDibujo().getLayoutX()+110);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(10+(3.2*(puerto+1))));
-                    break;
-                case 64:
-                    line.setStartX(aux.getDibujo().getLayoutX()+120);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(10+(2*(puerto+1))));
-                    break;
                 default:
                     break;
             }
@@ -2044,12 +1902,12 @@ public class VentanaPrincipal implements Initializable {
             sptt.getConexiones().get(puerto).setLinea(line);
         }
         else if("fbg".equals(aux.getComponente().getNombre())){
-            FBG sptt=(FBG) aux.getComponente();
-            sptt.getConexiones().get(puerto).getLinea().setVisible(false);
+            FBG fbg=(FBG) aux.getComponente();
+            fbg.getConexiones().get(puerto).getLinea().setVisible(false);
             line.setStrokeWidth(2);
             line.setStroke(javafx.scene.paint.Color.BLACK);
         
-            switch (sptt.getSalidas()) {
+            switch (fbg.getSalidas()) {
                 case 2:
                     line.setStartX(aux.getDibujo().getLayoutX()+50);
                     line.setStartY(aux.getDibujo().getLayoutY()+(24+(5*(puerto+1))));
@@ -2057,35 +1915,23 @@ public class VentanaPrincipal implements Initializable {
             }
         }
         else{
-            Demultiplexor sptt=(Demultiplexor) aux.getComponente();
-            sptt.getConexiones().get(puerto).getLinea().setVisible(false);
+            Demultiplexor demux=(Demultiplexor) aux.getComponente();
+            demux.getConexiones().get(puerto).getLinea().setVisible(false);
             line.setStrokeWidth(2);
             line.setStroke(javafx.scene.paint.Color.BLACK);
         
-            switch (sptt.getSalidas()) {
+            switch (demux.getSalidas()) {
                 case 2:
-                    line.setStartX(aux.getDibujo().getLayoutX()+50);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(24+(5*(puerto+1))));
+                    line.setStartX(aux.getDibujo().getLayoutX()+40);
+                    line.setStartY(aux.getDibujo().getLayoutY()+20+13);
                     break;
                 case 4:
-                    line.setStartX(aux.getDibujo().getLayoutX()+50);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(18+(5*(puerto+1))));
+                    line.setStartX(aux.getDibujo().getLayoutX()+40);
+                    line.setStartY(aux.getDibujo().getLayoutY()+(14+(10*(puerto+1))));
                     break;
                 case 8:
-                    line.setStartX(aux.getDibujo().getLayoutX()+80);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(10+(9*(puerto+1))));
-                    break;
-                case 16:
-                    line.setStartX(aux.getDibujo().getLayoutX()+94);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(10+(5.1*(puerto+1))));
-                    break;
-                case 32:
-                    line.setStartX(aux.getDibujo().getLayoutX()+110);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(10+(3.2*(puerto+1))));
-                    break;
-                case 64:
-                    line.setStartX(aux.getDibujo().getLayoutX()+120);
-                    line.setStartY(aux.getDibujo().getLayoutY()+(10+(2*(puerto+1))));
+                    line.setStartX(aux.getDibujo().getLayoutX()+60);
+                    line.setStartY(aux.getDibujo().getLayoutY()+(7+(9.4*(puerto+1))));
                     break;
                 default:
                     break;
@@ -2094,7 +1940,7 @@ public class VentanaPrincipal implements Initializable {
             line.setEndY(elem.getDibujo().getLayoutY()+7);
             line.setVisible(true);
             Pane1.getChildren().add(line); 
-            sptt.getConexiones().get(puerto).setLinea(line);
+            demux.getConexiones().get(puerto).setLinea(line);
         } 
     }
     
@@ -2104,7 +1950,6 @@ public class VentanaPrincipal implements Initializable {
      */
     private boolean outSideParentBoundsX( Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane1.getLayoutBounds();
-
         //check if too left
         if( parentBounds.getMaxX() <= (newX + childBounds.getMaxX()) ) {
             return true ;
@@ -2122,7 +1967,6 @@ public class VentanaPrincipal implements Initializable {
      */
     private boolean outSideParentBoundsY( Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane1.getLayoutBounds();
-        
         //check if too down
         if( parentBounds.getMaxY() <= (newY + childBounds.getMaxY()) ) {
             return true ;
@@ -2132,6 +1976,592 @@ public class VentanaPrincipal implements Initializable {
             return true ;
         }
         return false;
+    }
+    
+    /**
+     * Metodo el cual inicializa y actualiza las señales creadas 
+     * @throws java.lang.InterruptedException Proporciona diferentes excepciones lanzadas 
+     * bajo el paquete java lang
+     */
+    @FXML
+    public void start() throws InterruptedException{
+        btnStart = true;
+        for(int a=0; a<controlador.getElementos().size(); a++){
+            if(controlador.getElementos().get(a).getNombre().startsWith("source")){
+                Fuente fuente= (Fuente) controlador.getElementos().get(a);
+                elemConected(fuente, true);
+                System.out.println("adios");
+            }
+        }
+        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                "\nSignals Updated!",
+                aceptar);
+        alert.setTitle("Succes");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    
+    /**
+     * Metodo que agrega a una lista los componentes conectados antes de un componente
+     * @param lista Lista de componentes
+     * @param comp Componentes
+     * @return lista de componentes
+     */
+    public LinkedList añadirComponentesConectados(LinkedList lista, Componente comp){
+        lista.add(comp);
+        if(comp.isConectadoEntrada()){
+            for(int i=0; i<controlador.getElementos().size();i++){
+                if(comp.getElementoConectadoEntrada().equals(controlador.getDibujos().get(i).getDibujo().getText())){
+                    Componente aux= controlador.getElementos().get(i);
+                    añadirComponentesConectados(lista, aux);
+                    break;
+                }
+            }
+        }
+        return lista;
+    }
+    
+    /**
+     * Metodo encargado de generar la señal inicial en la fuente. Si esta 
+     * conectado, se realiza el proceso para modificar la señal dependiendo del
+     * elemento
+     * @param actual Componente actual
+     * @param tu Indica si el elemento paso sus valores
+     */
+    public void elemConected(Componente actual, boolean tu  ){
+        if(actual.getNombre().startsWith("source")){
+            Fuente fue= (Fuente) actual;
+            LinkedList<Listas> salidas= new LinkedList<>();
+            Señal señal= new Señal();
+            if(fue.getSeñalSalida()!=null){
+                señal= fue.getSeñalSalida();
+                salidas=señal.getValoresMagnitud();
+            }
+            else{
+                try { 
+                    salidas=fue.calcularPulso2();
+                    señal.setValoresMagnitud(salidas);
+                    fue.setSeñalSalida(señal);
+                } catch (ExcepcionDivideCero ex) {
+                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            fue.setSeñalSalida(señal);
+            if(fue.isConectadoSalida()){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(fue.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        Señal señal2= new Señal();
+                        señal2=clonarSeñal(señal);
+                        auxcomp.setSeñalEntrada(señal2);
+                        System.out.println("la fuente paso sus valores");
+                        elemConected(auxcomp,tu);
+                        break;
+                    }
+                }
+            }
+        } else
+        if(actual.getNombre().startsWith("connector")){
+            Conector conector= (Conector) actual;
+            LinkedList<Listas> salidas= new LinkedList<>();
+            Señal señal= new Señal();
+            señal= clonarSeñal(conector.getSeñalEntrada());
+            salidas=señal.getValoresMagnitud();
+            salidas=conector.valorMagnitudPerdida(salidas);
+            señal.setValoresMagnitud(salidas);
+            conector.setSeñalSalida(señal);
+            
+            if(conector.isConectadoSalida()){
+                Componente auxcomp= new Componente();
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(conector.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c).getDibujo().getText())){
+                        auxcomp= controlador.getElementos().get(c);
+                        if("mux".equals(auxcomp.getNombre())){
+                            Multiplexor muxAux= (Multiplexor) auxcomp;
+                            if(muxAux.getElementoConectadoEntrada().startsWith(conector.getNombreid())){
+                                Señal señal2= new Señal();
+                                señal2=clonarSeñal(señal);
+                                muxAux.setSeñalEntrada(señal2);
+                                muxAux.getSeñalEntrada().setSumado(false);
+                            }
+                            for(int h=0; h<muxAux.getConexionEntradas().size(); h++){
+                                if (muxAux.getConexionEntradas().get(h).getElementoConectadoEntrada().startsWith(conector.getNombreid())) {
+                                    Señal señal2= new Señal();
+                                    señal2=clonarSeñal(señal);
+                                    muxAux.getConexionEntradas().get(h).setSeñalEntrada(señal2);
+                                    muxAux.getConexionEntradas().get(h).getSeñalEntrada().setSumado(false);
+                                    break;
+                                }
+                            }
+                        }
+                        else{
+                            Señal señal2= new Señal();
+                            señal2=clonarSeñal(señal);
+                            auxcomp.setSeñalEntrada(señal2);
+                            System.out.println("conector paso sus valores");
+                        }
+                        elemConected(auxcomp,tu);
+                    }
+                }
+            }
+        }
+        else
+        if(actual.getNombre().startsWith("splice")){
+            Empalme empalme= (Empalme) actual;
+            LinkedList<Listas> salidas= new LinkedList<>();
+            Señal señal= new Señal();
+            señal= clonarSeñal(empalme.getSeñalEntrada());
+            salidas=empalme.valorMagnitudPerdida(salidas);
+            señal.setValoresMagnitud(salidas);
+            empalme.setSeñalSalida(señal);
+            if(empalme.isConectadoSalida()){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(empalme.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        Señal señal2= new Señal();
+                        señal2=clonarSeñal(señal);
+                        auxcomp.setSeñalEntrada(señal2);
+                        System.out.println("empalme paso sus valores");
+                        elemConected(auxcomp,tu);
+                    }
+                }
+            }
+        }
+        else
+        if(actual.getNombre().startsWith("fiber")){
+            Fibra fibra= (Fibra) actual;
+            LinkedList<Listas> salidas= new LinkedList<>();
+            Señal señal= new Señal();
+            señal= clonarSeñal(fibra.getSeñalEntrada());
+            salidas=señal.getValoresMagnitud();
+            salidas=fibra.valorMagnitudPerdida(salidas);
+            señal.setValoresMagnitud(salidas);
+            fibra.setSeñalSalida(señal);
+            if(fibra.isConectadoSalida()){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(fibra.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        Señal señal2= new Señal();
+                        señal2=clonarSeñal(señal);
+                        auxcomp.setSeñalEntrada(señal2);
+                        System.out.println("fibra paso sus valores");
+                        elemConected(auxcomp,tu);
+                    }
+                }
+            }
+        }
+        else
+        if(actual.getNombre().startsWith("mux")){
+            boolean iniciado=false;
+            Multiplexor mux= (Multiplexor) actual;
+            if(mux.isConectadoEntrada()&&mux.getSeñalEntrada()!=null){
+                if(!iniciado){
+                    mux.setSeñalesTotal(mux.getSeñalEntrada().getValoresMagnitud());
+                    mux.getSeñalEntrada().setSumado(true);
+                    iniciado=true;
+                }
+                else{
+                    if(!mux.getSeñalEntrada().isSumado()){
+                        if(mux.getSeñalEntrada().getValoresMagnitud().size()<=mux.getSeñalesTotal().size()){
+                            for(int j=0;j<mux.getSeñalEntrada().getValoresMagnitud().size();j++){
+                                NumeroComplejo complex= new NumeroComplejo(mux.getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getRealPart(), mux.getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getImaginaryPart());
+                                mux.getSeñalesTotal().get(j).getComplejo().sumar(complex, false);
+                            }
+                        }
+                        else{
+                            for(int j=0;j<mux.getSeñalesTotal().size();j++){
+                                NumeroComplejo complex2= new NumeroComplejo(mux.getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getRealPart(), mux.getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getImaginaryPart());
+                                mux.getSeñalesTotal().get(j).getComplejo().sumar(complex2, false);
+                            }
+                        }
+                        mux.getSeñalEntrada().setSumado(true);
+                    }
+                }
+            }
+            for(int g=0;g<mux.getConexionEntradas().size();g++){
+                if(mux.getConexionEntradas().get(g).isConectadoEntrada()&&mux.getConexionEntradas().get(g).getSeñalEntrada()!=null){
+                    if(!iniciado){
+                        mux.setSeñalesTotal(mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud());
+                        iniciado=true;
+                        mux.getConexionEntradas().get(g).getSeñalEntrada().setSumado(true);
+                    }else{
+                        if(!mux.getConexionEntradas().get(g).getSeñalEntrada().isSumado()){
+                            if(mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().size()<=mux.getSeñalesTotal().size()){
+                                for(int j=0;j<mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().size();j++){
+                                    NumeroComplejo complex= new NumeroComplejo(mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getRealPart(), mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getImaginaryPart());
+                                    NumeroComplejo complex2= new NumeroComplejo(mux.getSeñalesTotal().get(j).getComplejo().getRealPart(), mux.getSeñalesTotal().get(j).getComplejo().getImaginaryPart());
+                                    mux.getSeñalesTotal().get(j).setComplejo(complex.sumar(complex2, true));
+                                }
+                            }
+                            else{
+                                for(int j=0;j<mux.getSeñalesTotal().size();j++){
+                                    NumeroComplejo complex2= new NumeroComplejo(mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getRealPart(), mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getImaginaryPart());
+                                    NumeroComplejo complex= new NumeroComplejo(mux.getSeñalesTotal().get(j).getComplejo().getRealPart(), mux.getSeñalesTotal().get(j).getComplejo().getImaginaryPart());
+                                    mux.getSeñalesTotal().get(j).setComplejo(complex2.sumar(complex, true));
+                                }
+                            }
+                            mux.getConexionEntradas().get(g).getSeñalEntrada().setSumado(true);
+                        }
+                    }
+                }
+            }
+            Señal señal= new Señal();
+            señal.setValoresMagnitud(mux.getSeñalesTotal());
+            mux.setSeñalSalida(señal);
+            if(mux.isConectadoSalida()){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(mux.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        Señal señal2= new Señal();
+                        señal2= clonarSeñal(señal);
+                        auxcomp.setSeñalEntrada(señal2);
+                        System.out.println("mux paso sus valores");
+                        elemConected(auxcomp,tu);
+                    }
+                }
+            }
+        }
+        else if(actual.getNombre().startsWith("splitter")){
+            Splitter splitter= (Splitter) actual;
+            if(splitter.isConectadoSalida()){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(splitter.getElementoConectadoSalida().equals(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        LinkedList<Listas> salidas= new LinkedList<>();
+                        salidas=splitter.getSeñalEntrada().getValoresMagnitud();
+                        for(int x=0; x<salidas.size(); x++){
+                            NumeroComplejo nc=new NumeroComplejo((float) (salidas.get(x).getComplejo().getRealPart()/Math.sqrt(splitter.getSalidas())), 
+                                    (float) (salidas.get(x).getComplejo().getImaginaryPart()/Math.sqrt(splitter.getSalidas())));
+                            salidas.get(x).setComplejo(nc);
+                        }
+                        double Fsamp = 2*(236*Math.pow(10, 6)); //2*FcMaxima*10^6
+                        calculosFFT(4096, salidas,Fsamp);
+                        
+                        Señal señal= new Señal();
+                        señal.setValoresMagnitud(salidas);
+                        if(splitter.isConectadoSalida()){
+                            for(int c2=0; c2<controlador.getElementos().size();c2++){
+                                if(splitter.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c2).getDibujo().getText())){
+                                    Componente auxcomp2= controlador.getElementos().get(c2);
+                                    Señal señal2= new Señal();
+                                    señal2= clonarSeñal(señal);
+                                    auxcomp2.setSeñalEntrada(señal2);
+                                    elemConected(auxcomp,tu);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for(int f=0; f<splitter.getConexiones().size();f++){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(splitter.getConexiones().get(f).getElementoConectadoSalida().equals(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        LinkedList<Listas> salidas= new LinkedList<>();
+                        salidas=splitter.getSeñalEntrada().getValoresMagnitud();
+
+                        double Fsamp = 2*(236*Math.pow(10, 6)); //2*FcMaxima*10^6
+                        calculosFFT(4096, salidas,Fsamp);
+                        
+                        Señal señal= new Señal();
+                        señal.setValoresMagnitud(salidas);
+                        if(splitter.getConexiones().get(f).isConectadoSalida()){
+                            for(int c2=0; c2<controlador.getElementos().size();c2++){
+                                if(splitter.getConexiones().get(f).getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c2).getDibujo().getText())){
+                                    Componente auxcomp2= controlador.getElementos().get(c2);
+                                    Señal señal2= new Señal();
+                                    señal2= clonarSeñal(señal);
+                                    auxcomp2.setSeñalEntrada(señal2);
+                                    elemConected(auxcomp,tu);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if(actual.getNombre().startsWith("fbg")){
+            FBG fbg= (FBG) actual;
+            //TRANSMISION
+            if(fbg.isConectadoSalida()){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(fbg.getElementoConectadoSalida().equals(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        LinkedList<Listas> salidas= new LinkedList<>();
+                        salidas=fbg.getSeñalEntrada().getValoresMagnitud();
+                        for(int x=0; x<salidas.size(); x++){
+                            NumeroComplejo nc=new NumeroComplejo((float) (salidas.get(x).getComplejo().getRealPart()/Math.sqrt(fbg.getSalidas())), 
+                                    (float) (salidas.get(x).getComplejo().getImaginaryPart()/Math.sqrt(fbg.getSalidas())));
+                            salidas.get(x).setComplejo(nc);
+                        }
+
+                        double Fsamp = 2*(236*Math.pow(10, 6)); //2*FcMaxima*10^6
+                        calculosFFT(4096, salidas,Fsamp);
+                        
+                        Señal señal= new Señal();
+                        LinkedList xd=VentanaFBGController.transmision;
+                        
+                        NumeroComplejo[] numeroifft= new NumeroComplejo[4096];
+                        for(int z=0; z<4096;z++){
+                            NumeroComplejo numero=salidas.getLast().getFftseñal().getFft()[z].multiplicar((float)(double)xd.get(z), true);
+                            numeroifft[z]=numero;
+                        }
+                        FFT2 fft= new FFT2();
+                        NumeroComplejo[] Numfinal=fft.ifft(numeroifft);
+                        LinkedList<Listas> listaAux=new LinkedList<>();
+                        
+                        for(int a=0; a<Numfinal.length; a++){
+                            Listas lista= new Listas();
+                            lista.setComplejo(Numfinal[a]);
+                            lista.setMagnitud(Numfinal[a].magnitud());
+                            lista.setxNumComplex(fbg.getSeñalEntrada().getValoresMagnitud().get(a).getxNumComplex());
+                            listaAux.add(lista);
+                        }
+                        señal.setValoresMagnitud(listaAux);
+                        if(fbg.isConectadoSalida()){
+                            for(int c2=0; c2<controlador.getElementos().size();c2++){
+                                if(fbg.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c2).getDibujo().getText())){
+                                    Componente auxcomp2= controlador.getElementos().get(c2);
+                                    Señal señal2= new Señal();
+                                    señal2= clonarSeñal(señal);
+                                    auxcomp2.setSeñalEntrada(señal2);
+                                    elemConected(auxcomp,tu);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //REFLEXION
+            for(int f=0; f<fbg.getConexiones().size();f++){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(fbg.getConexiones().get(f).getElementoConectadoSalida().equals(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        LinkedList<Listas> salidas= new LinkedList<>();
+                        salidas=fbg.getSeñalEntrada().getValoresMagnitud();
+
+                        double Fsamp = 2*(236*Math.pow(10, 6)); //2*FcMaxima*10^6
+                        calculosFFT(4096, salidas,Fsamp);
+                        
+                        Señal señal= new Señal();
+                        LinkedList xd=VentanaFBGController.reflexion;
+                        
+                        NumeroComplejo[] numeroifft= new NumeroComplejo[4096];
+                        for(int z=0; z<4096;z++){
+                            NumeroComplejo numero=salidas.getLast().getFftseñal().getFft()[z].multiplicar((float)(double)xd.get(z), true);
+                            numeroifft[z]=numero;
+                        }
+                        FFT2 fft= new FFT2();
+                        NumeroComplejo[] Numfinal=fft.ifft(numeroifft);
+                        LinkedList<Listas> listaAux=new LinkedList<>();
+                        
+                        for(int a=0; a<Numfinal.length; a++){
+                            Listas lista= new Listas();
+                            lista.setComplejo(Numfinal[a]);
+                            lista.setMagnitud(Numfinal[a].magnitud());
+                            lista.setxNumComplex(fbg.getSeñalEntrada().getValoresMagnitud().get(a).getxNumComplex());
+                            listaAux.add(lista);
+                        }
+                        señal.setValoresMagnitud(listaAux);
+                        if(fbg.getConexiones().get(f).isConectadoSalida()){
+                            for(int c2=0; c2<controlador.getElementos().size();c2++){
+                                if(fbg.getConexiones().get(f).getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c2).getDibujo().getText())){
+                                    Componente auxcomp2= controlador.getElementos().get(c2);
+                                    Señal señal2= new Señal();
+                                    señal2= clonarSeñal(señal);
+                                    auxcomp2.setSeñalEntrada(señal2);
+                                    elemConected(auxcomp,tu);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if(actual.getNombre().startsWith("demux")){
+            Demultiplexor demux= (Demultiplexor) actual;
+            if(demux.isConectadoSalida()){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(demux.getElementoConectadoSalida().equals(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        LinkedList<Listas> salidas= new LinkedList<>();
+                        salidas=demux.getSeñalEntrada().getValoresMagnitud();
+                        for(int x=0; x<salidas.size(); x++){
+                            NumeroComplejo nc=new NumeroComplejo((float) (salidas.get(x).getComplejo().getRealPart()/Math.sqrt(demux.getSalidas())), 
+                                    (float) (salidas.get(x).getComplejo().getImaginaryPart()/Math.sqrt(demux.getSalidas())));
+                            salidas.get(x).setComplejo(nc);
+                        }
+
+                        double Fsamp = 2*(236*Math.pow(10, 6)); //2*FcMaxima*10^6
+                        calculosFFT(4096, salidas,Fsamp);
+                        
+                        Señal señal= new Señal();
+                        LinkedList xd=demux.getFbg().filtro(demux.getLongitudOnda(), 1.9);
+                        
+                        NumeroComplejo[] numeroifft= new NumeroComplejo[4096];
+                        for(int z=0; z<4096;z++){
+                            NumeroComplejo numero=salidas.getLast().getFftseñal().getFft()[z].multiplicar((float)(double)xd.get(z), true);
+                            numeroifft[z]=numero;
+                        }
+                        FFT2 fft= new FFT2();
+                        NumeroComplejo[] Numfinal=fft.ifft(numeroifft);
+                        LinkedList<Listas> listaAux=new LinkedList<>();
+                        
+                        for(int a=0; a<Numfinal.length; a++){
+                            Listas lista= new Listas();
+                            lista.setComplejo(Numfinal[a]);
+                            lista.setMagnitud(Numfinal[a].magnitud());
+                            lista.setxNumComplex(demux.getSeñalEntrada().getValoresMagnitud().get(a).getxNumComplex());
+                            listaAux.add(lista);
+                        }
+                        señal.setValoresMagnitud(listaAux);
+                        if(demux.isConectadoSalida()){
+                            for(int c2=0; c2<controlador.getElementos().size();c2++){
+                                if(demux.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c2).getDibujo().getText())){
+                                    Componente auxcomp2= controlador.getElementos().get(c2);
+                                    Señal señal2= new Señal();
+                                    señal2= clonarSeñal(señal);
+                                    auxcomp2.setSeñalEntrada(señal2);
+                                    elemConected(auxcomp,tu);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for(int f=0; f<demux.getConexiones().size();f++){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(demux.getConexiones().get(f).getElementoConectadoSalida().equals(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        LinkedList<Listas> salidas= new LinkedList<>();
+                        salidas=demux.getSeñalEntrada().getValoresMagnitud();
+
+                        double Fsamp = 2*(236*Math.pow(10, 6)); //2*FcMaxima*10^6
+                        calculosFFT(4096, salidas,Fsamp);
+                        
+                        Señal señal= new Señal();
+                        LinkedList xd=demux.getConexiones().get(f).getFbg().filtro(demux.getConexiones().get(f).getLongitudOnda(), 1.9);
+                        
+                        NumeroComplejo[] numeroifft= new NumeroComplejo[4096];
+                        for(int z=0; z<4096;z++){
+                            NumeroComplejo numero=salidas.getLast().getFftseñal().getFft()[z].multiplicar((float)(double)xd.get(z), true);
+                            numeroifft[z]=numero;
+                        }
+                        FFT2 fft= new FFT2();
+                        NumeroComplejo[] Numfinal=fft.ifft(numeroifft);
+                        LinkedList<Listas> listaAux=new LinkedList<>();
+                        
+                        for(int a=0; a<Numfinal.length; a++){
+                            Listas lista= new Listas();
+                            lista.setComplejo(Numfinal[a]);
+                            lista.setMagnitud(Numfinal[a].magnitud());
+                            lista.setxNumComplex(demux.getSeñalEntrada().getValoresMagnitud().get(a).getxNumComplex());
+                            listaAux.add(lista);
+                        }
+                        señal.setValoresMagnitud(listaAux);
+                        if(demux.getConexiones().get(f).isConectadoSalida()){
+                            for(int c2=0; c2<controlador.getElementos().size();c2++){
+                                if(demux.getConexiones().get(f).getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c2).getDibujo().getText())){
+                                    Componente auxcomp2= controlador.getElementos().get(c2);
+                                    Señal señal2= new Señal();
+                                    señal2= clonarSeñal(señal);
+                                    auxcomp2.setSeñalEntrada(señal2);
+                                    elemConected(auxcomp,tu);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            Señal señal= new Señal();
+            LinkedList<Listas> salidas= new LinkedList<>();
+            señal=actual.getSeñalEntrada();
+            actual.setSeñalSalida(señal);
+            if(actual.isConectadoSalida()){
+                for(int c=0; c<controlador.getElementos().size();c++){
+                    if(actual.getElementoConectadoSalida().startsWith(controlador.getDibujos().get(c).getDibujo().getText())){
+                        Componente auxcomp= controlador.getElementos().get(c);
+                        Señal señal2= new Señal();
+                        señal2= clonarSeñal(señal);
+                        auxcomp.setSeñalEntrada(señal2);
+                        elemConected(auxcomp,tu);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Metodo encargado de sumar las señales que esten presentes en el 
+     * multiplexor cuidando que no se repita la señal que ya se sumo
+     * @param lista1 Señal 1
+     * @param lista2 Señal 2
+     * @return Suma de señales en el multiplexor
+     */
+    public LinkedList<Listas> sumarSeñales( LinkedList<Listas> lista1,  LinkedList<Listas> lista2){
+        LinkedList<Listas> listaAux= new LinkedList<>(); 
+        LinkedList<Listas>  sumador; new LinkedList<>();
+        
+        if(lista1.size()>=lista2.size()){
+            listaAux=lista1;
+            sumador=lista2;
+        }
+        else{
+            listaAux=lista2;
+            sumador=lista1;
+        }
+        for(int x=0;x<sumador.size();x++){
+            NumeroComplejo complex= new NumeroComplejo(listaAux.get(x).getComplejo().getRealPart(), listaAux.get(x).getComplejo().getImaginaryPart());
+            NumeroComplejo complex2= new NumeroComplejo(sumador.get(x).getComplejo().getRealPart(), sumador.get(x).getComplejo().getImaginaryPart());
+            complex.sumar(complex2, false);
+            listaAux.get(x).setComplejo(complex);
+        } 
+        System.out.println("la señal..."+lista1.toString()+"se sumo con la señal..."+lista2.toString());
+        return listaAux;
+    }
+    
+    /**
+     * Metodo el cual calcula la Transformada Rapida de Fourier de la señal
+     * @param NFFT Tamaño de muestra
+     * @param señales Lista de señales
+     * @param Fsamp Frecuencia de muestreo
+     */
+    public void calculosFFT(int NFFT, LinkedList<Listas> señales, double Fsamp){
+        int n = NFFT;
+        
+        NumeroComplejo[] nc = new NumeroComplejo[n];
+        for(int a=-(n/2); a<(n/2);a++){
+            nc[(n/2)+a]= señales.get((n/2)+a).getComplejo();
+            señales.get((n/2)+a).setxFftseñal(((n/2)+a)*(Fsamp/n));
+        }
+        Señal s= new Señal();
+        FFT2 fftAux = new FFT2();
+        NumeroComplejo[] fftValores =fftAux.fft(nc);
+        
+        s.setFft(fftValores);
+        
+        señales.getLast().setFftseñal(s);
+    }
+    
+    /**
+     * Metodo el cual clona la señal actual
+     * @param señal Señal actual
+     * @return Señal clonada
+     */
+    public Señal clonarSeñal(Señal señal){
+        Señal señalxd= new Señal();
+        LinkedList<Listas> xd= new LinkedList<>();
+        señalxd.setValoresMagnitud(xd);
+        for(int f=0; f<señal.getValoresMagnitud().size();f++){
+            NumeroComplejo compl= new NumeroComplejo(señal.getValoresMagnitud().get(f).getComplejo().getRealPart(), señal.getValoresMagnitud().get(f).getComplejo().getImaginaryPart());
+            Listas lista= new Listas();
+            lista.setComplejo(compl);
+            lista.setxNumComplex(señal.getValoresMagnitud().get(f).getxNumComplex());
+            señalxd.getValoresMagnitud().add(lista);
+        }
+        return señalxd; 
     }
     
 }

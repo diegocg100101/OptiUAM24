@@ -42,14 +42,15 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import optiuam.bc.modelo.Componente;
 import optiuam.bc.modelo.ElementoGrafico;
+import optiuam.bc.modelo.ExcepcionDivideCero;
 import optiuam.bc.modelo.Fuente;
 
 /**
  * Clase VentanaFuenteController la cual se encarga de instanciar una fuente
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
+ * @author Carlos Elizarraras
  * @see ControladorGeneral
  */
 public class VentanaFuenteController extends ControladorGeneral implements Initializable {
@@ -69,30 +70,54 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
     /**Posicion de la fuente en el eje Y*/
     static double posY;
     
-    /**RadioButton para la longitud de onda de 1310 nm*/
-    @FXML
-    RadioButton rbtn1310;
-    /**RadioButton para la longitud de onda de 1550 nm*/
-    @FXML
-    RadioButton rbtn1550;
     /**RadioButton para el tipo Laser de la fuente*/
     @FXML
     RadioButton rbtnLaser;
     /**RadioButton para el tipo LED de la fuente*/
     @FXML
     RadioButton rbtnLed;
+    /**RadioButton para la longitud de onda de 1310 nm*/
+    @FXML
+    RadioButton rbtnThz;
+    /**RadioButton para la longitud de onda de 1550 nm*/
+    @FXML
+    RadioButton rbtnNm;
+    /**RadioButton para leer la potencia en dBm*/
+    @FXML
+    RadioButton rbtnDbm;
+    /**RadioButton para leer la potencia en mW*/
+    @FXML
+    RadioButton rbtnMw;
+    /**RadioButton para un pulso de tipo Gaussiano*/
+    @FXML
+    RadioButton rbtnGaussian;
+    /**RadioButton para un pulso de tipo Supergaussiano*/
+    @FXML
+    RadioButton rbtnSupergaussian;
+    /**RadioButton para ninguna modulacion*/
+    @FXML
+    RadioButton rbtnNone;
+    /**RadioButton para la modulacion OOK*/
+    @FXML
+    RadioButton rbtnOOK;
     /**Caja de texto para ingresar la potencia de la fuente*/
     @FXML
     TextField txtPotencia;
     /**Caja de texto para ingresar la anchura espectral de la fuente*/
     @FXML
     TextField txtAnchuraEspectro;
+    /**Caja de texto para ingresar el chirp de la fuente*/
+    @FXML
+    TextField txtChirp;
     /**Caja de texto para ingresar la velocidad de transmision de la fuente*/
     @FXML
     TextField txtVelocidad;
-    /**Boton para configurar el pulso de la fuente*/
+    /**Caja de texto para ingresar el span de pulsos de la señal de la fuente*/
     @FXML
-    Button btnPulso;
+    TextField txtSpan;
+    /**Boton para abrir mas informacion de la fuente*/
+    @FXML
+    Button btnInfo;
     /**Boton para crear una fuente*/
     @FXML
     Button btnCrear;
@@ -102,13 +127,28 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
     /**Boton para modificar la fuente*/
     @FXML
     Button btnModificar;
-    /**Etiqueta de la lista desplegable de elementos disponibles para conectar
-     la fuente*/
+    /**Etiqueta para la velocidad de la fuente*/
+    @FXML
+    Label lblVelocidad;
+    /**Etiqueta para la uniad de velocidad de la fuente*/
+    @FXML
+    Label lblVelocidadU;
+    /**Etiqueta para el span de pulsos de la señal de la fuente*/
+    @FXML
+    Label lblSpan;
+    /**Etiqueta para inidicar el span en segundos*/
+    @FXML
+    Label lblSpanS;
+    /**Etiqueta de la lista desplegable de elementos disponibles para conectar 
+     * la fuente*/
     @FXML
     Label lblConectarA;
     /**Lista desplegable de elementos disponibles para conectar la fuente*/
     @FXML
     ComboBox cboxConectarA;
+    /**Lista desplegable de las Frecuencias centrales para la señal de la fuente*/
+    @FXML
+    ComboBox cboxFc;
     /**Separador de la ventana fuente*/
     @FXML
     Separator separator;
@@ -176,18 +216,106 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //Mensajes al pasar el cursor
+        Tooltip power = new Tooltip();
+        power.setText("mW: The power value must be between (0.001,10000)"
+                + "\ndBm: The power value must be between (-30,40)");
+        txtPotencia.setTooltip(power);
+        
         Tooltip perdida = new Tooltip();
         perdida.setText("Laser: The width value must be max 1.0 nm"
-                + "\nLed: The width value must be min: 0.01 nm  max: 1.0 nm");
+                + "\nLed: The width value must be between (0.01,1.0) nm");
         txtAnchuraEspectro.setTooltip(perdida);
+        //Siguientes mensajes son para evitar exceso en tiempo de computo
+        Tooltip bitrate = new Tooltip();
+        bitrate.setText("The bitrate value must be between (0.001,1)");
+        txtVelocidad.setTooltip(bitrate);
         
-        btnPulso.setVisible(false);
+        Tooltip span = new Tooltip();
+        span.setText("The span value must be max 1.3");
+        txtSpan.setTooltip(span);
+        
+        //Da la lista de valores de frecuencia central
+        cboxFc.getItems().removeAll(cboxFc.getItems());
+        cboxFc.getItems().addAll("228.84920458","203.80","201.07","198.41",
+                    "195.81","193.29","190.83","188.43","186.09");
+        cboxFc.getSelectionModel().selectFirst();
+        
+        //Elementos para modificar
         separator.setVisible(false);
-        btnDesconectar.setVisible(false);
         lblConectarA.setVisible(false);
         cboxConectarA.setVisible(false);
+        btnDesconectar.setVisible(false);
         btnModificar.setVisible(false);
+        
+        //Elementos para modulacion OOK
+        lblVelocidad.setVisible(false);
+        txtVelocidad.setVisible(false);
+        lblVelocidadU.setVisible(false);
+        lblSpan.setVisible(false);
+        txtSpan.setVisible(false);
+        lblSpanS.setVisible(false);
     }    
+    
+    /**
+     * Metodo que recibe la frecuencia central en THz
+     * y la devuelve en nm
+     * @param entrada
+     * @return 
+     */
+    public double ThzToNm(double entrada) {
+        if (entrada >= 228.84920458) {
+            return 1310.0;
+        } else if (entrada >= 203.80) {
+            return 1471.0130422;
+        } else if (entrada >= 201.07) {
+            return 1490.9855175;
+        } else if (entrada >= 198.41) {
+            return 1510.9745376;
+        } else if (entrada >= 195.81) {
+            return 1531.0375262;
+        } else if (entrada >= 193.41448903) {
+            return 1550.0;
+        } else if (entrada >= 193.29) {
+            return 1550.9982824;
+        } else if (entrada >= 190.83) {
+            return 1570.9922863;
+        } else if (entrada >= 188.43) {
+            return 1591.0017407;
+        } else {//entrada >= 186.09
+            return 1611.0078887;
+        }
+    }
+    
+    /**
+     * Metodo que recibe la frecuencia central en nm
+     * y la devuelve en THz
+     * @param entrada
+     * @return 
+     */
+    public double NmToThz(double entrada) {
+        if (entrada >= 1611.0078887) {
+            return 186.09;
+        } else if (entrada >= 1591.0017407) {
+            return 188.43;
+        } else if (entrada >= 1570.9922863) {
+            return 190.83;
+        } else if (entrada >= 1550.9982824) {
+            return 193.29;
+        } else if (entrada >= 1550.0) {
+            return 193.41448903;
+        } else if (entrada >= 1531.0375262) {
+            return 195.81;
+        } else if (entrada >= 1510.9745376) {
+            return 198.41;
+        } else if (entrada >= 1490.9855175) {
+            return 201.07;
+        } else if (entrada >= 1471.0130422) {
+            return 203.80;
+        } else {//entrada >= 1310.0
+            return 228.84920458;
+        }
+    }
     
     /**
      * Metodo el cual captura los datos obtenidos de la ventana de la fuente y
@@ -196,96 +324,191 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
      * @throws java.lang.reflect.InvocationTargetException Proporciona diferentes 
      * excepciones lanzadas bajo el paquete java lang
      */
-    public void enviarDatos(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException{
-        int longitudOnda=0, tipo=0, id = 0;
-        double potencia, anchura, velocidad;
-        
+    public void enviarDatos(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException, ExcepcionDivideCero{
+        int tipo=0, unidadLongitudOnda=0, unidadPotencia=0, tipoPulso=0, modulacion=0;
+        double longitudOnda=0, potencia, anchura, chirp, velocidad = 0, span = 0;
         if(rbtnLaser.isSelected()){
             tipo = 0;
         }
         else if(rbtnLed.isSelected()){
             tipo = 1;
         }
-        if(rbtn1310.isSelected()){
-            longitudOnda=1310;
+        if(rbtnThz.isSelected()){
+            unidadLongitudOnda = 0;
         }
-        else if(rbtn1550.isSelected()){
-            longitudOnda=1550;
+        else if (rbtnNm.isSelected()){
+            unidadLongitudOnda = 1;
         }
-        if (txtPotencia.getText().isEmpty() || txtPotencia.getText().compareTo("")==0 || !txtPotencia.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-            System.out.println("Invalid power value");
+        if(rbtnMw.isSelected()){
+            unidadPotencia = 0;
+        }
+        else if(rbtnDbm.isSelected()){
+            unidadPotencia = 1;
+        }
+        if(rbtnGaussian.isSelected()){
+            tipoPulso = 1;
+        }
+        else if(rbtnSupergaussian.isSelected()){
+            tipoPulso = 10;
+        }
+        if(rbtnNone.isSelected()){
+            modulacion = 0;
+        }
+        else if(rbtnOOK.isSelected()){
+            modulacion = 1;
+        }
+        //Se corrobora potencia en mW
+        if (unidadPotencia==0 && (txtPotencia.getText().isEmpty() || 
+            txtPotencia.getText().compareTo("")==0 || 
+            !txtPotencia.getText().matches("^(?!0\\\\.000)[0-9]+(\\\\.\\\\d{1,3})?$|^[1-9]\\\\d{0,3}(\\\\.\\\\d{1,3})?$"))){
+            System.out.println("Invalid mW power value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nInvalid power value",
-                    aceptar);
+                    "\nInvalid mW power value",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtPotencia.setText("");
         }
-        else if(txtAnchuraEspectro.getText().isEmpty() || txtAnchuraEspectro.getText().compareTo("")==0 || !txtAnchuraEspectro.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-            System.out.println("Invalid width value");
+        //Se corrobora potencia en dBm
+        else if(unidadPotencia==1 && (txtPotencia.getText().isEmpty() || 
+                txtPotencia.getText().compareTo("")==0 || 
+                !txtPotencia.getText().matches("^-?((3[0-9]|[0-2]?[0-9])(\\\\.\\\\d+)?|40(\\\\.0+)?)$"))){
+            System.out.println("Invalid dBm power value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nInvalid width value",
-                    aceptar);
+                    "\nInvalid dBm power value",aceptar);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+            txtPotencia.setText("");
+        }
+        //Se corrobora Spectral Width
+        else if(txtAnchuraEspectro.getText().isEmpty() || 
+                txtAnchuraEspectro.getText().compareTo("")==0 || 
+                !txtAnchuraEspectro.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+            System.out.println("Invalid spectral width value");
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "\nInvalid spectral width value",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtAnchuraEspectro.setText("");
         }
-        else if(txtVelocidad.getText().isEmpty() || txtVelocidad.getText().compareTo("")==0 || !txtVelocidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-            System.out.println("Invalid speed value");
+        //Se corrobora Chirp
+        else if(txtChirp.getText().isEmpty() || 
+                txtChirp.getText().compareTo("")==0 || 
+                !txtChirp.getText().matches("^(0|[1-9]\\d*)(\\.\\d+)?$")){
+            System.out.println("Invalid chirp value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nInvalid speed value",
-                    aceptar);
+                    "\nInvalid chirp value",aceptar);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+            txtChirp.setText("");
+        }
+        //Se corrobora Bitrate
+        else if(modulacion == 1 && (txtVelocidad.getText().isEmpty() || 
+                txtVelocidad.getText().compareTo("")==0 || 
+                !txtVelocidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?"))){
+            System.out.println("Invalid bitrate value");
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "\nInvalid bitrate value",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtVelocidad.setText("");
         }
-        else if((tipo==0 && Double.parseDouble(txtAnchuraEspectro.getText())<=0) ||
-           (tipo==0 &&Double.parseDouble(txtAnchuraEspectro.getText())>1)){
+        //Se corrobora el span
+        else if(modulacion == 1 && (txtSpan.getText().isEmpty() || 
+                txtSpan.getText().compareTo("")==0 || 
+                !txtSpan.getText().matches("^[1-9]\\d*$"))){
+            System.out.println("Invalid span value");
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "\nInvalid span value",aceptar);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+            txtSpan.setText("");
+        }
+        //Laser
+        else if((tipo==0 && Double.parseDouble(txtAnchuraEspectro.getText())<=0) || 
+                (tipo==0 && Double.parseDouble(txtAnchuraEspectro.getText())>1)){
             System.out.println("\nThe width value must be max 1 nm");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nThe width value must be max 1 nm",
-                    aceptar);
+                    "\nThe width value must be max 1 nm",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtAnchuraEspectro.setText("");
         }
-        else if((tipo == 1 && Double.parseDouble(txtAnchuraEspectro.getText())< (double)(0.01)) ||
-           (tipo==1 &&Double.parseDouble(txtAnchuraEspectro.getText())> 1)){
+        //LED
+        else if((tipo == 1 && Double.parseDouble(txtAnchuraEspectro.getText())< (double)(0.01)) || 
+                (tipo == 1 && Double.parseDouble(txtAnchuraEspectro.getText())> 1)){
             System.out.println("\nThe width value must be min: 0.01 nm  max: 1.0 nm");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nThe width value must be min: 0.01 nm  max: 1.0 nm",
-                    aceptar);
+                    "\nThe width value must be min: 0.01 nm  max: 1.0 nm",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtAnchuraEspectro.setText("");
-        } 
+        }
         else{
-            potencia = Double.parseDouble(txtPotencia.getText());
+            //Spectral Width
             anchura = Double.parseDouble(txtAnchuraEspectro.getText());
-            velocidad = Double.parseDouble(txtVelocidad.getText());
+            //Chirp
+            chirp = Double.parseDouble(txtChirp.getText());
+            if(modulacion == 1){
+                //BitRate
+                velocidad = Double.parseDouble(txtVelocidad.getText());
+                //Span
+                span = Double.parseDouble(txtSpan.getText());
+            }
+            
             Fuente fuente= new Fuente();
-            fuente.setAnchura(anchura);
             fuente.setIdFuente(idFuente);
-            fuente.setLongitudOnda(longitudOnda);
-            fuente.setNombre("source"); 
-            fuente.setPotencia(potencia);
+            fuente.setNombre("source");
             fuente.setTipo(tipo);
-            fuente.setVelocidad(velocidad);
+            if (unidadLongitudOnda == 0){
+                longitudOnda = Double.parseDouble(cboxFc.getSelectionModel().getSelectedItem().toString());
+            }
+            else if (unidadLongitudOnda == 1){
+                longitudOnda = NmToThz(Double.parseDouble(cboxFc.getSelectionModel().getSelectedItem().toString()));
+            }
+            fuente.setLongitudOnda(longitudOnda);
+            fuente.setUnidadLongitudOnda(unidadLongitudOnda);
+            fuente.setIndexLongitudOnda(cboxFc.getSelectionModel().getSelectedIndex());
+            if (unidadPotencia == 0) {//Deja la potencia en mW
+                potencia = Double.parseDouble(txtPotencia.getText());
+            }
+            else{//Pasa la potencia de dBm a mW (unidadPotencia == 1)
+                potencia = Math.pow(10, Double.parseDouble(txtPotencia.getText()) / 10);
+            }
+            fuente.setPotencia(potencia);
+            fuente.setUnidadPotencia(unidadPotencia);
+            fuente.setAnchura(anchura);
+            fuente.setTipoPulso(tipoPulso);
+            fuente.setChirp(chirp);
+            fuente.setModulacion(modulacion);
+            if(modulacion == 1){
+                fuente.setVelocidad(velocidad);
+                fuente.setSpan(span);
+            }
             fuente.setConectadoEntrada(false);
             fuente.setConectadoSalida(false);
             guardarFuente(fuente);
             idFuente++;
             cerrarVentana(event);
+            //Aqui se manda a graficar la señal modulada
+            //fuente.setPulso(Math.sqrt(2*potencia),1/(anchura/1e9),longitudOnda*1e12,chirp,tipoPulso);
+            fuente.setPulso(Math.sqrt(2*potencia),anchura*1e-3,longitudOnda*1e3,chirp,tipoPulso);
+            fuente.graficas();
         }
     }
     
@@ -382,47 +605,39 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                     }
                 }
                 if( outSideParentBoundsX(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                }else{
+                }
+                else{
                     elem.getDibujo().setLayoutX(Pane1.getChildren().get(j).getLayoutX()+event.getX()+1);
                 }
                 
                 if(outSideParentBoundsY(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                }else{
-                elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);}
-
+                }
+                else{
+                    elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);
+                }
                 if(elem.getComponente().isConectadoSalida()==true){
                     elem.getComponente().getLinea().setVisible(false);
                     dibujarLinea(elem);
                 }
             }
         });
-        
         elem.getDibujo().setOnMouseEntered((MouseEvent event) -> {
             elem.getDibujo().setStyle("-fx-border-color: darkblue;");
             elem.getDibujo().setCursor(Cursor.OPEN_HAND);
         });
-        
         elem.getDibujo().setOnMouseExited((MouseEvent event) -> {
             elem.getDibujo().setStyle("");
         });
-        
         elem.getDibujo().setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton()==MouseButton.PRIMARY){
                 try{
                     Stage stage1 = new Stage();
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaFuente.fxml"));
                     Parent root = loader.load();
-                    //Se crea una instancia del controlador de la fuente
                     VentanaFuenteController fuenteController = (VentanaFuenteController) loader.getController();
-                    //fuenteController.init(controlador, stage, Pane1);
-                    /*Se necesito usar otro init de forma que el controller sepa cual es el elemento
-                        con el que se esta trabajando ademas de que se manda el mismo controller para 
-                        iniciar con los valores del elemento mandado.
-                    */
-                    fuenteController.init(controlador, this.stage, this.Pane1,this.scroll);
+                    fuenteController.init(controlador, this.stage, this.Pane1,this.scroll,ventana_principal);
                     fuenteController.init2(elem,fuenteController);
                     fuenteController.btnCrear.setVisible(false);
-                    fuenteController.btnPulso.setVisible(true);
                     fuenteController.separator.setVisible(true);
                     fuenteController.btnDesconectar.setVisible(true);
                     fuenteController.lblConectarA.setVisible(true);
@@ -441,10 +656,65 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                 catch(IOException ex){
                     Logger.getLogger(VentanaConectorController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }else if(event.getButton()==MouseButton.SECONDARY){
+            }
+            else if(event.getButton()==MouseButton.SECONDARY){
                 mostrarMenu(elem);
             }
         });
+    }
+    
+    /**
+     * Metodo que  eventos al seleccionar modulacion, 
+     * Mostrar u ocultar las opciones si hay modulacion seleccionada
+     * @param event
+     */
+    public void eventosFrecuenciaCentral(ActionEvent event){
+        if (rbtnLaser.isSelected() && rbtnThz.isSelected()) {
+            cboxFc.getItems().removeAll(cboxFc.getItems());
+            cboxFc.getItems().addAll("228.84920458","203.80","201.07","198.41",
+                    "195.81","193.29","190.83","188.43","186.09");
+            cboxFc.getSelectionModel().selectFirst();
+        }
+        else if (rbtnLaser.isSelected() && rbtnNm.isSelected()) {
+            cboxFc.getItems().removeAll(cboxFc.getItems());
+            cboxFc.getItems().addAll("1310","1471.0130422","1490.9855175","1510.9745376",
+                    "1531.0375262","1550.9982824","1570.9922863","1591.0017407","1611.0078887");
+            cboxFc.getSelectionModel().selectFirst();
+        }
+        else if (rbtnLed.isSelected() && rbtnThz.isSelected()) {
+            cboxFc.getItems().removeAll(cboxFc.getItems());
+            cboxFc.getItems().addAll("228.84920458","193.41448903");
+            cboxFc.getSelectionModel().selectFirst();
+        }
+        else if (rbtnLed.isSelected() && rbtnNm.isSelected()) {
+            cboxFc.getItems().removeAll(cboxFc.getItems());
+            cboxFc.getItems().addAll("1310","1550");
+            cboxFc.getSelectionModel().selectFirst();
+        }
+    }
+    
+    /**
+     * Metodo que proporciona eventos al seleccionar modulacion, 
+     * Mostrar u ocultar las opciones si hay modulacion seleccionada
+     * @param event
+     */
+    public void eventosModulacion(ActionEvent event){
+        if(rbtnNone.isSelected()){
+            lblVelocidad.setVisible(false);
+            txtVelocidad.setVisible(false);
+            lblVelocidadU.setVisible(false);
+            lblSpan.setVisible(false);
+            txtSpan.setVisible(false);
+            lblSpanS.setVisible(false);
+        }
+        else if(rbtnOOK.isSelected()){
+            lblVelocidad.setVisible(true);
+            txtVelocidad.setVisible(true);
+            lblVelocidadU.setVisible(true);
+            lblSpan.setVisible(true);
+            txtSpan.setVisible(true);
+            lblSpanS.setVisible(true);
+        }
     }
     
     /**
@@ -462,21 +732,28 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
         menuItem1.setOnAction(e ->{
             for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
                 if(dibujo.getId()==controlador.getElementos().get(elemento).getId()){
-                    System.out.println(dibujo.getId()+"----"+controlador.getElementos().get(elemento).getId());
                     Fuente fuenteAux=new Fuente();
                     Fuente fuenteAux1=(Fuente)controlador.getElementos().get(elemento);
+                    fuenteAux.setIdFuente(idFuente);
+                    fuenteAux.setNombre("source");
+                    fuenteAux.setTipo(fuenteAux1.getTipo());
+                    fuenteAux.setLongitudOnda(fuenteAux1.getLongitudOnda());
+                    fuenteAux.setUnidadLongitudOnda(fuenteAux1.getUnidadLongitudOnda());
+                    fuenteAux.setIndexLongitudOnda(fuenteAux1.getIndexLongitudOnda());
+                    fuenteAux.setPotencia(fuenteAux1.getPotencia());
+                    fuenteAux.setUnidadPotencia(fuenteAux1.getUnidadPotencia());
                     fuenteAux.setAnchura(fuenteAux1.getAnchura());
+                    fuenteAux.setTipoPulso(fuenteAux1.getTipoPulso());
+                    fuenteAux.setChirp(fuenteAux1.getChirp());
+                    fuenteAux.setModulacion(fuenteAux1.getModulacion());
+                    if(fuenteAux1.getModulacion() == 1){
+                        fuenteAux.setSpan(fuenteAux1.getSpan());
+                        fuenteAux.setVelocidad(fuenteAux1.getVelocidad());
+                    }
                     fuenteAux.setConectadoEntrada(false);
                     fuenteAux.setConectadoSalida(false);
-                    fuenteAux.setLongitudOnda(fuenteAux1.getLongitudOnda());
-                    fuenteAux.setPotencia(fuenteAux1.getPotencia());
-                    fuenteAux.setTipo(fuenteAux1.getTipo());
-                    fuenteAux.setNombre("source");
-                    fuenteAux.setPulso(fuenteAux1.getA0(),fuenteAux1.getT0(),fuenteAux1.getW0(),fuenteAux1.getC(),fuenteAux1.getM());
-                    fuenteAux.setVelocidad(fuenteAux1.getVelocidad());
-                    fuenteAux.setIdFuente(idFuente);
+                    fuenteAux.setPulso(fuenteAux1.getA0(),fuenteAux1.getT0(),fuenteAux1.getFc(),fuenteAux1.getC(),fuenteAux1.getM());
                     duplicarFuente(fuenteAux,dibujo);
-                    System.out.println(fuenteAux);
                     idFuente++;
                     break;
                 }
@@ -489,7 +766,6 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                 for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
                     if(dibujo.getComponente().getElementoConectadoSalida().equals(controlador.getDibujos().get(elemento).getDibujo().getText())){
                         Componente aux= controlador.getElementos().get(elemento);
-                        System.out.println();
                         aux.setConectadoEntrada(false);
                         aux.setElementoConectadoEntrada("");
                         dibujo.getComponente().getLinea().setVisible(false);
@@ -533,44 +809,68 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                     s.setTitle("OptiUAM BC - Properties");
                     s.initModality(Modality.APPLICATION_MODAL);
                     Fuente aux= (Fuente)controlador.getElementos().get(elemento);
-                    String tip;
+                    String PrTipo,PrTipoPulso;
                     Label label;
-                    if(aux.getTipo() == 0){
-                        tip = "Laser";
+                    if(aux.getModulacion()==0){
+                        if (aux.getTipo() == 1) {
+                            PrTipo = "LED";
+                        }else{
+                            PrTipo = "Laser";
+                        }
+                        if (aux.getTipoPulso() == 1) {
+                            PrTipoPulso = "Gaussian";
+                        }else{
+                            PrTipoPulso = "Supergaussian";
+                        }
                         label = new Label("  Name: "+aux.getNombre()+
                             "\n  Id: "+aux.getIdFuente()+
                             "\n  Input: "+aux.getElementoConectadoEntrada()+
                             "\n  Output :"+aux.getElementoConectadoSalida()+
-                            "\n  Wavelenght: "+aux.getLongitudOnda()+" nm"+
-                            "\n  Type: "+tip+
-                            "\n  Potency: "+aux.getPotencia()+" dBm"+
+                            "\n  Type: "+PrTipo+
+                            "\n  Wavelenght: "+aux.getLongitudOnda()+" THz"+
+                            "\n  Potency: "+aux.getPotencia()+" mW"+
                             "\n  Spectral Width: "+aux.getAnchura()+" nm"+
-                            "\n  Transmission Speed: "+aux.getVelocidad()+" Gbits/seg"+
-                            "\n  ----------------Pulse----------------"+
+                            "\n  Pulse Type: "+PrTipoPulso+
+                            "\n  Chirp: "+aux.getChirp()+
+                            "\n  Modulation: None"+
+                            "\n  ---------------Pulse---------------"+
                             "\n  A0: "+aux.getA0() + "\n  C: "+aux.getC()+
-                            "\n  T0: "+aux.getT0() + "\n  W0: "+aux.getW0()+
+                            "\n  T0: "+aux.getT0() + "\n  Fc: "+aux.getFc()+
                             "\n  M: "+aux.getM());
-                        Scene scene = new Scene(label, 190, 250);
+                        Scene scene = new Scene(label, 225, 375);
                         s.setScene(scene);
                         s.setResizable(false);
                         s.showAndWait();
                     }
-                    else if(aux.getTipo()== 1){
-                        tip = "LED";
+                    else if(aux.getModulacion()==1){
+                        if (aux.getTipo() == 1) {
+                            PrTipo = "LED";
+                        }else{
+                            PrTipo = "Laser";
+                        }
+                        if (aux.getTipoPulso() == 1) {
+                            PrTipoPulso = "Gaussian";
+                        }else{
+                            PrTipoPulso = "Supergaussian";
+                        }
                         label = new Label("  Name: "+aux.getNombre()+
                             "\n  Id: "+aux.getIdFuente()+
                             "\n  Input: "+aux.getElementoConectadoEntrada()+
                             "\n  Output :"+aux.getElementoConectadoSalida()+
-                            "\n  Wavelenght: "+aux.getLongitudOnda()+" nm"+
-                            "\n  Type: "+tip+
-                            "\n  Potency: "+aux.getPotencia()+" dBm"+
+                            "\n  Type: "+PrTipo+
+                            "\n  Wavelenght: "+aux.getLongitudOnda()+" THz"+
+                            "\n  Potency: "+aux.getPotencia()+" mW"+
                             "\n  Spectral Width: "+aux.getAnchura()+" nm"+
-                            "\n  Transmission Speed: "+aux.getVelocidad()+" Gbits/seg"+
-                            "\n  ----------------Pulse----------------"+
+                            "\n  Pulse Type: "+PrTipoPulso+
+                            "\n  Chirp: "+aux.getChirp()+
+                            "\n  Modulation: OOK"+
+                            "\n  Transmission Speed: "+aux.getVelocidad()+" Gbit/s"+
+                            "\n  Span: "+aux.getSpan()+" s"+
+                            "\n  ---------------Pulse---------------"+
                             "\n  A0: "+aux.getA0() + "\n  C: "+aux.getC()+
-                            "\n  T0: "+aux.getT0() + "\n  W0: "+aux.getW0()+
+                            "\n  T0: "+aux.getT0() + "\n  Fc: "+aux.getFc()+
                             "\n  M: "+aux.getM());
-                        Scene scene = new Scene(label, 190, 250);
+                        Scene scene = new Scene(label, 225, 375);
                         s.setScene(scene);
                         s.setResizable(false);
                         s.showAndWait();
@@ -578,7 +878,6 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                 }
             }
         });
-
         contextMenu.getItems().add(menuItem1);
         contextMenu.getItems().add(menuItem3);
         contextMenu.getItems().add(menuItem4);
@@ -606,7 +905,6 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                 Componente comp= controlador.getElementos().get(elemento2);
                 comp.setConectadoEntrada(false);
                 comp.setElementoConectadoEntrada("");
-                System.out.println(comp.getNombre());
                 break;
             }
         }
@@ -632,10 +930,10 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
      * @throws java.lang.reflect.InvocationTargetException
      */
     @FXML
-    private void modificar(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException{
+    private void modificar(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException, ExcepcionDivideCero{
         Fuente aux = (Fuente) elemG.getComponente();
-        int longitudOnda=0, tipo=0, id = 0;
-        double potencia, anchura, velocidad;
+        int tipo=0, unidadLongitudOnda=0, unidadPotencia=0, tipoPulso=0, modulacion=0;
+        double longitudOnda=0, potencia, anchura, chirp, velocidad = 0, span = 0;
 
         if(rbtnLaser.isSelected()){
             tipo = 0;
@@ -643,14 +941,33 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
         else if(rbtnLed.isSelected()){
             tipo = 1;
         }
-        if(rbtn1310.isSelected()){
-            longitudOnda=1310;
-        }else if(rbtn1550.isSelected()){
-            longitudOnda=1550;
+        if(rbtnThz.isSelected()){
+            unidadLongitudOnda = 0;
+        }
+        else if (rbtnNm.isSelected()){
+            unidadLongitudOnda = 1;
+        }
+        if(rbtnMw.isSelected()){
+            unidadPotencia = 0;
+        }
+        else if(rbtnDbm.isSelected()){
+            unidadPotencia = 1;
+        }
+        if(rbtnGaussian.isSelected()){
+            tipoPulso = 1;
+        }
+        else if(rbtnSupergaussian.isSelected()){
+            tipoPulso = 5;
+        }
+        if(rbtnNone.isSelected()){
+            modulacion = 0;
+        }else if(rbtnOOK.isSelected()){
+            modulacion = 1;
         }
         if((fuenteControl.cboxConectarA.getSelectionModel().getSelectedIndex())==0){
             Desconectar(event);
-        }else{
+        }
+        else{
             if(aux.isConectadoSalida()){
                 elemG.getComponente().getLinea().setVisible(false);
             }
@@ -661,83 +978,163 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                     ElementoGrafico eg= controlador.getDibujos().get(elemento2);
                     aux.setElementoConectadoSalida(eg.getDibujo().getText());
                     aux.setConectadoSalida(true);
-                    System.out.println(controlador.getDibujos().get(elemento2).getComponente().toString());
                     eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
                     eg.getComponente().setConectadoEntrada(true);
                     break;
                 }
             }
             dibujarLinea(elemG);
+            if(elemG.getComponente().getSeñalSalida()!=null){
+               elemG.getComponente().setSeñalSalida(null);
+               ventana_principal.elemConected(elemG.getComponente(),false);
+            }
         }
-        if (txtPotencia.getText().isEmpty() || txtPotencia.getText().compareTo("")==0 || !txtPotencia.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-            System.out.println("Invalid power value");
+        //Se corrobora potencia en mW
+        if (unidadPotencia==0 && (txtPotencia.getText().isEmpty() || 
+            txtPotencia.getText().compareTo("")==0 || 
+            !txtPotencia.getText().matches("^(?!0\\\\.000)[0-9]+(\\\\.\\\\d{1,3})?$|^[1-9]\\\\d{0,3}(\\\\.\\\\d{1,3})?$"))){
+            System.out.println("Invalid mW power value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nInvalid power value",
-                    aceptar);
+                    "\nInvalid mW power value",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtPotencia.setText("");
         }
-        else if(txtAnchuraEspectro.getText().isEmpty() || txtAnchuraEspectro.getText().compareTo("")==0 || !txtAnchuraEspectro.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-            System.out.println("Invalid width value");
+        //Se corrobora potencia en dBm
+        else if(unidadPotencia==1 && (txtPotencia.getText().isEmpty() || 
+                txtPotencia.getText().compareTo("")==0 || 
+                !txtPotencia.getText().matches("^-?((3[0-9]|[0-2]?[0-9])(\\\\.\\\\d+)?|40(\\\\.0+)?)$"))){
+            System.out.println("Invalid dBm power value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nInvalid width value",
-                    aceptar);
+                    "\nInvalid dBm power value",aceptar);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+            txtPotencia.setText("");
+        }
+        //Se corrobora Spectral Width
+        else if(txtAnchuraEspectro.getText().isEmpty() || 
+                txtAnchuraEspectro.getText().compareTo("")==0 || 
+                !txtAnchuraEspectro.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+            System.out.println("Invalid spectral width value");
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "\nInvalid spectral width value",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtAnchuraEspectro.setText("");
         }
-        else if(txtVelocidad.getText().isEmpty() || txtVelocidad.getText().compareTo("")==0 || !txtVelocidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-            System.out.println("Invalid speed value");
+        //Se corrobora Chirp
+        else if(txtChirp.getText().isEmpty() || 
+                txtChirp.getText().compareTo("")==0 || 
+                !txtChirp.getText().matches("^(0|[1-9]\\d*)(\\.\\d+)?$")){
+            System.out.println("Invalid chirp value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nInvalid speed value",
-                    aceptar);
+                    "\nInvalid chirp value",aceptar);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+            txtChirp.setText("");
+        }
+        //Se corrobora Bitrate
+        else if(modulacion == 1 && (txtVelocidad.getText().isEmpty() || 
+                txtVelocidad.getText().compareTo("")==0 || 
+                !txtVelocidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?"))){
+            System.out.println("Invalid bitrate value");
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "\nInvalid bitrate value",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtVelocidad.setText("");
         }
-        else if((tipo==0 &&Double.parseDouble(txtAnchuraEspectro.getText())<=0) ||
-           (tipo==0 &&Double.parseDouble(txtAnchuraEspectro.getText())>1)){
+        //Se corrobora el span
+        else if(modulacion == 1 && (txtSpan.getText().isEmpty() || 
+                txtSpan.getText().compareTo("")==0 || 
+                !txtSpan.getText().matches("^[1-9]\\d*$"))){
+            System.out.println("Invalid span value");
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "\nInvalid span value",aceptar);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+            txtSpan.setText("");
+        }
+        //Laser
+        else if((tipo==0 && Double.parseDouble(txtAnchuraEspectro.getText())<=0) || 
+                (tipo==0 && Double.parseDouble(txtAnchuraEspectro.getText())>1)){
             System.out.println("\nThe width value must be max 1 nm");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nThe width value must be max 1 nm",
-                    aceptar);
+                    "\nThe width value must be max 1 nm",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtAnchuraEspectro.setText("");
         }
-        else if((tipo == 1 &&Double.parseDouble(txtAnchuraEspectro.getText())< (double)(0.01)) ||
-           (tipo==1 &&Double.parseDouble(txtAnchuraEspectro.getText())> 1)){
+        //LED
+        else if((tipo == 1 && Double.parseDouble(txtAnchuraEspectro.getText())< (double)(0.01)) || 
+                (tipo == 1 && Double.parseDouble(txtAnchuraEspectro.getText())> 1)){
             System.out.println("\nThe width value must be min: 0.01 nm  max: 1.0 nm");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nThe width value must be min: 0.01 nm  max: 1.0 nm",
-                    aceptar);
+                    "\nThe width value must be min: 0.01 nm  max: 1.0 nm",aceptar);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.showAndWait();
             txtAnchuraEspectro.setText("");
-        } 
+        }
         else{
-            potencia = Double.parseDouble(txtPotencia.getText());
+            //Spectral Width
             anchura = Double.parseDouble(txtAnchuraEspectro.getText());
-            velocidad = Double.parseDouble(txtVelocidad.getText());
-            aux.setAnchura(anchura);
-            aux.setLongitudOnda(longitudOnda);
+            //Chirp
+            chirp = Double.parseDouble(txtChirp.getText());
+            if(modulacion == 1){
+                //BitRate
+                velocidad = Double.parseDouble(txtVelocidad.getText());
+                //Span
+                span = Double.parseDouble(txtSpan.getText());
+            }
             aux.setNombre("source");
-            aux.setPotencia(potencia);
             aux.setTipo(tipo);
-            aux.setVelocidad(velocidad);
+            if (unidadLongitudOnda == 0){
+                longitudOnda = Double.parseDouble(cboxFc.getSelectionModel().getSelectedItem().toString());
+            }
+            else if (unidadLongitudOnda == 1){
+                longitudOnda = NmToThz(Double.parseDouble(cboxFc.getSelectionModel().getSelectedItem().toString()));
+            }
+            aux.setLongitudOnda(longitudOnda);
+            aux.setUnidadLongitudOnda(unidadLongitudOnda);
+            aux.setIndexLongitudOnda(cboxFc.getSelectionModel().getSelectedIndex());
+            if (unidadPotencia == 0) {//Deja la potencia en mW
+                potencia = Double.parseDouble(txtPotencia.getText());
+            }
+            else{//Pasa la potencia de dBm a mW (unidadPotencia == 1)
+                potencia = Math.pow(10, Double.parseDouble(txtPotencia.getText()) / 10);
+            }
+            aux.setPotencia(potencia);
+            aux.setUnidadPotencia(unidadPotencia);
+            aux.setAnchura(anchura);
+            aux.setTipoPulso(tipoPulso);
+            aux.setChirp(chirp);
+            aux.setModulacion(modulacion);
+            if(modulacion == 1){
+                aux.setSpan(span);
+                aux.setVelocidad(velocidad);
+            }
+            //aux.setPulso(Math.sqrt(2*potencia),1/(anchura/1e9),longitudOnda*1e12,chirp,tipoPulso);
+            aux.setPulso(Math.sqrt(2*potencia),anchura*1e-3,longitudOnda*1e3,chirp,tipoPulso);
+            aux.graficas();
             cerrarVentana(event);
-
+            
+            VentanaPrincipal.btnStart = false;
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
                     "\nModified source!",
@@ -745,39 +1142,35 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
             alert.setTitle("Succes");
             alert.setHeaderText(null);
             alert.showAndWait();
-            
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
         }
     }
     
     /**
-     * Metodo para configurar el pulso de la fuente
-     * @throws java.io.IOException Proporciona diferentes excepciones lanzadas 
-     * bajo el paquete java io
+     * Metodo para mostrar informacion de la fuente
+     * @param event Representa cualquier tipo de accion
      */
     @FXML
-    public void configurarPulso() throws IOException {
+    public void configurarPulso(ActionEvent event) {
         try {
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("VentanaPulso.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaPulso.fxml"));
             Parent root = loader.load();
-            VentanaPulsoController pulControl= loader.getController();
-            pulControl.init(elemG);
-            
-            Scene scene = new Scene(root);
-            Image ico = new Image("images/acercaDe.png");
+            VentanaPulsoController pulControl = loader.getController();
+
             Stage st = new Stage(StageStyle.UTILITY);
-            st.getIcons().add(ico);
-            st.setTitle("OptiUAM BC - Pulse Configuration");
-            st.setScene(scene);
-            st.showAndWait();
+            st.setTitle("Signal Information");
+            st.setScene(new Scene(root));
             st.setResizable(false);
+
+            // Guardar la referencia al Stage en el controlador de la ventana
+            pulControl.setStage(st);
+
+            st.showAndWait();
         } catch (IOException ex) {
             Logger.getLogger(VentanaFuenteController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+
 
     /**
      * Metodo que proporciona lo necesario para que la ventana reconozca a 
@@ -786,12 +1179,15 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
      * @param stage Escenario en el cual se agregan los objetos creados
      * @param Pane1 Panel para agregar objetos
      * @param scroll Espacio en el cual el usuario puede desplazarse
+     * @param ventana Ventana principal
      */
-    public void init(ControladorGeneral controlador, Stage stage, Pane Pane1,ScrollPane scroll) {
+    public void init(ControladorGeneral controlador, Stage stage, Pane Pane1, 
+            ScrollPane scroll, VentanaPrincipal ventana) {
         this.controlador=controlador;
         this.stage=stage;
         this.Pane1=Pane1;
         this.scroll=scroll;
+        this.ventana_principal= ventana;
     }
 
     /**
@@ -806,37 +1202,73 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
         
         if(elemG.getComponente().isConectadoSalida()==true){
             fuenteControl.cboxConectarA.getSelectionModel().select(elemG.getComponente().getElementoConectadoSalida());
-        }else{
+        }
+        else{
             fuenteControl.cboxConectarA.getItems().add("Desconected");
             fuenteControl.cboxConectarA.getSelectionModel().select(0);
             for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
-                if("connector".equals(controlador.getElementos().get(elemento).getNombre())){
+                if("connector".equals(controlador.getElementos().get(elemento).getNombre()) ||
+                        "spectrum".equals(controlador.getElementos().get(elemento).getNombre())
+                        ||
+                        "demux".equals(controlador.getElementos().get(elemento).getNombre())){
                     if(!controlador.getElementos().get(elemento).isConectadoEntrada()){
                         fuenteControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento).getDibujo().getText());
                     }
                 }
             }
         }
-        
         for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
             if(elem.getId()==controlador.getElementos().get(elemento).getId()){
                 Fuente fue = (Fuente)controlador.getElementos().get(elemento);
-                System.out.println(fue.getTipo()+"\t"+fue.getLongitudOnda());
-                if(fue.getTipo()==0){
+                if(fue.getTipo() == 0){
                     fuenteControl.rbtnLaser.setSelected(true);
-                }else if(fue.getTipo()==1){
+                }
+                else if(fue.getTipo() == 1){
                     fuenteControl.rbtnLed.setSelected(true);
                 }
-                if(fue.getLongitudOnda()==1310){
-                    fuenteControl.rbtn1310.setSelected(true);
-                }else if(fue.getLongitudOnda()==1550){
-                    fuenteControl.rbtn1550.setSelected(true);
+                if (fue.getUnidadLongitudOnda() == 0){
+                    fuenteControl.rbtnThz.setSelected(true);
+                }
+                else if (fue.getUnidadLongitudOnda() == 1){
+                    fuenteControl.rbtnNm.setSelected(true);
+                }
+                eventosFrecuenciaCentral(null);
+                fuenteControl.cboxFc.getSelectionModel().select(fue.getIndexLongitudOnda());
+                if (fue.getUnidadPotencia() == 0){//Deja la potencia en mW
+                    fuenteControl.rbtnMw.setSelected(true);
+                    fuenteControl.txtPotencia.setText(String.valueOf(fue.getPotencia()));
+                }
+                else if (fue.getUnidadPotencia() == 1){//Pasa la potencia de mW a dBm (unidadPotencia == 1)
+                    fuenteControl.rbtnDbm.setSelected(true);
+                    fuenteControl.txtPotencia.setText(String.valueOf((int)(10 * Math.log10(fue.getPotencia()))));
                 }
                 fuenteControl.txtAnchuraEspectro.setText(String.valueOf(fue.getAnchura()));
-                fuenteControl.txtPotencia.setText(String.valueOf(fue.getPotencia()));
-                fuenteControl.txtVelocidad.setText(String.valueOf(fue.getVelocidad()));
+                if (fue.getTipoPulso() == 1) {
+                    fuenteControl.rbtnGaussian.setSelected(true);
+                }else{
+                    fuenteControl.rbtnSupergaussian.setSelected(true);
+                }
+                fuenteControl.txtChirp.setText(String.valueOf(fue.getChirp()));
+                if(fue.getModulacion()==0){
+                    fuenteControl.rbtnNone.setSelected(true);
+                    lblVelocidad.setVisible(false);
+                    txtVelocidad.setVisible(false);
+                    lblVelocidadU.setVisible(false);
+                    lblSpan.setVisible(false);
+                    txtSpan.setVisible(false);
+                    lblSpanS.setVisible(false);
+                }else if(fue.getModulacion()==1){
+                    fuenteControl.rbtnOOK.setSelected(true);
+                    fuenteControl.txtVelocidad.setText(String.valueOf(fue.getVelocidad()));
+                    fuenteControl.txtSpan.setText(String.valueOf((int)fue.getSpan()));
+                    lblVelocidad.setVisible(true);
+                    txtVelocidad.setVisible(true);
+                    lblVelocidadU.setVisible(true);
+                    lblSpan.setVisible(true);
+                    txtSpan.setVisible(true);
+                    lblSpanS.setVisible(true);
+                }
             }
-            
         }
     }
     
@@ -871,7 +1303,6 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
      */
     private boolean outSideParentBoundsX( Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane1.getLayoutBounds();
-
         //check if too left
         if( parentBounds.getMaxX() <= (newX + childBounds.getMaxX()) ) {
             return true ;
@@ -880,7 +1311,6 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
         if( parentBounds.getMinX() >= (newX + childBounds.getMinX()) ) {
             return true ;
         }
-        
         return false;
     }
     
@@ -890,7 +1320,6 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
      */
     private boolean outSideParentBoundsY( Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane1.getLayoutBounds();
-        
         //check if too down
         if( parentBounds.getMaxY() <= (newY + childBounds.getMaxY()) ) {
             return true ;
@@ -899,7 +1328,6 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
         if( parentBounds.getMinY()+179 >= (newY + childBounds.getMinY()) ) {
             return true ;
         }
-
         return false;
     }
     

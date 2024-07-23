@@ -2,18 +2,19 @@
 package optiuam.bc.modelo;
 
 /**
- * Clase MedidorPotencia la cual contiene los atributos principales de un medidor de potencia
- * @author Daniel Hernandez
- * Editado por:
+ * Clase MedidorPotencia la cual contiene los atributos principales de un 
+ * medidor de potencia
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  * @see Componente
  */
 public class MedidorPotencia extends Componente {
     
     /**Sensibilidad del medidor de potencia*/
     private Double sensibilidad = 0.0;
-    /**Identificador del medidor de potencia. Es diferente al identificador del componente*/
+    /**Identificador del medidor de potencia. Es diferente al identificador del 
+     * componente*/
     private int idPotencia;
 
     /**
@@ -26,10 +27,12 @@ public class MedidorPotencia extends Componente {
     * Metodo constructor con parametros
      * @param nombre Nombre del componente
      * @param id Identificador del componente
-     * @param elementoConectado Nombre del componente el cual se encuentra conectado con el medidor de potencia
+     * @param elementoConectado Nombre del componente el cual se encuentra 
+     * conectado con el medidor de potencia
      * @param conectado Indica si el componente esta conectado
     */
-    public MedidorPotencia(String nombre, int id,String elementoConectado, boolean conectado) {
+    public MedidorPotencia(String nombre, int id,String elementoConectado, 
+            boolean conectado) {
         this.nombre = nombre;
         this.id = id;
     }
@@ -51,7 +54,8 @@ public class MedidorPotencia extends Componente {
     }
     
     /**
-     * Metodo que muestra el identificador del medidor de potencia, no el del componente
+     * Metodo que muestra el identificador del medidor de potencia, no el del 
+     * componente
      * @return idPotencia
      */
     public int getIdPotencia() {
@@ -59,7 +63,8 @@ public class MedidorPotencia extends Componente {
     }
 
     /**
-     * Metodo que modifica el identificador del medidor de potencia, no el del componente
+     * Metodo que modifica el identificador del medidor de potencia, no el del 
+     * componente
      * @param idPotencia Identificador del medidor de potencia
      */
     public void setIdPotencia(int idPotencia) {

@@ -17,45 +17,67 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="380.0" prefWidth="500.0" style="-fx-background-color: lightcyan;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controlador.VentanaFuenteController">
+<AnchorPane id="AnchorPane" prefHeight="579.0" prefWidth="588.0" style="-fx-background-color: lightcyan;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controlador.VentanaFuenteController">
    <children>
-      <ImageView fitHeight="380.0" fitWidth="500.0" pickOnBounds="true">
+      <ImageView fitHeight="579.0" fitWidth="588.0" pickOnBounds="true">
          <image>
             <Image url="@../../../images/FondoAzul.png" />
          </image>
       </ImageView>
-      <Label alignment="CENTER" layoutY="21.0" prefHeight="17.0" prefWidth="500.0" text="Optical Source Configuration">
+      <Label alignment="CENTER" layoutY="12.0" prefHeight="17.0" prefWidth="588.0" text="Optical Source Configuration">
          <font>
             <Font name="Arial Black" size="18.0" />
          </font></Label>
-      <Separator layoutY="51.0" prefHeight="4.0" prefWidth="500.0" />
-      <Label layoutX="28.0" layoutY="77.0" text="Wavelength" />
-      <RadioButton fx:id="rbtn1310" layoutX="149.0" layoutY="77.0" mnemonicParsing="false" selected="true" text="1310 nm">
-         <toggleGroup>
-            <ToggleGroup fx:id="LongitudOnda" />
-         </toggleGroup></RadioButton>
-      <RadioButton fx:id="rbtn1550" layoutX="241.0" layoutY="77.0" mnemonicParsing="false" text="1550 nm" toggleGroup="$LongitudOnda" />
-      <Label layoutX="28.0" layoutY="117.0" text="Type" />
-      <RadioButton fx:id="rbtnLaser" layoutX="149.0" layoutY="117.0" mnemonicParsing="false" selected="true" text="Laser">
+      <Separator layoutY="51.0" prefHeight="4.0" prefWidth="588.0" />
+      <Label layoutX="28.0" layoutY="77.0" text="Type" />
+      <RadioButton fx:id="rbtnLaser" layoutX="157.0" layoutY="77.0" mnemonicParsing="false" onAction="#eventosFrecuenciaCentral" selected="true" text="Laser">
          <toggleGroup>
             <ToggleGroup fx:id="Tipo" />
          </toggleGroup></RadioButton>
-      <RadioButton fx:id="rbtnLed" layoutX="241.0" layoutY="117.0" mnemonicParsing="false" text="LED" toggleGroup="$Tipo" />
-      <Label layoutX="27.0" layoutY="157.0" text="Power" />
-      <TextField fx:id="txtPotencia" layoutX="149.0" layoutY="152.0" prefHeight="25.0" prefWidth="79.0" />
-      <Label layoutX="241.0" layoutY="156.0" text="dBm" />
-      <Label layoutX="25.0" layoutY="193.0" text="Spectral Width" />
-      <TextField fx:id="txtAnchuraEspectro" layoutX="149.0" layoutY="189.0" prefHeight="25.0" prefWidth="79.0" />
-      <Label layoutX="240.0" layoutY="193.0" text="nm" />
-      <Label layoutX="24.0" layoutY="233.0" text="Bitrate" />
-      <TextField fx:id="txtVelocidad" layoutX="149.0" layoutY="229.0" prefHeight="25.0" prefWidth="79.0" />
-      <Label layoutX="240.0" layoutY="233.0" text="Gbits/seg" />
-      <Button fx:id="btnPulso" layoutX="151.0" layoutY="276.0" mnemonicParsing="false" onAction="#configurarPulso" text="Set Pulse" />
-      <Separator fx:id="separator" layoutX="333.0" layoutY="73.0" orientation="VERTICAL" prefHeight="200.0" />
-      <Label fx:id="lblConectarA" layoutX="357.0" layoutY="109.0" text="Connect to:" />
-      <ComboBox fx:id="cboxConectarA" layoutX="351.0" layoutY="134.0" prefHeight="25.0" prefWidth="105.0" />
-      <Button fx:id="btnDesconectar" layoutX="350.0" layoutY="189.0" mnemonicParsing="false" onAction="#Desconectar" text="Disconnect" />
-      <Button fx:id="btnCrear" layoutX="77.0" layoutY="316.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: #7fff00;" text="CREATE">
+      <RadioButton fx:id="rbtnLed" layoutX="270.0" layoutY="77.0" mnemonicParsing="false" onAction="#eventosFrecuenciaCentral" text="LED" toggleGroup="$Tipo" />
+      <Label layoutX="28.0" layoutY="117.0" text="Center frequency" />
+      <ComboBox fx:id="cboxFc" layoutX="157.0" layoutY="112.0" prefHeight="31.0" prefWidth="85.0" />
+      <RadioButton fx:id="rbtnThz" layoutX="270.0" layoutY="117.0" mnemonicParsing="false" onAction="#eventosFrecuenciaCentral" selected="true" text="THz">
+         <toggleGroup>
+            <ToggleGroup fx:id="FrecuenciaCentral" />
+         </toggleGroup></RadioButton>
+      <RadioButton fx:id="rbtnNm" layoutX="339.0" layoutY="117.0" mnemonicParsing="false" onAction="#eventosFrecuenciaCentral" text="nm" toggleGroup="$FrecuenciaCentral" />
+      <Label layoutX="28.0" layoutY="157.0" text="Power" />
+      <TextField fx:id="txtPotencia" layoutX="157.0" layoutY="152.0" prefHeight="31.0" prefWidth="85.0" />
+      <RadioButton fx:id="rbtnMw" layoutX="270.0" layoutY="157.0" mnemonicParsing="false" selected="true" text="mW">
+         <toggleGroup>
+            <ToggleGroup fx:id="UnidadPotencia" />
+         </toggleGroup></RadioButton>
+      <RadioButton fx:id="rbtnDbm" layoutX="339.0" layoutY="157.0" mnemonicParsing="false" text="dBm" toggleGroup="$UnidadPotencia" />
+      <Label layoutX="28.0" layoutY="197.0" text="Spectral Width" />
+      <TextField fx:id="txtAnchuraEspectro" layoutX="157.0" layoutY="192.0" prefHeight="25.0" prefWidth="85.0" />
+      <Label layoutX="270.0" layoutY="197.0" text="nm" />
+      <Label layoutX="28.0" layoutY="237.0" text="Pulse type" />
+      <RadioButton fx:id="rbtnGaussian" layoutX="157.0" layoutY="237.0" mnemonicParsing="false" selected="true" text="Gaussian">
+         <toggleGroup>
+            <ToggleGroup fx:id="PulseType" />
+         </toggleGroup></RadioButton>
+      <RadioButton fx:id="rbtnSupergaussian" layoutX="270.0" layoutY="237.0" mnemonicParsing="false" text="Supergaussian" toggleGroup="$PulseType" />
+      <Label layoutX="28.0" layoutY="277.0" text="Chirp" />
+      <TextField fx:id="txtChirp" layoutX="157.0" layoutY="272.0" prefHeight="31.0" prefWidth="85.0" />
+      <Label layoutX="28.0" layoutY="317.0" text="Modulation" />
+      <RadioButton fx:id="rbtnNone" layoutX="157.0" layoutY="317.0" mnemonicParsing="false" onAction="#eventosModulacion" selected="true" text="None">
+         <toggleGroup>
+            <ToggleGroup fx:id="Modulacion" />
+         </toggleGroup></RadioButton>
+      <RadioButton fx:id="rbtnOOK" layoutX="270.0" layoutY="317.0" mnemonicParsing="false" onAction="#eventosModulacion" text="OOK" toggleGroup="$Modulacion" />
+      <Label fx:id="lblVelocidad" layoutX="28.0" layoutY="357.0" text="Bitrate" />
+      <TextField fx:id="txtVelocidad" layoutX="157.0" layoutY="352.0" prefHeight="25.0" prefWidth="85.0" />
+      <Label fx:id="lblVelocidadU" layoutX="270.0" layoutY="357.0" text="Gbit/s" />
+      <Label fx:id="lblSpan" layoutX="28.0" layoutY="397.0" text="Span" />
+      <TextField fx:id="txtSpan" layoutX="157.0" layoutY="392.0" prefHeight="25.0" prefWidth="85.0" />
+      <Label fx:id="lblSpanS" layoutX="270.0" layoutY="397.0" text="s" />
+      <Separator fx:id="separator" layoutX="421.0" layoutY="77.0" orientation="VERTICAL" prefHeight="461.0" prefWidth="6.0" />
+      <Label fx:id="lblConectarA" layoutX="455.0" layoutY="117.0" text="Connect to:" />
+      <ComboBox fx:id="cboxConectarA" layoutX="455.0" layoutY="157.0" prefHeight="25.0" prefWidth="105.0" />
+      <Button fx:id="btnDesconectar" layoutX="455.0" layoutY="197.0" mnemonicParsing="false" onAction="#Desconectar" text="Disconnect" />
+      <Button fx:id="btnInfo" layoutX="514.0" layoutY="477.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#configurarPulso" prefHeight="31.0" prefWidth="46.0" text="Info" />
+      <Button fx:id="btnCrear" layoutX="164.0" layoutY="477.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: #7fff00;" text="CREATE">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
@@ -78,7 +100,7 @@
             </LinearGradient>
          </textFill>
       </Button>
-      <Button fx:id="btnModificar" layoutX="372.0" layoutY="316.0" mnemonicParsing="false" onAction="#modificar" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: violet;" text="MODIFY">
+      <Button fx:id="btnModificar" layoutX="350.0" layoutY="477.0" mnemonicParsing="false" onAction="#modificar" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: violet;" text="MODIFY">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>

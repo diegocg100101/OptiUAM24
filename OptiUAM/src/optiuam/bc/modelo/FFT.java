@@ -2,22 +2,23 @@
 package optiuam.bc.modelo;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Clase FFT la cual contiene los atributos principales de la Transformada
  * Rapida de Fourier al igual que otros metodos
- * @author Daniel Hernandez
- * Editado por:
+ * NOTA: NO SE HACE USO DE ESTA CLASE, SOLO DE FFT2
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  */
 public class FFT {
     
     /**Tamaño*/
     private int size;
     /**Frecuencia de muestreo*/
-    private int frecuenciaMuestreo;
+    private double frecuenciaMuestreo;
     /**Numeros complejos*/
     private NumeroComplejoArray numerosComplejos;
     /**Tiempo*/
@@ -34,7 +35,7 @@ public class FFT {
     /**Metodo constructor con parametros
      * @param size Tamaño
      * @param frecuenciaMuestreo Frecuencia de muestreo*/
-    public FFT(int size, int frecuenciaMuestreo) {
+    public FFT(int size, double frecuenciaMuestreo) {
             inicializar(size,frecuenciaMuestreo);
     }
 
@@ -42,7 +43,7 @@ public class FFT {
      * Metodo que se utiliza en el metodo constructor para inicializar los 
      * atributos
      */
-    private void inicializar(int size, int frecuenciaMuestreo) {
+    private void inicializar(int size, double frecuenciaMuestreo) {
             this.size = size;
             this.frecuenciaMuestreo = frecuenciaMuestreo;
             numerosComplejos = new NumeroComplejoArray(size);
@@ -93,6 +94,16 @@ public class FFT {
     }
     
     /**Metodo que ordena los datos en base al indice FFT*/
+    private  float[] ordenarFFTLista(LinkedList datos) {
+        limpiarArreglo(FFTordenados);
+        for(int i=0;i<vectorIndice.length;i++) {
+                int p = vectorIndice[i];
+                datos.set(p, datos.get(p));
+        }
+        return FFTordenados;
+    }
+    
+    /**Metodo que ordena los datos en base al indice FFT*/
     private  float[] ordenarFFT(float[] datos) {
         limpiarArreglo(FFTordenados);
         for(int i=0;i<vectorIndice.length;i++) {
@@ -124,6 +135,36 @@ public class FFT {
         numerosComplejos.limpiarTodo();
         numerosComplejos.setNumerosComplejos(datos, null);
         return numerosComplejos;
+    }
+    
+    /**
+     * Metodo para la Transformada Rapida de Fourier
+     * @param datos Datos a ordenar en base al indice FFT
+     * @return arreglo de numeros complejos
+     */
+    public NumeroComplejoArray fftLista(LinkedList datos) {
+        FFTordenados = ordenarFFTLista(datos);
+        NumeroComplejoArray arregloComplejos = crearArregloComplejos(FFTordenados);
+
+        for(int i=1;i<=tiempo;i++) {
+            int sizeGrupo = (int)(Math.pow(2, i));
+            int grupos = size/sizeGrupo;
+            for(int j=0;j<grupos;j++) {
+                int aux1 = j*sizeGrupo;
+                int aux2 = aux1+sizeGrupo/2;
+                for(int k=0;k<sizeGrupo/2;k++) {
+                    arregloComplejos.multiplicar(aux2, raices.getRaizUnitaria(sizeGrupo, k));
+                    NumeroComplejo complejo = arregloComplejos.getNumeroComplejo(aux2);
+                    arregloComplejos.setNumeroComplejo(aux2, arregloComplejos.getParteReal(aux1), arregloComplejos.getParteImaginaria(aux1));
+                    arregloComplejos.sumar(aux1, complejo);
+                    arregloComplejos.restar(aux2, complejo);
+
+                    aux1++;
+                    aux2++;
+                }
+            }
+        }
+        return arregloComplejos;
     }
 
     /**
@@ -320,7 +361,7 @@ public class FFT {
          * @return resolucion
          */
         public float resolucionFrecuencia() {
-                return fourier.frecuenciaMuestreo/fourier.size;
+                return (float) (fourier.frecuenciaMuestreo/fourier.size);
         }
         
         /**
@@ -329,7 +370,7 @@ public class FFT {
          * @return frecuencia
          */
         public float frecuenciaNormalizada(float frecuencia) {
-                return frecuencia/fourier.frecuenciaMuestreo;
+                return (float) (frecuencia/fourier.frecuenciaMuestreo);
         }
         
         /**

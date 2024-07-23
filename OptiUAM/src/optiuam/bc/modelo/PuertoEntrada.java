@@ -1,8 +1,6 @@
 
 package optiuam.bc.modelo;
 
-import javafx.scene.shape.Line;
-
 /**
  * Clase PuertoEntrada la cual contiene los atributos principales del puerto
  * entrada para un multiplexor
@@ -14,9 +12,9 @@ public class PuertoEntrada {
     private boolean conectadoEntrada;
     /**Nombre del componente el cual se encuentra conectado por la entrada*/
     private String elementoConectadoEntrada;
-    /**Conexion (linea) del componente*/
-    private Line linea;
-
+    /*Señal de entrada*/
+    protected Señal señalEntrada;
+    
     /**Metodo constructor sin parametros*/
     public PuertoEntrada() {
         this.conectadoEntrada=false;
@@ -33,7 +31,8 @@ public class PuertoEntrada {
 
     /**
      * Metodo que modifica si el componente esta conectado por la entrada
-     * @param conectadoEntrada Indica si el componente esta conectado por la entrada
+     * @param conectadoEntrada Indica si el componente esta conectado por 
+     * la entrada
      */
     public void setConectadoEntrada(boolean conectadoEntrada) {
         this.conectadoEntrada = conectadoEntrada;
@@ -51,26 +50,27 @@ public class PuertoEntrada {
     /**
      * Metodo que modifica el nombre del componente el cual se encuentra 
      * conectado por la entrada
-     * @param elementoConectadoEntrada Indica si el componente esta conectado por la entrada
+     * @param elementoConectadoEntrada Indica si el componente esta conectado 
+     * por la entrada
      */
     public void setElementoConectadoEntrada(String elementoConectadoEntrada) {
         this.elementoConectadoEntrada = elementoConectadoEntrada;
     }
-    
+
     /**
-     * Metodo que muestra la conexion (linea) del componente
-     * @return linea
+     * Metodo que muestra la señal de entrada
+     * @return señalEntrada
      */
-    public Line getLinea() {
-        return linea;
+    public Señal getSeñalEntrada() {
+        return señalEntrada;
     }
 
     /**
-     * Metodo que modifica la conexion (linea) del componente
-     * @param linea Conexion (linea) del componente
+     * Metodo que modifica la señal de entrada
+     * @param señalEntrada Señal de entrada
      */
-    public void setLinea(Line linea) {
-        this.linea = linea;
+    public void setSeñalEntrada(Señal señalEntrada) {
+        this.señalEntrada = señalEntrada;
     }
     
     /**

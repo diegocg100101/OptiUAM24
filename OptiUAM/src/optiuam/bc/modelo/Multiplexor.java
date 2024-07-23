@@ -4,23 +4,27 @@ package optiuam.bc.modelo;
 import java.util.LinkedList;
 
 /**
- * Clase Multiplexor la cual contiene los atributos principales de un multiplexor
+ * Clase Multiplexor la cual contiene los atributos principales de un 
+ * multiplexor
  * @author Arturo Borja
  * @see Componente
  */
 public class Multiplexor extends Componente {
     
-    /**Identificador del multiplexor. Es diferente al identificador del componente*/
+    /**Identificador del multiplexor. Es diferente al identificador del 
+     * componente*/
     private int idMux;
-    /**string donde se actualiza el contenido de las entradas del elemento*/
+    /**String donde se actualiza el contenido de las entradas del multiplexor*/
     private StringBuilder cEntradas;
-    /**lista de las entradas del elemento*/
+    /**Lista de los puertos de entrada del multiplexor*/
     private LinkedList<PuertoEntrada> conexionEntradas;
-    /**Numero entradas del elemento*/
+    /**Numero de entradas del multiplexor*/
     private int entradas;
     /**Perdida de insercion del multiplexor*/
     private double perdidaInsercion;
-
+    /**Lista de las señales en el multiplexor*/
+    private LinkedList<Listas> señalesTotal;
+    
     /**
     * Metodo constructor sin parametros
     */
@@ -32,10 +36,12 @@ public class Multiplexor extends Componente {
     * Metodo constructor con parametros
      * @param nombre Nombre del componente
      * @param id Identificador del componente
-     * @param elementoConectado Nombre del componente el cual se encuentra conectado con el multiplexor
+     * @param elementoConectado Nombre del componente el cual se encuentra 
+     * conectado con el multiplexor
      * @param conectado Indica si el componente esta conectado
     */
-    public Multiplexor(String nombre, int id,String elementoConectado, boolean conectado) {
+    public Multiplexor(String nombre, int id,String elementoConectado, 
+            boolean conectado) {
         this.nombre = nombre;
         this.id = id;
     }
@@ -49,7 +55,8 @@ public class Multiplexor extends Componente {
     }
 
     /**
-     * Metodo que modifica el identificador del multiplexor, no el del componente
+     * Metodo que modifica el identificador del multiplexor, no el del 
+     * componente
      * @param idMux Identificador del multiplexor
      */
     public void setIdMux(int idMux) {
@@ -86,7 +93,7 @@ public class Multiplexor extends Componente {
      * Metodo que modifica las conexiones del multiplexor
      * @param conexionEntradas Conexiones del multiplexor
      */
-    public void setConexionEntradas(LinkedList<PuertoEntrada> conexionEntradas) {
+    public void setConexionEntradas(LinkedList<PuertoEntrada> conexionEntradas){
         this.conexionEntradas = conexionEntradas;
     }
 
@@ -136,10 +143,43 @@ public class Multiplexor extends Componente {
     }
     
     /**
+     * Metodo que multiplica los valores de la señal actual con la atenuacion 
+     * del multiplexor
+     * @param valores Valores de la señal actual
+     * @return Valores con la atenuacion del multiplexor
+     */
+    public LinkedList<Listas> valorMagnitudPerdida(LinkedList<Listas> valores){
+        int n=0;
+        while(n<valores.size()){
+            NumeroComplejo aux= valores.get(n).getComplejo();
+            aux.producto(aux, (float) Math.pow(10, (-perdidaInsercion/10)));
+            valores.get(n).setComplejo(aux);
+            n++;
+        }
+        return valores; 
+    }
+    
+    /**
+     * Metodo que muestra la lista de las señales en el multiplexor
+     * @return señalesTotal
+     */
+    public LinkedList<Listas> getSeñalesTotal() {
+        return señalesTotal;
+    }
+
+    /**
+     * Metodo que modifica la lista de las señales en el multiplexor
+     * @param señalesTotal Lista de señales que hay en el multiplexor
+     */
+    public void setSeñalesTotal(LinkedList<Listas> señalesTotal) {
+        this.señalesTotal = señalesTotal;
+    }
+    
+    /**
      * Metodo toString que retorna los atributos del multiplexor
      * @return nombre, id, conectadoEntrada, elementoConectadoEntrada, 
-     * conectadoSalida, elementoConectadoSalida, idMux, entradas, perdidaInsercion,
-     * cEntradas
+     * conectadoSalida, elementoConectadoSalida, idMux, entradas, 
+     * perdidaInsercion,cEntradas
      */
     @Override
     public String toString() {
@@ -147,7 +187,8 @@ public class Multiplexor extends Componente {
         for(int i=0;i<entradas-1; i++){
             cEntradas.append(conexionEntradas.get(i).toString());
         }
-        return super.toString()+","+ idMux + "," + entradas + "," + perdidaInsercion + cEntradas;
+        return super.toString()+","+ idMux + "," + entradas + "," + 
+                perdidaInsercion + cEntradas;
     }
     
 }

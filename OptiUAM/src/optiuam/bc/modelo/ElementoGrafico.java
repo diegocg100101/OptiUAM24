@@ -8,27 +8,22 @@ import optiuam.bc.controlador.ControladorGeneral;
 /**
  * Clase ElementoGrafico la cual contiene los atributos principales de un 
  * elemento grafico
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  */
 public class ElementoGrafico {
     
     /**Controlador del elemento grafico*/
     private ControladorGeneral controlador; 
-    
     /**Etiqueta para colocar el elemento grafico*/
     @FXML
     private Label dibujo; 
-    
     /**Etiqueta del elemento grafico*/
     @FXML
     private Label title; 
-    
     /**Identificador del componente*/
     private Componente componente; 
-    
     /**Identificador del elemento grafico, es igual al identificador del componente*/
     @FXML                              
     private int id; 
@@ -46,7 +41,8 @@ public class ElementoGrafico {
      * @param id Identificador del elemento grafico
      * @param componente Identificador del componente
      */
-    public ElementoGrafico(ControladorGeneral controlador, int id, Componente componente) {
+    public ElementoGrafico(ControladorGeneral controlador, int id, 
+            Componente componente) {
         this.controlador = controlador;
         this.id = id;
         this.componente = componente;

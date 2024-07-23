@@ -66,6 +66,8 @@ public class MatrizTransferencia {
      * @return reflexion+transmision
      */
     public double calculoMatriz(double dz, int longitudOnda){
+        //dz=1;
+        //longitudOnda=1550;
         periodo = longitudOnda / (2*indRef);
         acoplamiento = (Math.PI*cambioIndRed*indRef) / longitudOnda;
         desintonia = ((2*Math.PI*indRef)/longitudOnda) - (Math.PI/periodo);

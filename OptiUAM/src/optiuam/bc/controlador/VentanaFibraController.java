@@ -4,6 +4,7 @@ package optiuam.bc.controlador;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,14 +42,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import optiuam.bc.modelo.Componente;
 import optiuam.bc.modelo.ElementoGrafico;
+import optiuam.bc.modelo.ExcepcionDivideCero;
 import optiuam.bc.modelo.Fibra;
 
 /**
  * Clase VentanaFibraController la cual se encarga de instanciar una fibra
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  * @see ControladorGeneral
  */
 public class VentanaFibraController extends ControladorGeneral implements Initializable {
@@ -67,6 +68,8 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
     static double posX;
     /**Posicion de la fibra en el eje Y*/
     static double posY;
+    /**Lista de enlaces creados*/
+    LinkedList<LinkedList> listaListas= new LinkedList();
     
     /**Caja de texto para ingresar la atenuacion de la fibra*/
     @FXML
@@ -108,7 +111,7 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
     @FXML
     Button btnModificar;
     /**Etiqueta de la lista desplegable de elementos disponibles para conectar
-     la fibra*/
+     * la fibra*/
     @FXML
     Label lblConectarA;
     /**Lista desplegable de elementos disponibles para conectar la fibra*/
@@ -202,7 +205,8 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                 txtAtenue.setEditable(false);
                 txtDisp.setText("0");
                 txtDisp.setEditable(false);
-            } else { 
+            } 
+            else { 
                 txtAtenue.setText("0.36");
                 txtAtenue.setEditable(false);
                 txtDisp.setText("3.5");
@@ -295,24 +299,26 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
      * Metodo el cual captura los datos obtenidos de la ventana de la fibra y
      * crea una
      * @param event Representa cualquier tipo de accion 
-     * @throws java.lang.reflect.InvocationTargetException Proporciona diferentes 
-     * excepciones lanzadas bajo el paquete java lang 
+     * @throws java.lang.reflect.InvocationTargetException Proporciona 
+     * diferentes excepciones lanzadas bajo el paquete java lang 
      */
     public void enviarDatos(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException{
-        int modo=0, longitudOnda=0, tipo=0, id = 0;
+        int modo=0, longitudOnda=0, tipo=0;
         double longitudKm, atenue, dispersion;
         
         if (rbtnMulti.isSelected()){
             modo = 1;
             rbtnMulti.setSelected(true);
-        }else{
+        }
+        else{
             modo=0;
             rbtnMono.setSelected(true);
         }
         if (rbtn1550.isSelected()){
             longitudOnda = 1550;
             rbtn1550.setSelected(true);
-        }else{
+        }
+        else{
             longitudOnda=1310;
             rbtn1310.setSelected(true);
         }
@@ -334,8 +340,8 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
         if(rbtnOtro.isSelected()){
             tipo=2;
         }
-        
-        if (txtDistancia.getText().isEmpty() || txtDistancia.getText().compareTo("")==0 || !txtDistancia.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+        if (txtDistancia.getText().isEmpty() || txtDistancia.getText().compareTo("")==0 
+                || !txtDistancia.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
             System.out.println("\nInvalid value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -346,7 +352,8 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
             alert.showAndWait();
             txtDistancia.setText("");
         }
-        else if (txtAtenue.getText().isEmpty() || txtAtenue.getText().compareTo("")==0 || !txtAtenue.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+        else if (txtAtenue.getText().isEmpty() || txtAtenue.getText().compareTo("")==0 
+                || !txtAtenue.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
             System.out.println("\nInvalid value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -357,7 +364,8 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
             alert.showAndWait();
             txtAtenue.setText("");
         }
-        else if (txtDisp.getText().isEmpty() || txtDisp.getText().compareTo("")==0 || !txtDisp.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+        else if (txtDisp.getText().isEmpty() || txtDisp.getText().compareTo("")==0 
+                || !txtDisp.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
             System.out.println("\nInvalid value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -480,15 +488,16 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                         break;
                     }
                 }
-                
                 if( outSideParentBoundsX(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                }else{
+                }
+                else{
                     elem.getDibujo().setLayoutX(Pane1.getChildren().get(j).getLayoutX()+event.getX()+1);
                 }
                 if(outSideParentBoundsY(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                }else{
-                elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);}
-
+                }
+                else{
+                    elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);
+                }
                 if(elem.getComponente().isConectadoSalida()==true){
                     elem.getComponente().getLinea().setVisible(false);
                     dibujarLinea(elem);
@@ -505,50 +514,45 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                 }
             }
         });
-            elem.getDibujo().setOnMouseEntered((MouseEvent event) -> {
-                elem.getDibujo().setStyle("-fx-border-color: darkblue;");
-                elem.getDibujo().setCursor(Cursor.OPEN_HAND);
+        elem.getDibujo().setOnMouseEntered((MouseEvent event) -> {
+            elem.getDibujo().setStyle("-fx-border-color: darkblue;");
+            elem.getDibujo().setCursor(Cursor.OPEN_HAND);
         });
-            elem.getDibujo().setOnMouseExited((MouseEvent event) -> {
-                elem.getDibujo().setStyle("");
+        elem.getDibujo().setOnMouseExited((MouseEvent event) -> {
+            elem.getDibujo().setStyle("");
         });
-            elem.getDibujo().setOnMouseClicked((MouseEvent event) -> {
-                if(event.getButton()==MouseButton.PRIMARY){
-                    try{
-                        Stage stage1 = new Stage();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaFibra.fxml"));
-                        Parent root = loader.load();
-                        //Se crea una instancia del controlador de la fibra
-                        VentanaFibraController fibraController = (VentanaFibraController) loader.getController();
-                        fibraController.init(controlador, stage, Pane1,scroll);
-                        /*Se necesito usar otro init de forma que el controller sepa cual es el elemento
-                            con el que se esta trabajando ademas de que se manda el mismo controller para 
-                            iniciar con los valores del elemento mandado.
-                        */
-                        
-                        fibraController.btnCrear.setVisible(false);
-                        fibraController.btnDesconectar.setVisible(true);
-                        fibraController.lblConectarA.setVisible(true);
-                        fibraController.cboxConectarA.setVisible(true);
-                        fibraController.btnModificar.setVisible(true);
-                        fibraController.separator.setVisible(true);
-                        fibraController.init2(controlador, stage, Pane1,elem,fibraController);
-                        Scene scene = new Scene(root);
-                        Image ico = new Image("images/acercaDe.png");
-                        stage1.getIcons().add(ico);
-                        stage1.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
-                        stage1.initModality(Modality.APPLICATION_MODAL);
-                        stage1.setScene(scene);
-                        stage1.setResizable(false);
-                        stage1.showAndWait();
-                    }
-                    catch(IOException ex){
-                        Logger.getLogger(VentanaConectorController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+        elem.getDibujo().setOnMouseClicked((MouseEvent event) -> {
+            if(event.getButton()==MouseButton.PRIMARY){
+                try{
+                    Stage stage1 = new Stage();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaFibra.fxml"));
+                    Parent root = loader.load();
+                    VentanaFibraController fibraController = (VentanaFibraController) loader.getController();
+                    fibraController.init(controlador, stage, Pane1,scroll,ventana_principal);
+                    fibraController.btnCrear.setVisible(false);
+                    fibraController.btnDesconectar.setVisible(true);
+                    fibraController.lblConectarA.setVisible(true);
+                    fibraController.cboxConectarA.setVisible(true);
+                    fibraController.btnModificar.setVisible(true);
+                    fibraController.separator.setVisible(true);
+                    fibraController.init2(controlador, stage, Pane1,elem,fibraController);
                     
-                }else if(event.getButton()==MouseButton.SECONDARY){
-                    mostrarMenu(elem);
+                    Scene scene = new Scene(root);
+                    Image ico = new Image("images/acercaDe.png");
+                    stage1.getIcons().add(ico);
+                    stage1.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
+                    stage1.initModality(Modality.APPLICATION_MODAL);
+                    stage1.setScene(scene);
+                    stage1.setResizable(false);
+                    stage1.showAndWait();
                 }
+                catch(IOException ex){
+                    Logger.getLogger(VentanaConectorController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else if(event.getButton()==MouseButton.SECONDARY){
+                mostrarMenu(elem);
+            }
         });
     }
     
@@ -567,7 +571,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
         menuItem1.setOnAction(e ->{
             for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
                 if(dibujo.getId()==controlador.getElementos().get(elemento).getId()){
-                    //System.out.println(dibujo.getId()+"----"+controlador.getElementos().get(elemento).getId());
                     Fibra aux= new Fibra();
                     Fibra aux1= (Fibra)controlador.getElementos().get(elemento);
                     aux.setAtenuacion(aux1.getAtenuacion());
@@ -582,10 +585,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                     aux.setConectadoSalida(false);
                     duplicarFibra(aux,dibujo);
                     idFibra++;
-                    for(int h=0; h<controlador.getElementos().size(); h++){
-                        System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                        System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-                    }
                     break;
                 }
             }
@@ -597,7 +596,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                 for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
                     if(dibujo.getComponente().getElementoConectadoSalida().equals(controlador.getDibujos().get(elemento).getDibujo().getText())){
                         Componente aux= controlador.getElementos().get(elemento);
-                        System.out.println(); 
                         aux.setConectadoEntrada(false);
                         aux.setElementoConectadoEntrada("");
                         dibujo.getComponente().getLinea().setVisible(false);
@@ -610,7 +608,7 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                         Componente aux= controlador.getElementos().get(elemento);
                         aux.setConectadoSalida(false);
                         aux.setElementoConectadoSalida("");
-                         aux.getLinea().setVisible(false);
+                        aux.getLinea().setVisible(false);
                     }
                 }
             }
@@ -756,7 +754,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                 }
             }
         });
-        
         contextMenu.getItems().add(menuItem1);
         contextMenu.getItems().add(menuItem3);
         contextMenu.getItems().add(menuItem4);
@@ -784,7 +781,7 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                 Componente comp= controlador.getElementos().get(elemento2);
                 comp.setConectadoEntrada(false);
                 comp.setElementoConectadoEntrada("");
-                //System.out.println(comp.getNombre());
+                System.out.println(comp.getNombre());
                 break;
             }
         }
@@ -809,11 +806,13 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
      * @param event Representa cualquier tipo de accion
      * @throws java.lang.reflect.InvocationTargetException Proporciona diferentes 
      * excepciones lanzadas bajo el paquete java lang
+     * @throws optiuam.bc.modelo.ExcepcionDivideCero Lanza una excepcion al 
+     * dividir entre cero
      */
     @FXML
-    public void modificar(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException{
+    public void modificar(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException, ExcepcionDivideCero{
         Fibra aux = (Fibra) elemG.getComponente();
-        int modo=0, longitudOnda=0, tipo=0, id = 0;
+        int modo=0, longitudOnda=0, tipo=0;
         double longitudKm, atenue, dispersion;
 
         if(rbtnMulti.isSelected()){
@@ -846,12 +845,13 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
         if(rbtnOtro.isSelected()){
             tipo=2;
         } 
-
         if((fibraControl.cboxConectarA.getSelectionModel().getSelectedIndex())==0){
             Desconectar(event);
         }
         else{
-            if(aux.isConectadoSalida()){elemG.getComponente().getLinea().setVisible(false);}
+            if(aux.isConectadoSalida()){
+                elemG.getComponente().getLinea().setVisible(false);
+            }
             aux.setConectadoSalida(true);
             
             for(int elemento2=0; elemento2<controlador.getDibujos().size();elemento2++){
@@ -859,15 +859,19 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                     ElementoGrafico eg= controlador.getDibujos().get(elemento2);
                     aux.setElementoConectadoSalida(eg.getDibujo().getText());
                     aux.setConectadoSalida(true);
-                    System.out.println(controlador.getDibujos().get(elemento2).getComponente().toString());
                     eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
                     eg.getComponente().setConectadoEntrada(true);
+                    if(elemG.getComponente().getSeñalEntrada()!=null){
+                        elemG.getComponente().setSeñalSalida(null);
+                        ventana_principal.elemConected(elemG.getComponente(),false);
+                    }
                     break;
                 }
             }
             dibujarLinea(elemG);
         }
-        if (txtDistancia.getText().isEmpty() || txtDistancia.getText().compareTo("")==0 || !txtDistancia.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+        if (txtDistancia.getText().isEmpty() || txtDistancia.getText().compareTo("")==0 
+                || !txtDistancia.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
             System.out.println("\nInvalid value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -878,7 +882,8 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
             alert.showAndWait();
             txtDistancia.setText("");
         }
-        else if (txtAtenue.getText().isEmpty() || txtAtenue.getText().compareTo("")==0 || !txtAtenue.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+        else if (txtAtenue.getText().isEmpty() || txtAtenue.getText().compareTo("")==0 
+                || !txtAtenue.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
             System.out.println("\nInvalid value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -889,7 +894,8 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
             alert.showAndWait();
             txtAtenue.setText("");
         }
-        else if (txtDisp.getText().isEmpty() || txtDisp.getText().compareTo("")==0 || !txtDisp.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+        else if (txtDisp.getText().isEmpty() || txtDisp.getText().compareTo("")==0 
+                || !txtDisp.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
             System.out.println("\nInvalid value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -911,6 +917,7 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
             aux.setLongitud_km(longitudKm);
             aux.setTipo(tipo);
             cerrarVentana(event);
+            VentanaPrincipal.btnStart = false;
 
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
@@ -919,11 +926,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
             alert.setTitle("Succes");
             alert.setHeaderText(null);
             alert.showAndWait();
-
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
         }
     }
     
@@ -934,12 +936,15 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
      * @param stage Escenario en el cual se agregan los objetos creados
      * @param Pane1 Panel para agregar objetos
      * @param scroll Espacio en el cual el usuario puede desplazarse
+     * @param ventana Ventana principal
      */
-    public void init(ControladorGeneral controlador, Stage stage, Pane Pane1, ScrollPane scroll) {
+    public void init(ControladorGeneral controlador, Stage stage, Pane Pane1, 
+            ScrollPane scroll, VentanaPrincipal ventana) {
         this.controlador=controlador;
         this.stage=stage;
         this.Pane1=Pane1;
         this.scroll=scroll;
+        this.ventana_principal= ventana;
     }
 
     /**
@@ -951,7 +956,8 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
      * @param elem Elemento grafico
      * @param fibraController Controlador de la fibra
     */
-    public void init2(ControladorGeneral controlador, Stage stage, Pane Pane1,ElementoGrafico elem, VentanaFibraController fibraController) {
+    public void init2(ControladorGeneral controlador, Stage stage, Pane Pane1,
+            ElementoGrafico elem, VentanaFibraController fibraController) {
         this.elemG=elem;
         this.controlador=controlador;
         this.stage=stage;
@@ -966,18 +972,17 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
             fibraControl.cboxConectarA.getSelectionModel().select(0);
             for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
                 if("connector".equals(controlador.getElementos().get(elemento).getNombre()) ||
-                        "splice".equals(controlador.getElementos().get(elemento).getNombre())){
+                        "splice".equals(controlador.getElementos().get(elemento).getNombre()) ||
+                        "spectrum".equals(controlador.getElementos().get(elemento).getNombre())){
                     if(!controlador.getElementos().get(elemento).isConectadoEntrada()){
                         fibraControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento).getDibujo().getText());
                     }
                 }
             }
         }
-        
         for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
             if(elem.getId()==controlador.getElementos().get(elemento).getId()){
                 Fibra fib= (Fibra)controlador.getElementos().get(elemento);
-                System.out.println(fib.getModo()+"\t"+fib.getLongitudOnda());
                 
                 switch (fib.getTipo()) {
                     case 0:
@@ -994,13 +999,14 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                 }
                 if(fib.getModo()==0){
                     fibraControl.rbtnMono.setSelected(true);
-                }else if(fib.getModo()==1){
+                }
+                else if(fib.getModo()==1){
                     fibraControl.rbtnMulti.setSelected(true);
                 }
-                
                 if(fib.getLongitudOnda()==1310){
                     fibraControl.rbtn1310.setSelected(true);
-                }else if(fib.getLongitudOnda()==1550){
+                }
+                else if(fib.getLongitudOnda()==1550){
                     fibraControl.rbtn1550.setSelected(true);
                 }
                 fibraControl.txtAtenue.setText(String.valueOf(fib.getAtenuacion()));
@@ -1017,7 +1023,7 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
      */
     public void dibujarLinea(ElementoGrafico elemG) {
         Line line= new Line();   
-        line.setStartX(elemG.getDibujo().getLayoutX()+60);
+        line.setStartX(elemG.getDibujo().getLayoutX()+70);
         line.setStartY(elemG.getDibujo().getLayoutY()+20);
         ElementoGrafico aux= new ElementoGrafico();
         for(int it=0; it<controlador.getDibujos().size();it++){
@@ -1028,11 +1034,10 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
         line.setStrokeWidth(2);
         line.setStroke(Color.BLACK);
         line.setEndX(aux.getDibujo().getLayoutX()+1);
-        line.setEndY(aux.getDibujo().getLayoutY()+8);
+        line.setEndY(aux.getDibujo().getLayoutY()+5);
         line.setVisible(true);
         Pane1.getChildren().add(line); 
         elemG.getComponente().setLinea(line);
-              
     }
     
     /**
@@ -1066,7 +1071,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
      */
     private boolean outSideParentBoundsX( Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane1.getLayoutBounds();
-
         //check if too left
         if( parentBounds.getMaxX() <= (newX + childBounds.getMaxX()) ) {
             return true ;
@@ -1075,7 +1079,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
         if( parentBounds.getMinX() >= (newX + childBounds.getMinX()) ) {
             return true ;
         }
-        
         return false;
     }
     
@@ -1085,7 +1088,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
      */
     private boolean outSideParentBoundsY( Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane1.getLayoutBounds();
-        
         //check if too down
         if( parentBounds.getMaxY() <= (newY + childBounds.getMaxY()) ) {
             return true ;
@@ -1094,8 +1096,117 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
         if( parentBounds.getMinY()+179 >= (newY + childBounds.getMinY()) ) {
             return true ;
         }
-
         return false;
     }
+    /*
+    public float dispersion(){
+        LinkedList<Componente> lista=verComponentesConectados();
+        
+         // pendiente de la dispersion en lambdao en ps/nm^2*Km 
+        float So=0.090F; 
+        //longitud de onda en donde la dispersion es 0
+        float lambda0=1312;
+        //3*10^5 en nm/ps para dividirlo entre la longitud de onda(nm)
+        float cluz=300000;
+        float z = 0;
+        
+        int wavelength =0;
+        for(int i=0; i< lista.size();i++){
+            if(lista.get(i).getNombre().contains("fiber")){
+                Fibra fibra = (Fibra) lista.get(i);
+                z = (float) (z+fibra.getLongitud_km());
+                wavelength = fibra.getLongitudOnda();
+            }
+        }
+        float Dispersion = (float) ((So/4)*(wavelength-(Math.pow(lambda0,3)/(Math.pow(wavelength,4)))));
+        System.out.println(Dispersion+"  "+wavelength);
+        
+        float B2 = (float) (-((Math.pow(wavelength, 2))/(2*Math.PI*cluz))*(Dispersion));
+        
+        float B3;  //beta3=((S*lambda^4)/(4*(pi^2)*(c^2)))-beta2*lambda^2/(pi*c); donde S=pendiente de dispersión
+        B3 = (float) (((So*Math.pow(wavelength, 4))/(4*(Math.pow(Math.PI, 2))*(Math.pow(cluz, 2))))-B2*(Math.pow(wavelength, 2))/(Math.PI*cluz));
+        float C, O0, Ow, V;
+        Fuente f;
+        LinkedList<Componente> ele=verComponentesConectados();
+        
+        if(ele.getLast().getNombre().contains("source")){
+            f = (Fuente)ele.getLast();
+            C = f.getC();
+            O0 = (float) (f.getT0() / Math.sqrt(2));
+            Ow = (float) (((2*Math.PI*cluz)/(Math.pow(wavelength, 2)))*(f.getAnchura()));
+            V = 2*Ow*O0;
+            
+            //OJOOO XD NO SE SI ESTA Z ES LA MISMA DE ARRIBA :V
+            //ACTUALIZACION: Z ES LA DISTANCIA DEL ENLACE
+            double disp = Math.sqrt((Math.pow(1-((C*B2*z)/(2*Math.pow(O0, 2))), 2)) + 
+                    (1+Math.pow(V, 2))*(Math.pow(((B2*z)/(2*Math.pow(O0, 2))), 2)) + 
+                    (1+Math.pow(C, 2)+Math.pow(V, 2)) * 0.5 * (Math.pow(((B3*z)/(4*Math.pow(O0, 3))), 2)));
+            
+            return (float) disp;
+        }
+        else{
+            return 0;
+        }
+        
+    }
     
+    public LinkedList verComponentesConectados(){
+        LinkedList<Componente> lista=new LinkedList();
+        //System.out.println(elem.getComponente().getNombre());
+        añadirComponentesConectados(lista, elemG.getComponente());
+        //sacar componentes de la lista default
+        for(int xi=0; xi<lista.size(); xi++){
+                System.out.println(lista.get(xi).toString());
+        }
+        System.out.println("\n");
+        //Sacar la lista
+        for(int ci=0; ci<listaListas.size(); ci++){
+            //Sacar componente
+            for(int zi=0; zi<listaListas.get(ci).size(); zi++){
+                System.out.println(listaListas.get(ci).get(zi).toString());
+            }
+            System.out.println("\n");
+        }
+        return lista;
+    }
+    
+    public void añadirComponentesConectados(LinkedList lista, Componente comp){
+        lista.add(comp);
+        if(comp.isConectadoEntrada()){
+            for(int i=0; i<controlador.getElementos().size(); i++){
+                if(comp.getElementoConectadoEntrada().equals(controlador.getDibujos().get(i).getDibujo().getText())){
+                    Componente aux= controlador.getElementos().get(i);
+                    añadirComponentesConectados(lista, aux);
+                    //System.out.println(controlador.getDibujos().get(i).getDibujo().getText());
+                    break;
+                }
+                
+            }
+        }
+        if(comp.getNombre().startsWith("mux")){
+            Multiplexor muxi= (Multiplexor) comp;
+            for(int n=0; n<muxi.getEntradas()-1; n++){
+                if(muxi.getConexionEntradas().get(n).isConectadoEntrada()){
+                    LinkedList auxList= new LinkedList();
+                    for(int ju=0; ju<lista.size()-1; ju++){
+                        auxList.add(lista.get(ju));
+                        Componente w= (Componente) lista.get(ju);
+                        if(w.getNombre()=="mux"){
+                            break;
+                        }
+                    }
+                    for(int fe=0; fe<controlador.getDibujos().size();fe++){
+                        if(muxi.getConexionEntradas().get(n).getElementoConectadoEntrada().equals(controlador.getDibujos().get(fe).getDibujo().getText())){
+                            Componente aux2= controlador.getElementos().get(fe);
+                            //System.out.println("\t"+aux2.getNombre());
+                            añadirComponentesConectados(auxList, aux2);
+                            listaListas.add(auxList);
+                            break;
+                        }     
+                    }
+                }
+            } 
+        }
+    }
+    */
 }

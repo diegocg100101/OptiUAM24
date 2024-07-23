@@ -3,7 +3,6 @@ package optiuam.bc.controlador;
 
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -21,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import optiuam.bc.modelo.Componente;
 import optiuam.bc.modelo.Conector;
+import optiuam.bc.modelo.Demultiplexor;
 import optiuam.bc.modelo.ElementoGrafico;
 import optiuam.bc.modelo.Empalme;
 import optiuam.bc.modelo.FBG;
@@ -33,10 +33,9 @@ import optiuam.bc.modelo.Splitter;
 /**
  * Clase VentanaPotenciaController la cual se encarga de proporcionar la
  * funcionalidad al medidor de potencia
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  */
 public class VentanaPotenciaController implements Initializable {
     
@@ -81,7 +80,6 @@ public class VentanaPotenciaController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
     }    
     
     /**
@@ -120,7 +118,8 @@ public class VentanaPotenciaController implements Initializable {
         LinkedList<Double> empalmes = new LinkedList<>();//guarda las perdidas de los empalmes en un enlace
         double Ps=0.0;  //perdida del splitter
         int    Se=0;    //salidas del splitter
-        double Pm=0.0;  //perdida del mux
+        double Pmux=0.0;  //perdida del mux
+        double Pdem=0.0;  //perdida del demux
        // boolean isSplitter=false; //para saber si hubo un splitter en el enlace
         
         elementos = lista;
@@ -158,24 +157,28 @@ public class VentanaPotenciaController implements Initializable {
                 S=fuente_aux.getAnchura();
                 Tp=fuente_aux.getPotencia();
             } 
-            if(elementos.get(i).getNombre().contains("connector")){
+            else if(elementos.get(i).getNombre().contains("connector")){
                 Conector conector_aux = (Conector)elementos.get(i);
                 conectores.add(conector_aux.getPerdidaInsercion());
             }
             
-            if(elementos.get(i).getNombre().contains("fiber")){
+            else if(elementos.get(i).getNombre().contains("fiber")){
                 Fibra fibra_aux = (Fibra)elementos.get(i);
                 Dc = fibra_aux.getDispersion();
                 Fa = fibra_aux.getAtenuacion();
                 L = L + fibra_aux.getLongitud_km();
             }
-            if(elementos.get(i).getNombre().contains("splice")){ 
+            else if(elementos.get(i).getNombre().contains("splice")){ 
                 Empalme empalme_aux = (Empalme)elementos.get(i);
                 empalmes.add(empalme_aux.getPerdidaInsercion());
             }
-            if(elementos.get(i).getNombre().contains("mux")){ 
+            else if(elementos.get(i).getNombre().contains("demux")){
+                Demultiplexor demux = (Demultiplexor) elementos.get(i);
+                Pdem = demux.getPerdidaInsercion();
+            }
+            else if(elementos.get(i).getNombre().contains("mux")){ 
                 Multiplexor mux = (Multiplexor)elementos.get(i);
-                Pm = mux.getPerdidaInsercion();
+                Pmux = mux.getPerdidaInsercion();
             }
         }
         Dt = Dc * S *L; // picosegungo x10^12
@@ -187,13 +190,14 @@ public class VentanaPotenciaController implements Initializable {
         System.out.println("Perdida empalmes="+Pe);
         Pa = L*Fa;
         System.out.println("Perdida atenuacion fibra="+Pa);
-        System.out.println("Perdida multiplexor = " + Pm);
+        System.out.println("Perdida multiplexor = " + Pmux);
+        System.out.println("Perdida demultiplexor = " + Pdem);
         
         if(flagM){
             Pt=(Tp-(sensibilidad))-(Pd + Pc + Pe + Pa);
         }
         else{
-            Pt=(Tp-(sensibilidad))-(Pd + Pc + Pe + Pa+Pm);
+            Pt=(Tp-(sensibilidad))-(Pd + Pc + Pe + Pa + Pmux + Pdem);
         }
         //System.out.println("Potencia ="+Pt);
         System.out.println("Potencia Total="+Math.floor(Pt*100)/100);
@@ -220,47 +224,89 @@ public class VentanaPotenciaController implements Initializable {
      */
     @FXML
     public void btnCalcularPotenciaAction(ActionEvent event){
-        LinkedList<Componente> ele=verComponentesConectados();
-        try{
-            if(ele.get(1).getNombre().contains("fbg")){
-                FBG fbg = (FBG) ele.get(1);
-                if(fbg.getElementoConectadoSalida().equals(elem.getDibujo().getText())){
-                    /*POTENCIA TRANSMISION*/
-                    if(VentanaFBGController.getTransmisionS() != null && fbg.getTransmision() != 0){
-                        double potenciaT=0;
-                        boolean flag2=false;
-                        for(int yu=0; yu<listaListas.size(); yu++){
-                            if(!(listaListas.get(yu).getN()==VentanaFBGController.getReflexionS())){
-                                ele=listaListas.get(yu).getLista();
-                                if(ele.getLast().getNombre().contains("source")){
-                                    if (txtSensibilidad.getText().compareTo("")==0 || !txtSensibilidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-                                        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                                        Alert alert = new Alert(Alert.AlertType.ERROR,
-                                            "\nInvalid sensitivity value",
-                                            aceptar);
-                                        alert.setTitle("Error");
-                                        alert.setHeaderText(null);
-                                        alert.showAndWait();
-                                    }
-                                    else{
-                                        //POTENCIA TRANSMISION (SIN REFLEXION)
-                                        Double potencia = calcularPotencia(Double.valueOf(txtSensibilidad.getText()),ele,flag2);
-                                        flag2=true;
-                                        if(potencia !=-1){
-                                            potenciaT+=potencia;
-                                            //potenciaT = potenciaT-(-potenciaR);
-                                            DecimalFormat pot = new DecimalFormat("###0.####");
-                                            potenciaT = pot.parse(pot.format(potenciaT)).doubleValue();
-                                            lblPotencia.setText(String.valueOf(potenciaT + " dBm"));
-                                        }
-                                        else if(potencia ==-2){
+        if(VentanaPrincipal.btnStart == true){
+            try{
+                LinkedList<Componente> ele=verComponentesConectados();
+                if(ele.get(1).getNombre().contains("fbg")){
+                    FBG fbg = (FBG) ele.get(1);
+                    if(fbg.getElementoConectadoSalida().equals(elem.getDibujo().getText())){
+                        /*POTENCIA TRANSMISION*/
+                        if(VentanaFBGController.getTransmisionS() != null && fbg.getTransmision() != 0){
+                            double potenciaT=0;
+                            boolean flagM=false;
+                            for(int yu=0; yu<listaListas.size(); yu++){
+                                if(!(listaListas.get(yu).getN()==VentanaFBGController.getReflexionS())){
+                                    ele=listaListas.get(yu).getLista();
+                                    if(ele.getLast().getNombre().contains("source")){
+                                        if (txtSensibilidad.getText().compareTo("")==0 || !txtSensibilidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
                                             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
                                             Alert alert = new Alert(Alert.AlertType.ERROR,
-                                                "\nLink calculation error",
+                                                "\nInvalid sensitivity value",
                                                 aceptar);
                                             alert.setTitle("Error");
                                             alert.setHeaderText(null);
                                             alert.showAndWait();
+                                        }
+                                        else{
+                                            //POTENCIA TRANSMISION (SIN REFLEXION)
+                                            Double potencia = calcularPotencia(Double.valueOf(txtSensibilidad.getText()),ele,flagM);
+                                            flagM=true;
+                                            if(potencia !=-1){
+                                                potenciaT+=potencia;
+                                                //potenciaT = potenciaT-(-potenciaR);
+                                                DecimalFormat pot = new DecimalFormat("###0.####");
+                                                potenciaT = pot.parse(pot.format(potenciaT)).doubleValue();
+                                                lblPotencia.setText(String.valueOf(potenciaT + " dBm"));
+                                            }
+                                            else if(potencia ==-2){
+                                                ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+                                                Alert alert = new Alert(Alert.AlertType.ERROR,
+                                                    "\nLink calculation error",
+                                                    aceptar);
+                                                alert.setTitle("Error");
+                                                alert.setHeaderText(null);
+                                                alert.showAndWait();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        /*POTENCIA REFLEXION*/
+                        if(VentanaFBGController.getReflexionS()!= 0 && fbg.getReflexion()!= 0){
+                            for(int yu=0; yu<listaListas.size(); yu++){
+                                if(listaListas.get(yu).getN()==VentanaFBGController.getReflexionS()){
+                                    ele=listaListas.get(yu).getLista();
+                                    double potenciaT=0;
+                                    if(ele.getLast().getNombre().contains("source")){
+                                        if (txtSensibilidad.getText().compareTo("")==0 || !txtSensibilidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+                                            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+                                            Alert alert = new Alert(Alert.AlertType.ERROR,
+                                                "\nInvalid sensitivity value",
+                                                aceptar);
+                                            alert.setTitle("Error");
+                                            alert.setHeaderText(null);
+                                            alert.showAndWait();
+                                        }
+                                        else{
+                                            Double potencia = calcularPotencia(Double.valueOf(txtSensibilidad.getText()),ele,false);
+                                            if(potencia !=-1){
+                                                potenciaT+=potencia;
+                                                DecimalFormat pot = new DecimalFormat("###0.####");
+                                                potenciaT = pot.parse(pot.format(potenciaT)).doubleValue();
+                                                lblPotencia.setText(String.valueOf(potenciaT + " dBm"));
+                                            }
+                                            else if(potencia ==-2){
+                                                ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+                                                Alert alert = new Alert(Alert.AlertType.ERROR,
+                                                    "\nLink calculation error",
+                                                    aceptar);
+                                                alert.setTitle("Error");
+                                                alert.setHeaderText(null);
+                                                alert.showAndWait();
+                                            }
                                         }
                                     }
                                 }
@@ -269,84 +315,8 @@ public class VentanaPotenciaController implements Initializable {
                     }
                 }
                 else{
-                    /*POTENCIA REFLEXION*/
-                    if(VentanaFBGController.getReflexionS()!= 0 && fbg.getReflexion()!= 0){
-                        for(int yu=0; yu<listaListas.size(); yu++){
-                            if(listaListas.get(yu).getN()==VentanaFBGController.getReflexionS()){
-                                ele=listaListas.get(yu).getLista();
-                                double potenciaT=0;
-                                if(ele.getLast().getNombre().contains("source")){
-                                    if (txtSensibilidad.getText().compareTo("")==0 || !txtSensibilidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-                                        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                                        Alert alert = new Alert(Alert.AlertType.ERROR,
-                                            "\nInvalid sensitivity value",
-                                            aceptar);
-                                        alert.setTitle("Error");
-                                        alert.setHeaderText(null);
-                                        alert.showAndWait();
-                                    }
-                                    else{
-                                        Double potencia = calcularPotencia(Double.valueOf(txtSensibilidad.getText()),ele,false);
-                                        if(potencia !=-1){
-                                            potenciaT+=potencia;
-                                            DecimalFormat pot = new DecimalFormat("###0.####");
-                                            potenciaT = pot.parse(pot.format(potenciaT)).doubleValue();
-                                            lblPotencia.setText(String.valueOf(potenciaT + " dBm"));
-                                        }
-                                        else if(potencia ==-2){
-                                            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                                            Alert alert = new Alert(Alert.AlertType.ERROR,
-                                                "\nLink calculation error",
-                                                aceptar);
-                                            alert.setTitle("Error");
-                                            alert.setHeaderText(null);
-                                            alert.showAndWait();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else{
-                /*POTENCIA DE UN SOLO ENLACE*/
-                if(listaListas.isEmpty()){
-                    if(ele.getLast().getNombre().contains("source")){
-                        if (txtSensibilidad.getText().compareTo("")==0 || !txtSensibilidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-                            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                            Alert alert = new Alert(Alert.AlertType.ERROR,
-                                "\nInvalid sensitivity value",
-                                aceptar);
-                            alert.setTitle("Error");
-                            alert.setHeaderText(null);
-                            alert.showAndWait();
-                        }
-                        else{
-                            Double potencia = calcularPotencia(Double.valueOf(txtSensibilidad.getText()),ele,true);
-                            if(potencia !=-1){
-                                DecimalFormat pot = new DecimalFormat("###0.####");
-                                potencia = pot.parse(pot.format(potencia)).doubleValue();
-                                lblPotencia.setText(String.valueOf(potencia + " dBm"));
-                            }
-                            else if(potencia ==-2){
-                                ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                                Alert alert = new Alert(Alert.AlertType.ERROR,
-                                    "\nLink calculation error",
-                                    aceptar);
-                                alert.setTitle("Error");
-                                alert.setHeaderText(null);
-                                alert.showAndWait();
-                            }
-                        }
-                    }
-                }
-                /*POTENCIA DE VARIOS ENLACES*/ 
-                if(listaListas.size()>0){
-                    double potenciaT=0;
-                    boolean flag2=false;
-                    for(int yu=0; yu<listaListas.size(); yu++){
-                        ele=listaListas.get(yu).getLista();
+                    /*POTENCIA DE UN SOLO ENLACE*/
+                    if(listaListas.isEmpty()){
                         if(ele.getLast().getNombre().contains("source")){
                             if (txtSensibilidad.getText().compareTo("")==0 || !txtSensibilidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
                                 ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
@@ -358,13 +328,11 @@ public class VentanaPotenciaController implements Initializable {
                                 alert.showAndWait();
                             }
                             else{
-                                Double potencia = calcularPotencia(Double.valueOf(txtSensibilidad.getText()),ele,flag2);
-                                flag2=true;
+                                Double potencia = calcularPotencia(Double.valueOf(txtSensibilidad.getText()),ele,true);
                                 if(potencia !=-1){
-                                    potenciaT+=potencia;
                                     DecimalFormat pot = new DecimalFormat("###0.####");
-                                    potenciaT = pot.parse(pot.format(potenciaT)).doubleValue();
-                                    lblPotencia.setText(String.valueOf(potenciaT + " dBm"));
+                                    potencia = pot.parse(pot.format(potencia)).doubleValue();
+                                    lblPotencia.setText(String.valueOf(potencia + " dBm"));
                                 }
                                 else if(potencia ==-2){
                                     ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
@@ -378,27 +346,74 @@ public class VentanaPotenciaController implements Initializable {
                             }
                         }
                     }
+                    /*POTENCIA DE VARIOS ENLACES*/ 
+                    if(listaListas.size()>0){
+                        double potenciaT=0;
+                        boolean flagM=false;
+                        for(int yu=0; yu<listaListas.size(); yu++){
+                            ele=listaListas.get(yu).getLista();
+                            if(ele.getLast().getNombre().contains("source")){
+                                if (txtSensibilidad.getText().compareTo("")==0 || !txtSensibilidad.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+                                    ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+                                    Alert alert = new Alert(Alert.AlertType.ERROR,
+                                        "\nInvalid sensitivity value",
+                                        aceptar);
+                                    alert.setTitle("Error");
+                                    alert.setHeaderText(null);
+                                    alert.showAndWait();
+                                }
+                                else{
+                                    Double potencia = calcularPotencia(Double.valueOf(txtSensibilidad.getText()),ele,flagM);
+                                    flagM=true;
+                                    if(potencia !=-1){
+                                        potenciaT+=potencia;
+                                        DecimalFormat pot = new DecimalFormat("###0.####");
+                                        potenciaT = pot.parse(pot.format(potenciaT)).doubleValue();
+                                        lblPotencia.setText(String.valueOf(potenciaT + " dBm"));
+                                    }
+                                    else if(potencia ==-2){
+                                        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+                                        Alert alert = new Alert(Alert.AlertType.ERROR,
+                                            "\nLink calculation error",
+                                            aceptar);
+                                        alert.setTitle("Error");
+                                        alert.setHeaderText(null);
+                                        alert.showAndWait();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!ele.getLast().getNombre().contains("source")&&listaListas.isEmpty()){
+                    ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+                    Alert alert = new Alert(Alert.AlertType.ERROR,
+                            "\nLink error",
+                            aceptar);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.showAndWait();
                 }
             }
-            if(!ele.getLast().getNombre().contains("source")&&listaListas.isEmpty()){
+            catch(Exception e){
+                System.out.println(e);
                 ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                Alert alert = new Alert(Alert.AlertType.ERROR,
-                        "\nLink error",
-                        aceptar);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.showAndWait();
+                   Alert alert = new Alert(Alert.AlertType.ERROR,
+                           "\nLink error",
+                           aceptar);
+                   alert.setTitle("Error");
+                   alert.setHeaderText(null);
+                   alert.showAndWait();
             }
         }
-        catch(NumberFormatException | ParseException e){
-            System.out.println(e);
+        else{
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-               Alert alert = new Alert(Alert.AlertType.ERROR,
-                       "\nLink error",
-                       aceptar);
-               alert.setTitle("Error");
-               alert.setHeaderText(null);
-               alert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "\nPress the Update Signals button",
+                    aceptar);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.showAndWait();
         }
     }
     
@@ -618,7 +633,7 @@ public class VentanaPotenciaController implements Initializable {
                 }
             }
             else{
-                lblTitulo.setText("Power Meter");
+                //lblTitulo.setText("Power Meter");
             }
         }
         catch(Exception e){

@@ -5,7 +5,7 @@ import javafx.scene.shape.Line;
 
 /**
  * Clase PuertoSalida la cual contiene los atributos principales del puerto
- * salida para un divisor optico y un demultiplexor
+ * salida para un divisor optico, una fbg y un demultiplexor
  * @author Arturo Borja
  * @author Karen Cruz
  */
@@ -17,11 +17,16 @@ public class PuertoSalida {
     private String elementoConectadoSalida;
     /**Conexion (linea) del componente*/
     private Line linea;
+    /**Longitud de onda del puerto n del demultiplexor*/
+    private int longitudOnda;
+    /**Filtro del puerto n del demultiplexor*/
+    private FBG fbg;
 
     /**Metodo constructor sin parametros*/
     public PuertoSalida() {
         this.conectadoSalida=false;
         this.elementoConectadoSalida="";
+        this.fbg=new FBG();
     }
     
     /**
@@ -34,7 +39,8 @@ public class PuertoSalida {
 
     /**
      * Metodo que modifica si el componente esta conectado por la salida
-     * @param conectadoSalida Indica si el componente esta conectado por la salida
+     * @param conectadoSalida Indica si el componente esta conectado por la 
+     * salida
      */
     public void setConectadoSalida(boolean conectadoSalida) {
         this.conectadoSalida = conectadoSalida;
@@ -52,7 +58,8 @@ public class PuertoSalida {
     /**
      * Metodo que modifica el nombre del componente el cual se encuentra 
      * conectado por la salida
-     * @param elementoConectadoSalida Indica si el componente esta conectado por la salida
+     * @param elementoConectadoSalida Indica si el componente esta conectado 
+     * por la salida
      */
     public void setElementoConectadoSalida(String elementoConectadoSalida) {
         this.elementoConectadoSalida = elementoConectadoSalida;
@@ -72,6 +79,38 @@ public class PuertoSalida {
      */
     public void setLinea(Line linea) {
         this.linea = linea;
+    }
+
+    /**
+     * Metodo que muestra la longitud de onda del puerto n del demultiplexor
+     * @return longitudOnda
+     */
+    public int getLongitudOnda() {
+        return longitudOnda;
+    }
+
+    /**
+     * Metodo que modifica la longitud de onda del puerto n del demultiplexor
+     * @param longitudOnda Longitud de onda del puerto n del demultiplexor
+     */
+    public void setLongitudOnda(int longitudOnda) {
+        this.longitudOnda = longitudOnda;
+    }
+
+    /**
+     * Metodo que muestra el filtro del puerto n del demultiplexor
+     * @return fbg
+     */
+    public FBG getFbg() {
+        return fbg;
+    }
+
+    /**
+     * Metodo que modifica el filtro del puerto n del demultiplexor
+     * @param fbg Filtro del puerto n del demultiplexor
+     */
+    public void setFbg(FBG fbg) {
+        this.fbg = fbg;
     }
     
     /**

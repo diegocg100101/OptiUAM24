@@ -27,7 +27,6 @@ import javafx.stage.Stage;
 import optiuam.bc.modelo.Componente;
 import optiuam.bc.modelo.ElementoGrafico;
 import optiuam.bc.modelo.FBG;
-import optiuam.bc.modelo.MatrizTransferencia;
 import optiuam.bc.modelo.Multiplexor;
 import optiuam.bc.modelo.PuertoSalida;
 import optiuam.bc.modelo.Listas;
@@ -59,19 +58,16 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
     static double posY;
     /**Señal filtrada*/
     static int reflexionS;
+    static LinkedList reflexion;
     /**Señales sin la reflexion*/
     static String transmisionS;
+    static LinkedList transmision = new LinkedList();
     /**Lista de enlaces creados*/
     LinkedList<Listas> listaListas= new LinkedList();
     /**Longitudes de onda del multiplexor*/
-    static String longitudesOnda[] = {"1470", "1490", "1510", "1530", "1550", "1570", "1590", "1610"}; 
-    //                                  0        1       2       3       4      5       6        7
-    /*
-        Mux 2: longitudesOnda[3], longitudesOnda[4], perdida insercion max 0.6
-        Mux 4: longitudesOnda[2] a longitudesOnda[5], perdida insercion max 1.6
-        Mux 8: longitudesOnda[], perdida insercion max 2.5
-    */
-    
+    static String longitudesOnda[] = {"1470", "1490", "1510", "1530", "1550", 
+        "1570", "1590", "1610"}; 
+   
     /**Salidas de la rejilla de Bragg (FBG)*/
     @FXML
     ComboBox cboxSalidas;
@@ -212,7 +208,6 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
      */
     @FXML
     public void calcularMatriz() throws ParseException{
-        double reflexion, transmision, total;
         txtLongitudOnda.setEditable(false);
         if (txtLongitudFBG.getText().isEmpty() || txtLongitudFBG.getText().compareTo("")==0 || !txtLongitudFBG.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
             System.out.println("\nInvalid length value");
@@ -244,27 +239,25 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
             longitudOnda = Double.parseDouble(txtLongitudOnda.getText());
             fbg.setLongitudOnda(longitudOnda);
             System.out.println("CALCULO CON LONGITUD DE ONDA "+longitudOnda);
-            MatrizTransferencia m = new MatrizTransferencia();
-            m.calculoMatriz(dz*1000, 1550);
             
-            reflexion = m.getReflexion();
+            reflexion = fbg.filtro(fbg.getLongitudOnda(), fbg.getDz());
             DecimalFormat ref = new DecimalFormat("###0.############");
-            reflexion = ref.parse(ref.format(reflexion)).doubleValue();
+            //reflexion = ref.parse(ref.format(reflexion)).doubleValue();
+            for(int i = 0; i < reflexion.size(); i++){
+                transmision.add(1-(double)reflexion.get(i));
+            }
             
-            transmision =  m.getTransmision();
             DecimalFormat tra = new DecimalFormat("###0.#########");
-            transmision = tra.parse(tra.format(transmision)).doubleValue();
+            //transmision = tra.parse(tra.format(transmision)).doubleValue();
             
-            txtReflexion.setText(String.valueOf(reflexion));
-            txtTransmision.setText(String.valueOf(transmision));
+            txtReflexion.setText(String.valueOf(ref.parse(ref.format(reflexion.getFirst())).doubleValue()));
+            txtTransmision.setText(String.valueOf(tra.parse(tra.format(transmision.getFirst())).doubleValue()));
             txtReflexion.setEditable(false);
             txtTransmision.setEditable(false);
-            fbg.setReflexion(reflexion);
-            fbg.setTransmision(transmision);
-            System.out.println("Reflexion = " + reflexion);
-            System.out.println("Transmision = " + transmision);
-            total = reflexion + transmision;
-            System.out.println("Reflexion + Transmision = " + total);
+            fbg.setReflexion(ref.parse(ref.format(reflexion.getFirst())).doubleValue());
+            fbg.setTransmision(tra.parse(tra.format(transmision.getFirst())).doubleValue());
+            System.out.println("Reflexion = " + ref.parse(ref.format(reflexion.getFirst())).doubleValue());
+            System.out.println("Transmision = " + tra.parse(tra.format(transmision.getFirst())).doubleValue());
         }
     }
     
@@ -328,7 +321,6 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
      */
     @FXML
     public void modificar(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException, ParseException{
-        double reflexion, transmision, total;
         FBG fbg = (FBG) elemG.getComponente();
         if((fbgControl.cboxConectarA.getSelectionModel().getSelectedIndex())==0){
             Desconectar(event);
@@ -364,27 +356,24 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
             longitudOnda = Double.parseDouble(txtLongitudOnda.getText());
             fbg.setLongitudOnda(longitudOnda);
             System.out.println("CALCULO CON LONGITUD DE ONDA "+longitudOnda);
-            MatrizTransferencia m = new MatrizTransferencia();
-            m.calculoMatriz(dz*1000, 1550);
-            
-            reflexion = m.getReflexion();
+            reflexion = fbg.filtro(fbg.getLongitudOnda(), fbg.getDz());
             DecimalFormat ref = new DecimalFormat("###0.############");
-            reflexion = ref.parse(ref.format(reflexion)).doubleValue();
+            //reflexion = ref.parse(ref.format(reflexion)).doubleValue();
+            for(int i = 0; i < reflexion.size(); i++){
+                transmision.add(1-(double)reflexion.get(i));
+            }
             
-            transmision =  m.getTransmision();
             DecimalFormat tra = new DecimalFormat("###0.#########");
-            transmision = tra.parse(tra.format(transmision)).doubleValue();
+            //transmision = tra.parse(tra.format(transmision)).doubleValue();
             
-            txtReflexion.setText(String.valueOf(reflexion));
-            txtTransmision.setText(String.valueOf(transmision));
+            txtReflexion.setText(String.valueOf(ref.parse(ref.format(reflexion.getFirst())).doubleValue()));
+            txtTransmision.setText(String.valueOf(tra.parse(tra.format(transmision.getFirst())).doubleValue()));
             txtReflexion.setEditable(false);
             txtTransmision.setEditable(false);
-            fbg.setReflexion(reflexion);
-            fbg.setTransmision(transmision);
-            System.out.println("Reflexion = " + reflexion);
-            System.out.println("Transmision = " + transmision);
-            total = reflexion + transmision;
-            System.out.println("Reflexion + Transmision = " + total);
+            fbg.setReflexion(ref.parse(ref.format(reflexion.getFirst())).doubleValue());
+            fbg.setTransmision(tra.parse(tra.format(transmision.getFirst())).doubleValue());
+            System.out.println("Reflexion = " + ref.parse(ref.format(reflexion.getFirst())).doubleValue());
+            System.out.println("Transmision = " + tra.parse(tra.format(transmision.getFirst())).doubleValue());
             
             cerrarVentana(event);
 
@@ -417,17 +406,6 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
             alert.showAndWait();
             txtLongitudFBG.setText("");
         }
-        /*else if (txtLongitudOnda.getText().isEmpty() || txtLongitudOnda.getText().compareTo("")==0 || !txtLongitudOnda.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
-            System.out.println("\nThe element will not connect until you have selected a wavelength to filter");
-            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nThe element will not connect until you have selected a wavelength to filter",
-                    aceptar);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.showAndWait();
-            txtLongitudFBG.setText("");
-        }*/
         else{
             if (salida==0) { 
                 if(fbg.isConectadoSalida()==false){
@@ -492,7 +470,6 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
                 }
             }
         }
-        
         return false;
     }
     
@@ -551,14 +528,12 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
         }
         else{
             FBG aux=(FBG)elemG.getComponente();
-            //System.out.println(aux.getConexiones().toString());
             if(aux.getConexiones() != null && !aux.getConexiones().isEmpty()){
                 if(aux.getConexiones().get(fbgControl.cboxSalidas.getSelectionModel().getSelectedIndex()-1).isConectadoSalida()==true){
                     fbgControl.cboxConectarA.getSelectionModel().select(aux.getConexiones().get(fbgControl.cboxSalidas.getSelectionModel().getSelectedIndex()-1).getElementoConectadoSalida());
                 }
                 else{
                     fbgControl.cboxConectarA.getItems().add("Desconected");
-                    
                     fbgControl.cboxConectarA.getSelectionModel().select(0);
                     for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
                         if((controlador.getElementos().get(elemento).getNombre()).startsWith("spectrum")
@@ -631,12 +606,13 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
      * @param scroll Espacio en el cual el usuario puede desplazarse
      * @param elem Elemento grafico
      */
-    void init(ControladorGeneral controlador, Stage stage, Pane Pane1, ScrollPane scroll, ElementoGrafico elem) {
+    void init(ControladorGeneral controlador, Stage stage, Pane Pane1, ScrollPane scroll, ElementoGrafico elem,VentanaPrincipal ventana) {
         this.controlador=controlador;
         this.stage=stage;
         this.Pane1=Pane1;
         this.scroll=scroll;
         this.elemG=elem;
+        this.ventana_principal=ventana;
         PuertoSalida p= new PuertoSalida();
         FBG fbg = (FBG) elem.getComponente();
         fbg.getConexiones().add(p);
@@ -799,14 +775,13 @@ public class VentanaFBGController extends ControladorGeneral implements Initiali
                     }    
                 }
             }
-            
         }
         return mux;
     }
     
     /**
      * Metodo que permite visualizar la conexion hacia delante de la rejilla de Bragg 
-     * con otro elemento
+     * con otro elemento al abrir un trabajo
      * @param elemG Elemento grafico del FBG
      */
     public void dibujarLineaFBG(ElementoGrafico elemG) {

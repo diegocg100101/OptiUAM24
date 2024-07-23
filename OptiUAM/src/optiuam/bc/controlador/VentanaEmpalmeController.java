@@ -45,10 +45,9 @@ import optiuam.bc.modelo.Empalme;
 
 /**
  * Clase VentanaEmpalmeController la cual se encarga de instanciar un empalme
- * @author Daniel Hernandez
- * Editado por:
  * @author Arturo Borja
  * @author Karen Cruz
+ * @author Daniel Hernandez
  * @see ControladorGeneral
  */
 public class VentanaEmpalmeController extends ControladorGeneral implements Initializable {
@@ -92,8 +91,8 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
     /**Boton para crear una empalme*/
     @FXML
     Button btnCrear;
-    /**Etiqueta de la lista desplegable de elementos disponibles para conectar
-     el empalme*/
+    /**Etiqueta de la lista desplegable de elementos disponibles para conectar 
+     * el empalme*/
     @FXML
     Label lblConectarA;
     /**Lista desplegable de elementos disponibles para conectar el empalme*/
@@ -185,15 +184,18 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
         double perdidaInsercion, perdidaMax = 0.5;
         if(rbtnMecanico.isSelected()){
             tipo=1;
-        }else if(rbtnfusion.isSelected()){
+        }
+        else if(rbtnfusion.isSelected()){
             tipo=0;
         }   
         if(rbtn1310.isSelected()){
             longitudOnda=1310;
-        }else if(rbtn1550.isSelected()){
+        }
+        else if(rbtn1550.isSelected()){
             longitudOnda=1550;
         }
-        if (txtPerdida.getText().isEmpty() || txtPerdida.getText().compareTo("")==0 || !txtPerdida.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
+        if (txtPerdida.getText().isEmpty() || txtPerdida.getText().compareTo("")==0 
+                || !txtPerdida.getText().matches("[0-9]*?\\d*(\\.\\d+)?")){
             System.out.println("\nInvalid loss value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -204,7 +206,8 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
             alert.showAndWait();
             txtPerdida.setText("");
         }
-        else if(Double.parseDouble(txtPerdida.getText()) > perdidaMax || Double.parseDouble(txtPerdida.getText()) < 0){
+        else if(Double.parseDouble(txtPerdida.getText()) > perdidaMax 
+                || Double.parseDouble(txtPerdida.getText()) < 0){
             System.out.println("\nThe loss must be" + " min: 0" + " max: " + perdidaMax);
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -306,78 +309,80 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
      */
     public void eventos(ElementoGrafico elem) {
         elem.getDibujo().setOnMouseDragged((MouseEvent event) -> {
-                if(event.getButton()==MouseButton.PRIMARY){
-                    double newX=event.getSceneX();
-                    double newY=event.getSceneY();
-                    int j=0;
-                    for(int a=0; a<Pane1.getChildren().size();a++){
-                        if(Pane1.getChildren().get(a).toString().contains(elem.getDibujo().getText())){
-                            j=a;
-                            break;
-                        }
-                    }
-                    if( outSideParentBoundsX(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                    }else{
-                        elem.getDibujo().setLayoutX(Pane1.getChildren().get(j).getLayoutX()+event.getX()+1);
-                    }
-                    
-                    if(outSideParentBoundsY(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
-                    }else{
-                    elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);}
-                    if(elem.getComponente().isConectadoSalida()==true){
-                        elem.getComponente().getLinea().setVisible(false);
-                        dibujarLinea(elem);
-                    }
-                    if(elem.getComponente().isConectadoEntrada()){
-                        ElementoGrafico aux;
-                        for(int it=0; it<controlador.getDibujos().size();it++){
-                            if(elem.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())){
-                                aux=controlador.getDibujos().get(it);
-                                aux.getComponente().getLinea().setVisible(false);
-                            }
-                        }
-                        dibujarLineaAtras(elem);
+            if(event.getButton()==MouseButton.PRIMARY){
+                double newX=event.getSceneX();
+                double newY=event.getSceneY();
+                int j=0;
+                for(int a=0; a<Pane1.getChildren().size();a++){
+                    if(Pane1.getChildren().get(a).toString().contains(elem.getDibujo().getText())){
+                        j=a;
+                        break;
                     }
                 }
-        });
-            elem.getDibujo().setOnMouseEntered((MouseEvent event) -> {
-                elem.getDibujo().setStyle("-fx-border-color: darkblue;");
-                elem.getDibujo().setCursor(Cursor.OPEN_HAND);
-        });
-            elem.getDibujo().setOnMouseExited((MouseEvent event) -> {
-                elem.getDibujo().setStyle("");
-        });
-            elem.getDibujo().setOnMouseClicked((MouseEvent event) -> {
-                if(event.getButton()==MouseButton.PRIMARY){
-                    try{
-                        Stage stage1 = new Stage(StageStyle.UTILITY);
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaEmpalme.fxml"));
-                        Parent root = loader.load();
-                        //Se crea una instancia del controlador del empalme.
-                        VentanaEmpalmeController empalmeController = (VentanaEmpalmeController) loader.getController();
-                        empalmeController.init(controlador,stage,Pane1,scroll);
-                        empalmeController.init2(elem,empalmeController);
-                        empalmeController.btnCrear.setVisible(false);
-                        empalmeController.btnDesconectar.setVisible(true);
-                        empalmeController.lblConectarA.setVisible(true);
-                        empalmeController.cboxConectarA.setVisible(true);
-                        empalmeController.btnModificar.setVisible(true);
-                        
-                        Scene scene = new Scene(root);
-                        Image ico = new Image("images/acercaDe.png");
-                        stage1.getIcons().add(ico);
-                        stage1.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
-                        stage1.initModality(Modality.APPLICATION_MODAL);
-                        stage1.setScene(scene);
-                        stage1.setResizable(false);
-                        stage1.showAndWait();
-                    }
-                    catch(IOException ex){
-                        Logger.getLogger(VentanaEmpalmeController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }else if(event.getButton()==MouseButton.SECONDARY){
-                    mostrarMenu(elem);
+                if( outSideParentBoundsX(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
                 }
+                else{
+                    elem.getDibujo().setLayoutX(Pane1.getChildren().get(j).getLayoutX()+event.getX()+1);
+                }
+                if(outSideParentBoundsY(elem.getDibujo().getLayoutBounds(), newX, newY) ) {    //return; 
+                }
+                else{
+                    elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY()+event.getY()+1);
+                }
+                if(elem.getComponente().isConectadoSalida()==true){
+                    elem.getComponente().getLinea().setVisible(false);
+                    dibujarLinea(elem);
+                }
+                if(elem.getComponente().isConectadoEntrada()){
+                    ElementoGrafico aux;
+                    for(int it=0; it<controlador.getDibujos().size();it++){
+                        if(elem.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())){
+                            aux=controlador.getDibujos().get(it);
+                            aux.getComponente().getLinea().setVisible(false);
+                        }
+                    }
+                    dibujarLineaAtras(elem);
+                }
+            }
+        });
+        elem.getDibujo().setOnMouseEntered((MouseEvent event) -> {
+            elem.getDibujo().setStyle("-fx-border-color: darkblue;");
+            elem.getDibujo().setCursor(Cursor.OPEN_HAND);
+        });
+        elem.getDibujo().setOnMouseExited((MouseEvent event) -> {
+            elem.getDibujo().setStyle("");
+        });
+        elem.getDibujo().setOnMouseClicked((MouseEvent event) -> {
+            if(event.getButton()==MouseButton.PRIMARY){
+                try{
+                    Stage stage1 = new Stage(StageStyle.UTILITY);
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("VentanaEmpalme.fxml"));
+                    Parent root = loader.load();
+                    VentanaEmpalmeController empalmeController = (VentanaEmpalmeController) loader.getController();
+                    empalmeController.init(controlador,stage,Pane1,scroll,ventana_principal);
+                    empalmeController.init2(elem,empalmeController);
+                    empalmeController.btnCrear.setVisible(false);
+                    empalmeController.btnDesconectar.setVisible(true);
+                    empalmeController.lblConectarA.setVisible(true);
+                    empalmeController.cboxConectarA.setVisible(true);
+                    empalmeController.btnModificar.setVisible(true);
+
+                    Scene scene = new Scene(root);
+                    Image ico = new Image("images/acercaDe.png");
+                    stage1.getIcons().add(ico);
+                    stage1.setTitle("OptiUAM BC - "+elem.getDibujo().getText().toUpperCase());
+                    stage1.initModality(Modality.APPLICATION_MODAL);
+                    stage1.setScene(scene);
+                    stage1.setResizable(false);
+                    stage1.showAndWait();
+                }
+                catch(IOException ex){
+                    Logger.getLogger(VentanaEmpalmeController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else if(event.getButton()==MouseButton.SECONDARY){
+                mostrarMenu(elem);
+            }
         });
     }
     
@@ -396,7 +401,6 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
         menuItem1.setOnAction(e ->{
             for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
                 if(dibujo.getId()==controlador.getElementos().get(elemento).getId()){
-                    //System.out.println(dibujo.getId()+"----"+controlador.getElementos().get(elemento).getId());
                     Empalme empalmeAux=new Empalme();
                     Empalme aux1=(Empalme)controlador.getElementos().get(elemento);
                     empalmeAux.setConectadoEntrada(false);
@@ -498,7 +502,6 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
                 }
             }
         });
-
         contextMenu.getItems().add(menuItem1);
         contextMenu.getItems().add(menuItem3);
         contextMenu.getItems().add(menuItem4);
@@ -522,13 +525,13 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
     @FXML
     public void Desconectar(ActionEvent event){
         for(int elemento2=0; elemento2<controlador.getDibujos().size();elemento2++){
-                if(empalmeControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())){
-                    Componente comp= controlador.getElementos().get(elemento2);
-                    comp.setConectadoEntrada(false);
-                    comp.setElementoConectadoEntrada("");
-                    System.out.println(comp.getNombre());
-                    break;
-                }
+            if(empalmeControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())){
+                Componente comp= controlador.getElementos().get(elemento2);
+                comp.setConectadoEntrada(false);
+                comp.setElementoConectadoEntrada("");
+                System.out.println(comp.getNombre());
+                break;
+            }
         }
         empalmeControl.cboxConectarA.getSelectionModel().select(0);
         if(elemG.getComponente().isConectadoSalida()){
@@ -557,19 +560,23 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
         Empalme aux = (Empalme) elemG.getComponente();
         int tipo=0, longitudOnda=0, id = 0;
         double perdidaInsercion, perdidaMax = 0.5;
+        
         if(rbtnMecanico.isSelected()){
             tipo=1;
-        }else if(rbtnfusion.isSelected()){
+        }
+        else if(rbtnfusion.isSelected()){
             tipo=0;
         }   
         if(rbtn1310.isSelected()){
             longitudOnda=1310;
-        }else if(rbtn1550.isSelected()){
+        }
+        else if(rbtn1550.isSelected()){
             longitudOnda=1550;
         }
         if((empalmeControl.cboxConectarA.getSelectionModel().getSelectedIndex())==0){
             Desconectar(event);
-        }else{
+        }
+        else{
             if(aux.isConectadoSalida()){elemG.getComponente().getLinea().setVisible(false);}
             aux.setConectadoSalida(true);
             for(int elemento2=0; elemento2<controlador.getDibujos().size();elemento2++){
@@ -577,10 +584,12 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
                     ElementoGrafico eg= controlador.getDibujos().get(elemento2);
                     aux.setElementoConectadoSalida(eg.getDibujo().getText());
                     aux.setConectadoSalida(true);
-                    System.out.println(controlador.getDibujos().get(elemento2).getComponente().toString());
-                    
                     eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
                     eg.getComponente().setConectadoEntrada(true);
+                    if(elemG.getComponente().getSeñalEntrada()!=null){
+                        elemG.getComponente().setSeñalSalida(null);
+                        ventana_principal.elemConected(elemG.getComponente(),false);
+                    }
                     break;
                 }
             }
@@ -610,12 +619,17 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
         }
         else{
             perdidaInsercion = Double.parseDouble(txtPerdida.getText());
+            if(elemG.getComponente().getSeñalEntrada()!=null){
+                elemG.getComponente().setSeñalSalida(null);
+                ventana_principal.elemConected(aux,true);
+            }
             aux.setLongitudOnda(longitudOnda);
             aux.setNombre("splice");
             aux.setPerdidaInsercion(perdidaInsercion);
             aux.setTipo(tipo);
             cerrarVentana(event);
-
+            VentanaPrincipal.btnStart = false;
+            
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
                     "\nModified splice!",
@@ -623,11 +637,6 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
             alert.setTitle("Succes");
             alert.setHeaderText(null);
             alert.showAndWait();
-            
-            for(int h=0; h<controlador.getElementos().size(); h++){
-                System.out.print("\telemento: "+controlador.getElementos().get(h).toString());
-                System.out.println("\tdibujo: "+controlador.getDibujos().get(h).getDibujo().getText());
-            }
         }
     }
 
@@ -638,12 +647,15 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
      * @param stage Escenario en el cual se agregan los objetos creados
      * @param Pane1 Panel para agregar objetos
      * @param scroll Espacio en el cual el usuario puede desplazarse
+     * @param ventana Ventana principal
      */
-    public void init(ControladorGeneral controlador, Stage stage, Pane Pane1, ScrollPane scroll) {
+    public void init(ControladorGeneral controlador, Stage stage, Pane Pane1, 
+            ScrollPane scroll, VentanaPrincipal ventana) {
         this.controlador=controlador;
         this.stage=stage;
         this.Pane1=Pane1;
         this.scroll=scroll;
+        this.ventana_principal =ventana;
     }
     
     /**
@@ -658,30 +670,33 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
         
         if(elemG.getComponente().isConectadoSalida()==true){
             empalmeControl.cboxConectarA.getSelectionModel().select(elemG.getComponente().getElementoConectadoSalida());
-        }else{
+        }
+        else{
             empalmeControl.cboxConectarA.getItems().add("Desconected");
             empalmeControl.cboxConectarA.getSelectionModel().select(0);
-             for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
-                if("fiber".equals(controlador.getElementos().get(elemento).getNombre())){
+            for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
+                if("fiber".equals(controlador.getElementos().get(elemento).getNombre()) ||
+                        "spectrum".equals(controlador.getElementos().get(elemento).getNombre())){
                     if(!controlador.getElementos().get(elemento).isConectadoEntrada()){
                         empalmeControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento).getDibujo().getText());
                     }
                 }
-             }
+            }
         }
         
         for(int elemento=0; elemento<controlador.getElementos().size(); elemento++){
             if(elem.getId()==controlador.getElementos().get(elemento).getId()){
                 Empalme emp= (Empalme)controlador.getElementos().get(elemento);
-                System.out.println(emp.getTipo()+"\t"+emp.getLongitudOnda());
                 if(emp.getTipo()==0){
                     empalmeControl.rbtnfusion.setSelected(true);
-                }else if(emp.getTipo()==1){
+                }
+                else if(emp.getTipo()==1){
                     empalmeControl.rbtnMecanico.setSelected(true);
                 }
                 if(emp.getLongitudOnda()==1310){
                     empalmeControl.rbtn1310.setSelected(true);
-                }else if(emp.getLongitudOnda()==1550){
+                }
+                else if(emp.getLongitudOnda()==1550){
                     empalmeControl.rbtn1550.setSelected(true);
                 }
                 empalmeControl.txtPerdida.setText(String.valueOf(emp.getPerdidaInsercion()));
@@ -711,7 +726,6 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
         line.setVisible(true);
         Pane1.getChildren().add(line); 
         elemG.getComponente().setLinea(line);
-              
     }
     
     /**
@@ -744,7 +758,6 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
      */
     private boolean outSideParentBoundsX( Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane1.getLayoutBounds();
-
         //check if too left
         if( parentBounds.getMaxX() <= (newX + childBounds.getMaxX()) ) {
             return true ;
@@ -753,7 +766,6 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
         if( parentBounds.getMinX() >= (newX + childBounds.getMinX()) ) {
             return true ;
         }
-        
         return false;
     }
     
@@ -763,7 +775,6 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
      */
     private boolean outSideParentBoundsY( Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane1.getLayoutBounds();
-        
         //check if too down
         if( parentBounds.getMaxY() <= (newY + childBounds.getMaxY()) ) {
             return true ;
@@ -772,7 +783,6 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
         if( parentBounds.getMinY()+179 >= (newY + childBounds.getMinY()) ) {
             return true ;
         }
-
         return false;
     }
     
