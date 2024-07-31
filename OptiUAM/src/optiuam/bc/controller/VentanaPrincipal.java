@@ -579,6 +579,13 @@ public class VentanaPrincipal implements Initializable {
 
     }
 
+    /*Metodo que abre la ventana del OTDR
+     */
+
+    public void abrirVentanaOTDR(){
+
+    }
+
     /**
      * Metodo que crea un medidor de potencia
      */

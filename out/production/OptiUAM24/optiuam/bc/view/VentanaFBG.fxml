@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="380.0" prefWidth="500.0" style="-fx-background-color: lightcyan;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaFBGController">
+   <children>
+      <ImageView fitHeight="380.0" fitWidth="595.0" pickOnBounds="true">
+         <image>
+            <Image url="@../../../images/FondoAzul.png" />
+         </image>
+      </ImageView>
+      <Label alignment="CENTER" layoutX="57.0" layoutY="14.0" prefHeight="17.0" prefWidth="500.0" text="FBG Configuration">
+         <font>
+            <Font name="Arial Black" size="18.0" />
+         </font></Label>
+      <Separator layoutY="51.0" prefHeight="4.0" prefWidth="595.0" />
+      <Label layoutX="25.0" layoutY="122.0" text="Selected wavelength" />
+      <Separator fx:id="separator" layoutX="356.0" layoutY="73.0" orientation="VERTICAL" prefHeight="214.0" prefWidth="8.0" />
+      <Label fx:id="lblConectarA" layoutX="460.0" layoutY="99.0" text="Connect to:" />
+      <ComboBox fx:id="cboxConectarA" layoutX="458.0" layoutY="124.0" prefHeight="25.0" prefWidth="105.0" />
+      <Button fx:id="btnDesconectar" layoutX="423.0" layoutY="204.0" mnemonicParsing="false" onAction="#Desconectar" text="Disconnect" />
+      <Button fx:id="btnModificar" layoutX="243.0" layoutY="321.0" mnemonicParsing="false" onAction="#modificar" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: violet;" text="MODIFY">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <effect>
+            <DropShadow color="#111bd0">
+               <input>
+                  <InnerShadow color="#598d71" />
+               </input>
+            </DropShadow>
+         </effect>
+         <font>
+            <Font name="Calibri" size="12.0" />
+         </font>
+         <textFill>
+            <LinearGradient endX="1.0" endY="1.0" startX="1.0" startY="0.9428571428571428">
+               <stops>
+                  <Stop color="BLACK" />
+                  <Stop color="WHITE" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </textFill>
+      </Button>
+      <Label layoutX="25.0" layoutY="216.0" text="Reflection Coefficient" />
+      <Label layoutX="25.0" layoutY="260.0" text="Transmission Coefficient" />
+      <Button fx:id="btnCalcular" layoutX="265.0" layoutY="235.0" mnemonicParsing="false" onAction="#calcularMatriz" text="Calculate" />
+      <Label layoutX="25.0" layoutY="73.0" text="Signals to Filter:" />
+      <ComboBox fx:id="cboxFiltrar" layoutX="165.0" layoutY="69.0" onAction="#filtrarSeñal" prefHeight="25.0" prefWidth="109.0" />
+      <Label layoutX="25.0" layoutY="168.0" text="FBG Length" />
+       <Label fx:id="lblKm" layoutX="250.0" layoutY="168.0" text="km" />
+      <TextField fx:id="txtLongitudFBG" layoutX="165.0" layoutY="164.0" prefHeight="25.0" prefWidth="79.0" />
+      <Label fx:id="lblSalida" layoutX="378.0" layoutY="99.0" text="Output" />
+      <ComboBox fx:id="cboxSalidas" layoutX="376.0" layoutY="123.0" onAction="#actCbox" prefHeight="25.0" prefWidth="30.0" />
+      <TextField id="txtAtenue" fx:id="txtLongitudOnda" layoutX="165.0" layoutY="118.0" prefHeight="25.0" prefWidth="80.0" />
+      <TextField id="txtAtenue" fx:id="txtReflexion" layoutX="165.0" layoutY="212.0" prefHeight="25.0" prefWidth="80.0" />
+      <TextField id="txtAtenue" fx:id="txtTransmision" layoutX="165.0" layoutY="256.0" prefHeight="25.0" prefWidth="80.0" />
+   </children>
+   <effect>
+      <InnerShadow />
+   </effect>
+</AnchorPane>

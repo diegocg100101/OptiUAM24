@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="OptiUAM24_Pruebas">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/OptiUAM/dist/OptiUAM24_Pruebas.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
