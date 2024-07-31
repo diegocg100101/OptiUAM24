@@ -15,6 +15,6 @@
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="OptiUAM24_Pruebas" >
     <param name="requiredFXVersion" value="8.0+"/>
   </applet-desc>
-  <jfx:javafx-desc  width="800" height="600" main-class="optiuam.bc.controlador.OptiUAM24"  name="OptiUAM24_Pruebas" />
+  <jfx:javafx-desc width="800" height="600" main-class="optiuam.bc.controller.OptiUAM24" name="OptiUAM24_Pruebas" />
   <update check="always"/>
 </jnlp>
