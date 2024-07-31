@@ -16,11 +16,11 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="975.0" style="-fx-background-color: lightskyblue; -fx-border-color: darkblue;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controlador.VentanaPrincipal">
+<AnchorPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="975.0" style="-fx-background-color: lightskyblue; -fx-border-color: darkblue;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controlador.VentanaPrincipal">
    <children>
       <TitledPane fx:id="componentMenu" animated="false" layoutX="1.0" layoutY="24.0" maxHeight="-Infinity" minHeight="154.0" minWidth="900.0" text="Components" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <content>
-          <AnchorPane fx:id="desplegable" focusTraversable="false" style="-fx-background-color: lavender;">
+          <AnchorPane fx:id="desplegable" focusTraversable="false" prefHeight="161.0" prefWidth="972.0" style="-fx-background-color: lavender;">
                <children>
                   <Label fx:id="lbl_fibra" layoutX="39.0" layoutY="80.0" text="Fiber">
                      <font>
@@ -226,34 +226,41 @@
                      </font>
                   </Label>
                   <Separator layoutX="840.0" layoutY="4.0" orientation="VERTICAL" prefHeight="128.0" prefWidth="11.0" />
-                  <Label fx:id="lbl_espectro2" layoutX="888.0" layoutY="80.0" text="Press to">
+                  <Label fx:id="lbl_espectro2" layoutX="888.0" layoutY="140.0" text="Press to">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lbl_espectro11" layoutX="875.0" layoutY="92.0" text="Update Signs">
+                  <Label fx:id="lbl_espectro11" layoutX="875.0" layoutY="156.0" text="Update Signs">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
                   <Button fx:id="btnRun" layoutX="876.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#start" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent; -fx-background-color: transparent;">
-                     <graphic>
-                        <ImageView fx:id="viewRun" fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
-                           <effect>
-                              <InnerShadow color="#b2b2b2" />
-                           </effect>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <image>
-                              <Image url="@../../../images/upload.PNG" />
-                           </image>
-                        </ImageView>
-                     </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
+                  <Button fx:id="btnOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="33.0" layoutY="108.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOsciloscopio" prefHeight="64.0" prefWidth="64.0" AnchorPane.rightAnchor="875.0">
+                     <graphic>
+                        <ImageView fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
+                     </graphic>
+                  </Button>
+                  <Label layoutX="32.0" layoutY="172.0" prefHeight="34.0" prefWidth="70.0" text="Osciloscopio" AnchorPane.leftAnchor="13.0">
+                     <font>
+                        <Font name="Javanese Text" size="12.0" />
+                     </font></Label>
+                  <ImageView fx:id="viewRun" fitHeight="55.0" fitWidth="55.0" layoutX="881.0" layoutY="81.0" pickOnBounds="true" preserveRatio="true">
+                     <effect>
+                        <InnerShadow color="#b2b2b2" />
+                     </effect>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <image>
+                        <Image url="@../../../images/upload.PNG" />
+                     </image>
+                  </ImageView>
                </children>
                <effect>
                   <InnerShadow color="#264275" height="9.14" radius="2.5875000000000004" width="3.21" />
@@ -264,11 +271,11 @@
             <InnerShadow choke="0.09" color="#1f2f8d" height="35.83" radius="19.6375" width="44.72" />
          </effect>
       </TitledPane>
-      <ScrollPane fx:id="scroll" depthTest="ENABLE" hmax="2.0" layoutX="10.0" layoutY="178.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="3000.0" prefWidth="3000.0" style="-fx-background-color: lightblue;" vmax="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="177.0">
+      <ScrollPane fx:id="scroll" depthTest="ENABLE" hmax="2.0" layoutX="-3.2" layoutY="261.6" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="339.0" prefWidth="973.0" style="-fx-background-color: lightblue;" vmax="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-4.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="261.0">
          <content>
-            <Pane id="Pane1" fx:id="Pane1" prefHeight="4000.0" prefWidth="4000.0" style="-fx-background-color: White;">
+            <Pane id="Pane1" fx:id="Pane1" prefHeight="3534.0" prefWidth="3878.0" style="-fx-background-color: White;">
                <children>
-                  <ImageView fx:id="panel" accessibleText="Area de Trabajo." fitHeight="3000.0" fitWidth="3000.0" layoutX="-15.0" layoutY="-8.0" pickOnBounds="true" smooth="false">
+                  <ImageView fx:id="panel" accessibleText="Area de Trabajo." fitHeight="3000.0" fitWidth="3000.0" layoutX="-270.0" layoutY="-43.0" pickOnBounds="true" smooth="false">
                      <effect>
                         <InnerShadow color="#101c7c" />
                      </effect>
@@ -294,7 +301,7 @@
                           </items>
                       </Menu>
                       
-                      <Menu fx:id="menuAbout" mnemonicParsing="false" text="About">
+                            <Menu fx:id="menuAbout" mnemonicParsing="false" text="About">
                         <items>
                             <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#menuAboutAction" text="About" />
                           </items>
@@ -304,7 +311,8 @@
                         <InnerShadow choke="0.08" color="#0e5cc3" radius="24.085" width="77.34" />
                      </effect>
                   </MenuBar>
-               </children></Pane>
+               </children>
+            </Pane>
          </content>
          <cursor>
             <Cursor fx:constant="CLOSED_HAND" />

@@ -19,7 +19,7 @@ import javafx.stage.StageStyle;
 public class OptiUAM24 extends Application {
     
     /**
-    * Metodo start, encargado de mostrar la pantalla de inicio del simulador
+    * Método start, encargado de mostrar la pantalla de inicio del simulador
     * @throws java.lang.Exception Proporciona diferentes excepciones lanzadas 
     * bajo el paquete java lang
     */
@@ -38,7 +38,7 @@ public class OptiUAM24 extends Application {
     }
 
     /**
-     * Metodo main
+     * Método main
      * @param args the command line arguments
      * @throws java.lang.Exception Proporciona diferentes excepciones lanzadas 
      * bajo el paquete java lang

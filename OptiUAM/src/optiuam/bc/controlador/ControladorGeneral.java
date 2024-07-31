@@ -22,7 +22,7 @@ import optiuam.bc.modelo.Multiplexor;
 import optiuam.bc.modelo.Splitter;
 
 /**
- * Clase ControladorGeneral la cual contiene los metodos y atributos necesarios 
+ * Clase ControladorGeneral la cual contiene los métodos y atributos necesarios
  * para hacer funcionar el simulador
  * @author Arturo Borja
  * @author Karen Cruz
@@ -31,13 +31,17 @@ import optiuam.bc.modelo.Splitter;
 public class ControladorGeneral {
     
     /**Elementos creados en la simulacion*/
-    public LinkedList<Componente> elementos; 
+    public LinkedList<Componente> elementos;
+
     /**Elementos mostrados en el area de trabajo*/
     public LinkedList<ElementoGrafico> dibujos;
+
     /**Contador para asignar nombre a un elemento*/
-    public int contadorElemento; 
+    public int contadorElemento;
+
     /**Utilizado para tener la comunicacion vista-controlador*/
     public VentanaPrincipal ventana_principal;
+
     /**Utilizado para crear los elementos graficos*/
     public ElementoGrafico manejadorElementos; 
 
