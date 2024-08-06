@@ -576,7 +576,21 @@ public class VentanaPrincipal implements Initializable {
     Método que abre la ventana del osciloscopio
      */
     public void abrirVentanaOsciloscopio() {
-
+        try {
+            Stage s = new Stage(StageStyle.UTILITY);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaOsciloscopio.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Image ico = new Image("images/acercaDe.png");
+            s.getIcons().add(ico);
+            s.setTitle("OptiUAM BC - Oscilloscope");
+            s.initModality(Modality.APPLICATION_MODAL);
+            s.setScene(scene);
+            s.setResizable(false);
+            s.showAndWait();
+        } catch (IOException ex) {
+            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /*Metodo que abre la ventana del OTDR

@@ -241,12 +241,12 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="33.0" layoutY="108.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOsciloscopio" prefHeight="64.0" prefWidth="64.0" AnchorPane.rightAnchor="875.0">
+                  <Button fx:id="btnOsciloscopio" onAction="#abrirVentanaOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="33.0" layoutY="108.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="64.0" AnchorPane.rightAnchor="875.0">
                      <graphic>
                         <ImageView fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
                   </Button>
-                  <Label layoutX="32.0" layoutY="172.0" prefHeight="34.0" prefWidth="70.0" text="Osciloscopio" AnchorPane.leftAnchor="13.0">
+                  <Label layoutX="32.0" layoutY="172.0" prefHeight="34.0" prefWidth="70.0" text="Osciloscope" AnchorPane.leftAnchor="13.0">
                      <font>
                         <Font name="Javanese Text" size="12.0" />
                      </font></Label>
@@ -261,6 +261,16 @@
                         <Image url="@../../../images/upload.PNG" />
                      </image>
                   </ImageView>
+                  <Button fx:id="btnOTDR" layoutX="101.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOTDR" prefHeight="64.0" prefWidth="64.0">
+                     <graphic>
+                        <ImageView fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
+                     </graphic>
+                  </Button>
+                  <Label layoutX="118.0" layoutY="172.0" text="OTDR">
+                     <font>
+                        <Font name="Javanese Text" size="12.0" />
+                     </font>
+                  </Label>
                </children>
                <effect>
                   <InnerShadow color="#264275" height="9.14" radius="2.5875000000000004" width="3.21" />
@@ -275,7 +285,7 @@
          <content>
             <Pane id="Pane1" fx:id="Pane1" prefHeight="3534.0" prefWidth="3878.0" style="-fx-background-color: White;">
                <children>
-                  <ImageView fx:id="panel" accessibleText="Area de Trabajo." fitHeight="3000.0" fitWidth="3000.0" layoutX="-270.0" layoutY="-43.0" pickOnBounds="true" smooth="false">
+                  <ImageView fx:id="panel" accessibleText="Area de Trabajo." fitHeight="3000.0" fitWidth="3000.0" layoutX="-219.0" layoutY="-7.0" pickOnBounds="true" smooth="false">
                      <effect>
                         <InnerShadow color="#101c7c" />
                      </effect>
