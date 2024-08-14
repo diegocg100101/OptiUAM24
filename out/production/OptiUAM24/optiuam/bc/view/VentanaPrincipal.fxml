@@ -241,7 +241,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="33.0" layoutY="108.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false"  prefHeight="64.0" prefWidth="64.0" AnchorPane.rightAnchor="875.0">
+                  <Button fx:id="btnOsciloscopio" onAction="#abrirVentanaOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="33.0" layoutY="108.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="64.0" AnchorPane.rightAnchor="875.0">
                      <graphic>
                         <ImageView fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
@@ -261,7 +261,7 @@
                         <Image url="@../../../images/upload.PNG" />
                      </image>
                   </ImageView>
-                  <Button fx:id="btnOTDR" layoutX="101.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="64.0" onAction="#abrirVentanaOTDR">
+                  <Button fx:id="btnOTDR" layoutX="101.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOTDR" prefHeight="64.0" prefWidth="64.0">
                      <graphic>
                         <ImageView fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
