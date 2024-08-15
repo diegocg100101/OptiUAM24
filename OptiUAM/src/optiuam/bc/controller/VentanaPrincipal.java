@@ -151,6 +151,14 @@ public class VentanaPrincipal implements Initializable {
      * Fondo del panel de trabajo
      */
     Image fondo;
+    /**
+     * Icono de osciloscopio
+     */
+    Image osciloscopio;
+    /**
+     * Icono de OTDR
+     */
+    Image OTDR;
 
     /**
      * Permite visualizar el icono de la fibra
@@ -202,6 +210,11 @@ public class VentanaPrincipal implements Initializable {
      */
     @FXML
     ImageView viewFBG;
+    /**
+     * Permite visualizar el icono del osciloscopio
+     */
+    @FXML
+    ImageView viewOsciloscopio;
     /**
      * Boton para abrir la ventana de la fibra y crear una
      */
@@ -389,6 +402,7 @@ public class VentanaPrincipal implements Initializable {
         multiplexorI = new Image("images/ico_mux.png");
         demultiplexorI = new Image("images/ico_demux.png");
         fbgI = new Image("images/ico_fbg.png");
+        osciloscopio = new Image("images/ico_osciloscopio.png");
 
         viewFibra.setImage(fibraI);
         viewFuente.setImage(fuenteI);
@@ -400,6 +414,7 @@ public class VentanaPrincipal implements Initializable {
         viewMux.setImage(multiplexorI);
         viewDemux.setImage(demultiplexorI);
         viewFBG.setImage(fbgI);
+        viewOsciloscopio.setImage(osciloscopio);
 
         componentMenu.setCollapsible(false);
     }
@@ -581,7 +596,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaOsciloscopio.fxml"));
             Parent root = loader.load();
             VentanaOsciloscopioController osciloscopioController = loader.getController();
-            osciloscopioController.init(controlador, VentanaPrincipal.stage, this);
+            osciloscopioController.init(controlador, VentanaPrincipal.stage, this, Pane1);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
