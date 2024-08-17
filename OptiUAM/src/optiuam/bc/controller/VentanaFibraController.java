@@ -546,15 +546,13 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                         break;
                     }
                 }
-                if (outSideParentBoundsX(elem.getDibujo().getLayoutBounds(), newX, newY)) {    //return;
-                } else {
+                if (!outSideParentBoundsX(elem.getDibujo().getLayoutBounds(), newX, newY)) {
                     elem.getDibujo().setLayoutX(Pane1.getChildren().get(j).getLayoutX() + event.getX() + 1);
                 }
-                if (outSideParentBoundsY(elem.getDibujo().getLayoutBounds(), newX, newY)) {    //return;
-                } else {
+                if (!outSideParentBoundsY(elem.getDibujo().getLayoutBounds(), newX, newY)) {
                     elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY() + event.getY() + 1);
                 }
-                if (elem.getComponente().isConectadoSalida() == true) {
+                if (elem.getComponente().isConectadoSalida()) {
                     elem.getComponente().getLinea().setVisible(false);
                     dibujarLinea(elem);
                 }
@@ -1069,7 +1067,7 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
     }
 
     /**
-     * Metodo que permite visualizar la conexion hacia delante de la fibra
+     * Método que permite visualizar la conexión hacia delante de la fibra
      * con otro elemento
      *
      * @param elemG Elemento grafico de la fibra
@@ -1094,10 +1092,10 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
     }
 
     /**
-     * Metodo que permite visualizar la conexion hacia atras de la fibra
+     * Método que permite visualizar la conexión hacia atrás de la fibra
      * con otro elemento
      *
-     * @param elem Elemento grafico de la fibra
+     * @param elem Elemento gráfico de la fibra
      */
     public void dibujarLineaAtras(ElementoGrafico elem) {
         Line line = new Line();

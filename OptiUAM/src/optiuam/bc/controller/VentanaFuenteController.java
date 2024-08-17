@@ -1005,9 +1005,9 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
     }
 
     /**
-     * Metodo para modificar la fuente
+     * Método para modificar la fuente
      *
-     * @param event Representa cualquier tipo de accion
+     * @param event Representa cualquier tipo de acción
      * @throws java.lang.reflect.InvocationTargetException
      */
     @FXML

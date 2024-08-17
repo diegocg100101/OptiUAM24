@@ -2,15 +2,21 @@ package optiuam.bc.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import optiuam.bc.model.ElementoGrafico;
 import optiuam.bc.model.Multiplexor;
@@ -85,11 +92,26 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     @FXML
     Pane Pane;
 
-    public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane) {
+    public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane, VentanaOsciloscopioController osciloscopioController) {
         this.controlador = controlador;
         this.stage = stage;
         this.ventana_principal = ventana;
         this.Pane = pane;
+        this.osciloscopioControl = osciloscopioController;
+
+        osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
+        osciloscopioControl.cboxConectarA.getSelectionModel().select(0);
+
+        for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
+            if ("connector".equals(controlador.getElementos().get(elemento).getNombre()) ||
+                    "source".equals(controlador.getElementos().get(elemento).getNombre())
+                    ||
+                    "mux".equals(controlador.getElementos().get(elemento).getNombre())) {
+                if (!controlador.getElementos().get(elemento).isConectadoEntrada()) {
+                    osciloscopioControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento).getDibujo().getText());
+                }
+                }
+        }
     }
 
     /**
@@ -103,10 +125,9 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     /**
-     *
      * @param osciloscopio
      */
-    public void guardarOsciloscopio(Osciloscopio osciloscopio){
+    public void guardarOsciloscopio(Osciloscopio osciloscopio) {
         osciloscopio.setId(controlador.getContadorElemento());
         controlador.getElementos().add(osciloscopio);
 
@@ -134,7 +155,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         osciloscopio.setNombreid(osciloscopio.getNombre() + "_" + osciloscopio.getId());
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "\nConnector created!",
+                "\nOscilloscope created!",
                 aceptar);
         alert.setTitle("Succes");
         alert.setHeaderText(null);
@@ -146,33 +167,31 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         osciloscopio.setConectadoEntrada(false);
         osciloscopio.setIdOsciloscopio(idOsciloscopio);
         osciloscopio.setNombre("Osciloscopio");
-        idOsciloscopio ++;
+        idOsciloscopio++;
         guardarOsciloscopio(osciloscopio);
         cerrarVentana(event);
     }
 
-    public void eventos(ElementoGrafico elemento){
+    public void eventos(ElementoGrafico elemento) {
         elemento.getDibujo().setOnMouseDragged((MouseEvent event) -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 double newX = event.getSceneX();
                 double newY = event.getSceneY();
-                int j = 0;
+                int index = 0;
                 for (int a = 0; a < Pane.getChildren().size(); a++) {
                     if (Pane.getChildren().get(a).toString().contains(elemento.getDibujo().getText())) {
-                        j = a;
+                        index = a;
                         break;
                     }
                 }
-                if (outSideParentBoundsX(elemento.getDibujo().getLayoutBounds(), newX, newY)) {    //return;
-                } else {
-                    elemento.getDibujo().setLayoutX(Pane.getChildren().get(j).getLayoutX() + event.getX() + 1);
+                if (!outSideParentBoundsX(elemento.getDibujo().getLayoutBounds(), newX, newY)) {
+                    elemento.getDibujo().setLayoutX(Pane.getChildren().get(index).getLayoutX() + event.getX() + 1);
                 }
 
-                if (outSideParentBoundsY(elemento.getDibujo().getLayoutBounds(), newX, newY)) {    //return;
-                } else {
-                    elemento.getDibujo().setLayoutY(Pane.getChildren().get(j).getLayoutY() + event.getY() + 1);
+                if (!outSideParentBoundsY(elemento.getDibujo().getLayoutBounds(), newX, newY)) {
+                    elemento.getDibujo().setLayoutY(Pane.getChildren().get(index).getLayoutY() + event.getY() + 1);
                 }
-                if (elemento.getComponente().isConectadoSalida() == true) {
+                if (elemento.getComponente().isConectadoEntrada()) {
                     elemento.getComponente().getLinea().setVisible(false);
                     dibujarLinea(elemento);
                 }
@@ -185,11 +204,36 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         elemento.getDibujo().setOnMouseExited((MouseEvent event) -> {
             elemento.getDibujo().setStyle("");
         });
+        elemento.getDibujo().setOnMouseClicked((MouseEvent event) -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                try {
+                    Stage stage1 = new Stage();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaOsciloscopio.fxml"));
+                    Parent root = loader.load();
+                    VentanaOsciloscopioController osciloscopioController = loader.getController();
+
+                    osciloscopioController.init(controlador, stage, ventana_principal, Pane, osciloscopioController);
+                    osciloscopioController.btnCrear.setVisible(false);
+                    osciloscopioController.cboxConectarA.setVisible(true);
+
+                    Scene scene = new Scene(root);
+                    Image ico = new Image("images/acercaDe.png");
+                    stage1.getIcons().add(ico);
+                    stage1.setTitle("OptiUAM BC - " + elemento.getDibujo().getText().toUpperCase());
+                    stage1.initModality(Modality.APPLICATION_MODAL);
+                    stage1.setScene(scene);
+                    stage1.setResizable(false);
+                    stage1.showAndWait();
+                } catch (IOException ex) {
+                    Logger.getLogger(VentanaConectorController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 
     /**
-     * Metodo que delimita el movimiento en el eje X en el panel para que el
-     * elemento grafico no salga del area de trabajo
+     * Método que delimita el movimiento en el eje X en el panel para que el
+     * elemento gráfico no salga del área de trabajo
      */
     private boolean outSideParentBoundsX(Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane.getLayoutBounds();
@@ -205,8 +249,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     /**
-     * Metodo que delimita el movimiento en el eje Y en el panel para que el
-     * elemento grafico no salga del area de trabajo
+     * Método que delimita el movimiento en el eje Y en el panel para que el
+     * elemento gráfico no salga del área de trabajo
      */
     private boolean outSideParentBoundsY(Bounds childBounds, double newX, double newY) {
         Bounds parentBounds = Pane.getLayoutBounds();
@@ -222,102 +266,33 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     /**
-     * Metodo que permite visualizar la conexion hacia delante del conector
+     * Método que permite visualizar la conexión hacia delante del conector
      * con otro elemento
      *
      * @param elemG Elemento grafico del conector
      */
     public void dibujarLinea(ElementoGrafico elemG) {
         Line line = new Line();
-        line.setStartX(elemG.getDibujo().getLayoutX() + 65);
-        line.setStartY(elemG.getDibujo().getLayoutY() + 8);
         ElementoGrafico aux = new ElementoGrafico();
-        for (int it = 0; it < controlador.getDibujos().size(); it++) {
-            if (controlador.getDibujos().get(it).getDibujo().getText().startsWith("mux")) {
-                if (elemG.getComponente().getElementoConectadoSalida().startsWith(controlador.getDibujos().get(it).getDibujo().getText())) {
-                    aux = controlador.getDibujos().get(it);
-                }
-            } else if (elemG.getComponente().getElementoConectadoSalida().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
-                aux = controlador.getDibujos().get(it);
-            }
-        }
-        line.setStrokeWidth(2);
-        line.setStroke(Color.BLACK);
 
-        if (aux.getDibujo().getText().contains("fiber")) {
-            line.setEndX(aux.getDibujo().getLayoutX() + 3);
-            line.setEndY(aux.getDibujo().getLayoutY() + 20);
-        } else if (aux.getDibujo().getText().contains("spectrum")) {
-            line.setEndX(aux.getDibujo().getLayoutX() + 8);
-            line.setEndY(aux.getDibujo().getLayoutY() + 4);
-        } else if (aux.getDibujo().getText().contains("splitter")) {
-            Splitter auxsp = (Splitter) aux.getComponente();
-            int num = auxsp.getSalidas();
-            switch (num) {
-                case 2:
-                case 4:
-                    line.setEndX(aux.getDibujo().getLayoutX());
-                    line.setEndY(aux.getDibujo().getLayoutY() + 26);
-                    break;
-                case 8:
-                    line.setEndX(aux.getDibujo().getLayoutX());
-                    line.setEndY(aux.getDibujo().getLayoutY() + 41);
-                    break;
-                default:
-                    break;
+        for (int it = 0; it < controlador.getDibujos().size(); it++) {
+            if (elemG.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
+                aux = controlador.getDibujos().get(it);
+                line.setStrokeWidth(2);
+                line.setStroke(Color.BLACK);
+                line.setStartX(aux.getDibujo().getLayoutX() + aux.getDibujo().getWidth());
+                line.setStartY(aux.getDibujo().getLayoutY() + 12);
+                line.setEndX(elemG.getDibujo().getLayoutX());
+                line.setEndY(elemG.getDibujo().getLayoutY() + 23);
+                line.setVisible(true);
+                Pane.getChildren().add(line);
+                aux.getComponente().setLinea(line);
             }
-        } else if (aux.getDibujo().getText().startsWith("mux")) {
-            Multiplexor mul = (Multiplexor) aux.getComponente();
-            int num = mul.getEntradas();
-            if (elemG.getComponente().getElementoConectadoSalida().endsWith("input1")) {
-                switch (num) {
-                    case 2:
-                        line.setEndX(aux.getDibujo().getLayoutX());
-                        line.setEndY(aux.getDibujo().getLayoutY() + 20);
-                        break;
-                    case 4:
-                        line.setEndX(aux.getDibujo().getLayoutX());
-                        line.setEndY(aux.getDibujo().getLayoutY() + 14);
-                        break;
-                    case 8:
-                        line.setEndX(aux.getDibujo().getLayoutX());
-                        line.setEndY(aux.getDibujo().getLayoutY() + 7);
-                        break;
-                }
-            } else {
-                int num2 = 0;
-                for (int cr = 0; cr < num - 1; cr++) {
-                    if (mul.getConexionEntradas().get(cr).getElementoConectadoEntrada().equals(elemG.getDibujo().getText())) {
-                        num2 = cr + 1;
-                        break;
-                    }
-                }
-                switch (num) {
-                    case 2:
-                        line.setEndX(aux.getDibujo().getLayoutX());
-                        line.setEndY(aux.getDibujo().getLayoutY() + 20 + 13);
-                        break;
-                    case 4:
-                        line.setEndX(aux.getDibujo().getLayoutX());
-                        line.setEndY(aux.getDibujo().getLayoutY() + 14 + (num2 * 10));
-                        break;
-                    case 8:
-                        line.setEndX(aux.getDibujo().getLayoutX() + 8);
-                        line.setEndY(aux.getDibujo().getLayoutY() + 7 + (num2 * 9.4));
-                        break;
-                }
-            }
-        } else {
-            line.setEndX(aux.getDibujo().getLayoutX() + 3);
-            line.setEndY(aux.getDibujo().getLayoutY() + 4);
         }
-        line.setVisible(true);
-        Pane.getChildren().add(line);
-        elemG.getComponente().setLinea(line);
     }
 
     /**
-     * Metodo para cerrar la ventana del conector
+     * Método para cerrar la ventana del conector
      *
      * @param event Representa cualquier tipo de accion
      */

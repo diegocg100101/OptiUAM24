@@ -596,7 +596,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaOsciloscopio.fxml"));
             Parent root = loader.load();
             VentanaOsciloscopioController osciloscopioController = loader.getController();
-            osciloscopioController.init(controlador, VentanaPrincipal.stage, this, Pane1);
+            osciloscopioController.init(controlador, VentanaPrincipal.stage, this, Pane1, osciloscopioController);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
