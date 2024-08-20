@@ -46,7 +46,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      */
     static int idOsciloscopio = 0;
 
-
     /**
      * Controlador del simulador
      */

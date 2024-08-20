@@ -49,25 +49,7 @@ import javafx.stage.StageStyle;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import optiuam.bc.model.Componente;
-import optiuam.bc.model.Conector;
-import optiuam.bc.model.Demultiplexor;
-import optiuam.bc.model.ElementoGrafico;
-import optiuam.bc.model.Empalme;
-import optiuam.bc.model.ExcepcionDivideCero;
-import optiuam.bc.model.FBG;
-import optiuam.bc.model.FFT2;
-import optiuam.bc.model.Fibra;
-import optiuam.bc.model.Fuente;
-import optiuam.bc.model.Listas;
-import optiuam.bc.model.MedidorEspectro;
-import optiuam.bc.model.MedidorPotencia;
-import optiuam.bc.model.Multiplexor;
-import optiuam.bc.model.NumeroComplejo;
-import optiuam.bc.model.PuertoEntrada;
-import optiuam.bc.model.PuertoSalida;
-import optiuam.bc.model.Señal;
-import optiuam.bc.model.Splitter;
+import optiuam.bc.model.*;
 
 /**
  * Clase VentanaPrincipal la cual se encarga de proporcionar la funcionalidad
@@ -215,6 +197,11 @@ public class VentanaPrincipal implements Initializable {
      */
     @FXML
     ImageView viewOsciloscopio;
+    /**
+     * Permite visualizar el icono del OTDR
+     */
+    @FXML
+    ImageView viewOTDR;
     /**
      * Boton para abrir la ventana de la fibra y crear una
      */
@@ -403,6 +390,7 @@ public class VentanaPrincipal implements Initializable {
         demultiplexorI = new Image("images/ico_demux.png");
         fbgI = new Image("images/ico_fbg.png");
         osciloscopio = new Image("images/ico_osciloscopio.png");
+        OTDR = new Image("images/ico_otdr.png");
 
         viewFibra.setImage(fibraI);
         viewFuente.setImage(fuenteI);
@@ -415,6 +403,7 @@ public class VentanaPrincipal implements Initializable {
         viewDemux.setImage(demultiplexorI);
         viewFBG.setImage(fbgI);
         viewOsciloscopio.setImage(osciloscopio);
+        viewOTDR.setImage(OTDR);
 
         componentMenu.setCollapsible(false);
     }
@@ -614,6 +603,23 @@ public class VentanaPrincipal implements Initializable {
      */
 
     public void abrirVentanaOTDR(){
+        try {
+            Stage s = new Stage(StageStyle.UTILITY);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaOTDR.fxml"));
+            Parent root = loader.load();
+            VentanaOTDRController OTDRController = loader.getController();
+            OTDRController.init(controlador, VentanaPrincipal.stage,this, Pane1);
+            Scene scene = new Scene(root);
+            Image ico = new Image("images/acercaDe.png");
+            s.getIcons().add(ico);
+            s.setTitle("OptiUAM BC - Oscilloscope");
+            s.initModality(Modality.APPLICATION_MODAL);
+            s.setScene(scene);
+            s.setResizable(false);
+            s.showAndWait();
+        } catch (IOException ex) {
+            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
