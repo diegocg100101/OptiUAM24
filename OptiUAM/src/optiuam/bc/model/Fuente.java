@@ -665,10 +665,8 @@ public class Fuente extends Componente {
      * Método para obtener el Buffer circular de la fuente
      */
     public void calcularBuffer() {
-        double[] elementosY = new double[2000];
-        BufferCircular bufferY = new BufferCircular(2000);
+        BufferCircular bufferY = new BufferCircular(3000);
         double aux, centro, longitudCentro = 0.005, Fs = Fc / 128;
-        int contBuffer = 1;
         for (double t = 0; t <= (longitudCentro) * aleatorio.size(); t += (1 / Fs)) {
             aux = 0;
             centro = 0;
@@ -682,20 +680,20 @@ public class Fuente extends Componente {
     }
 
     /**
-     * Metodo que gestiona las graficas de la fuente
+     * Método que gestiona las graficas de la fuente
      */
     public void graficas() {
         System.out.println("C:" + C + " A0:" + A0 + " Fc:" + Fc + " T0:" + T0 + " M:" + M);
         GeneradorSeAl portadora = new GeneradorSeAl();
         aleatorio = portadora.generar((int) (1000 * velocidad * span));
         //graficarSennal();
-        calculaGraficaSennal();
+        //calculaGraficaSennal();
         //graficarSennalBuffer();
         //graficaFFT();
     }
 
     /**
-     * Metodo que grafica la señal de la fuente
+     * Método que grafica la señal de la fuente
      */
     private void graficarSennal() {
         LinkedList<Double> sennal = new LinkedList<>();

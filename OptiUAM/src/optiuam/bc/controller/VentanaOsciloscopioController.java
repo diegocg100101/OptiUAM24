@@ -57,7 +57,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     Stage stage;
 
     /**
-     *
+     * Elemento gráfico del osciloscopio
      */
     ElementoGrafico elemento;
 
@@ -109,7 +109,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                 if (!controlador.getElementos().get(elemento).isConectadoEntrada()) {
                     osciloscopioControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento).getDibujo().getText());
                 }
-                }
+            }
         }
     }
 
@@ -124,7 +124,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     /**
-     * @param osciloscopio
+     * @param osciloscopio Objeto de tipo osciloscopio
      */
     public void guardarOsciloscopio(Osciloscopio osciloscopio) {
         osciloscopio.setId(controlador.getContadorElemento());
@@ -161,11 +161,32 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         alert.showAndWait();
     }
 
+    /**
+     * Inicializa una instancia del osciloscopio
+     * @param event Eventos del sistema
+     * @throws RuntimeException
+     * @throws InvocationTargetException
+     */
     public void crearOsciloscopio(ActionEvent event) throws RuntimeException, InvocationTargetException {
         Osciloscopio osciloscopio = new Osciloscopio();
         osciloscopio.setConectadoEntrada(false);
         osciloscopio.setIdOsciloscopio(idOsciloscopio);
-        osciloscopio.setNombre("Osciloscopio");
+        osciloscopio.setNombre("oscilloscope");
+
+        // Conexión inicial
+        for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
+            if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+                ElementoGrafico eg = controlador.getDibujos().get(elemento2);
+                osciloscopio.setElementoConectadoEntrada(eg.getDibujo().getText());
+                osciloscopio.setConectadoEntrada(true);
+                eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
+                eg.getComponente().setConectadoSalida(true);
+
+                // Pasa el buffer al elemento conectado
+                osciloscopio.setBufferY(eg.getComponente().getBufferY());
+            }
+        }
+
         idOsciloscopio++;
         guardarOsciloscopio(osciloscopio);
         cerrarVentana(event);
@@ -265,8 +286,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     /**
-     * Método que permite visualizar la conexión hacia delante del conector
-     * con otro elemento
+     * Método que permite visualizar la conexión
      *
      * @param elemG Elemento grafico del conector
      */

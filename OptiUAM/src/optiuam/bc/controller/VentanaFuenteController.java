@@ -590,6 +590,8 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
 
             // Calcula el buffer de datos con todos los datos previamente especificados
             fuente.calcularBuffer();
+
+            System.out.println("prueba");
         }
     }
 
@@ -1056,6 +1058,9 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                     aux.setConectadoSalida(true);
                     eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
                     eg.getComponente().setConectadoEntrada(true);
+
+                    // Pasa el buffer al elemento conectado
+                    eg.getComponente().setBufferY(aux.getBufferY());
                     break;
                 }
             }
@@ -1281,10 +1286,10 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
             fuenteControl.cboxConectarA.getItems().add("Desconected");
             fuenteControl.cboxConectarA.getSelectionModel().select(0);
             for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
-                if ("connector".equals(controlador.getElementos().get(elemento).getNombre()) ||
-                        "spectrum".equals(controlador.getElementos().get(elemento).getNombre())
-                        ||
-                        "demux".equals(controlador.getElementos().get(elemento).getNombre())) {
+                if ("connector".equals(controlador.getElementos().get(elemento).getNombre())
+                        || "spectrum".equals(controlador.getElementos().get(elemento).getNombre())
+                        || "demux".equals(controlador.getElementos().get(elemento).getNombre())
+                        || "oscilloscope".equals(controlador.getElementos().get(elemento).getNombre())) {
                     if (!controlador.getElementos().get(elemento).isConectadoEntrada()) {
                         fuenteControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento).getDibujo().getText());
                     }
