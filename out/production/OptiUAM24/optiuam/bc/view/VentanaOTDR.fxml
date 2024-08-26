@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaOTDRController">
    <children>
       <ImageView fitHeight="400.0" fitWidth="600.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true">
@@ -22,6 +21,6 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Button fx:id="btnCrear" layoutX="284.0" layoutY="243.0" onAction="#crearOTDR" mnemonicParsing="false" style="-fx-background-color: #00ffe4;" text="OK" />
+      <Button fx:id="btnCrear" layoutX="284.0" layoutY="243.0" mnemonicParsing="false" onAction="#crearOTDR" style="-fx-background-color: #00ffe4;" text="OK" />
    </children>
 </AnchorPane>

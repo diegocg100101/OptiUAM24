@@ -91,7 +91,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     @FXML
     Pane Pane;
 
-    public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane, VentanaOsciloscopioController osciloscopioController) {
+    public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane,
+                     VentanaOsciloscopioController osciloscopioController) {
         this.controlador = controlador;
         this.stage = stage;
         this.ventana_principal = ventana;
@@ -101,18 +102,21 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
         osciloscopioControl.cboxConectarA.getSelectionModel().select(0);
 
-        for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
-            if ("connector".equals(controlador.getElementos().get(elemento).getNombre()) ||
-                    "source".equals(controlador.getElementos().get(elemento).getNombre())
+        for (int elemento1 = 0; elemento1 < controlador.getElementos().size(); elemento1++) {
+            if ("connector".equals(controlador.getElementos().get(elemento1).getNombre()) ||
+                    "source".equals(controlador.getElementos().get(elemento1).getNombre())
                     ||
-                    "mux".equals(controlador.getElementos().get(elemento).getNombre())) {
-                if (!controlador.getElementos().get(elemento).isConectadoEntrada()) {
-                    osciloscopioControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento).getDibujo().getText());
+                    "mux".equals(controlador.getElementos().get(elemento1).getNombre())) {
+                if (!controlador.getElementos().get(elemento1).isConectadoEntrada()) {
+                    osciloscopioControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento1).getDibujo().getText());
                 }
             }
         }
     }
 
+    public void init2(ElementoGrafico elemento) {
+        this.elemento = elemento;
+    }
     /**
      * @param url
      * @param resourceBundle
@@ -172,6 +176,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         osciloscopio.setConectadoEntrada(false);
         osciloscopio.setIdOsciloscopio(idOsciloscopio);
         osciloscopio.setNombre("oscilloscope");
+        guardarOsciloscopio(osciloscopio);
+
 
         // Conexión inicial
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
@@ -184,11 +190,11 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
 
                 // Pasa el buffer al elemento conectado
                 osciloscopio.setBufferY(eg.getComponente().getBufferY());
+                break;
             }
         }
 
         idOsciloscopio++;
-        guardarOsciloscopio(osciloscopio);
         cerrarVentana(event);
     }
 
@@ -233,6 +239,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                     VentanaOsciloscopioController osciloscopioController = loader.getController();
 
                     osciloscopioController.init(controlador, stage, ventana_principal, Pane, osciloscopioController);
+                    osciloscopioController.init2(elemento);
                     osciloscopioController.btnCrear.setVisible(false);
                     osciloscopioController.cboxConectarA.setVisible(true);
 

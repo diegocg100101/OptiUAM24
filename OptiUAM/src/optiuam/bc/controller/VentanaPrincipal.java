@@ -612,7 +612,7 @@ public class VentanaPrincipal implements Initializable {
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
-            s.setTitle("OptiUAM BC - Oscilloscope");
+            s.setTitle("OptiUAM BC - OTDR");
             s.initModality(Modality.APPLICATION_MODAL);
             s.setScene(scene);
             s.setResizable(false);
