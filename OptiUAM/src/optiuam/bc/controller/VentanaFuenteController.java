@@ -4,8 +4,6 @@ package optiuam.bc.controller;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -589,7 +587,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
             fuente.graficas();
 
             // Calcula el buffer de datos con todos los datos previamente especificados
-            fuente.calcularBuffer();
+            fuente.calcularDatos();
 
             System.out.println("prueba");
         }
@@ -1060,7 +1058,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                     eg.getComponente().setConectadoEntrada(true);
 
                     // Pasa el buffer al elemento conectado
-                    eg.getComponente().setBufferY(aux.getBufferY());
+                    eg.getComponente().setDatos(aux.getDatos());
                     break;
                 }
             }

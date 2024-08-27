@@ -5,6 +5,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import javax.swing.JFrame;
 
@@ -663,8 +665,8 @@ public class Fuente extends Componente {
     /**
      * Método para obtener el Buffer circular de la fuente
      */
-    public void calcularBuffer() {
-        BufferCircular bufferY = new BufferCircular(3000);
+    public void calcularDatos() {
+        ArrayList<Double> datos = new ArrayList<>();
         double aux, centro, longitudCentro = 0.005, Fs = Fc / 128;
         for (double t = 0; t <= (longitudCentro) * aleatorio.size(); t += (1 / Fs)) {
             aux = 0;
@@ -673,9 +675,9 @@ public class Fuente extends Componente {
                 aux += aleatorio.get(i) * A0 * Math.exp(-Math.pow((t - centro), 2) / (2 * Math.pow(T0, 2)));
                 centro += longitudCentro;
             }
-            bufferY.agregar(aux);
+            datos.add(aux);
         }
-        setBufferY(bufferY.leerBuffer());
+        setDatos(datos);
     }
 
     /**

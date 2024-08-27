@@ -28,9 +28,7 @@ import javafx.scene.shape.Line;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import optiuam.bc.model.ElementoGrafico;
-import optiuam.bc.model.Multiplexor;
 import optiuam.bc.model.Osciloscopio;
-import optiuam.bc.model.Splitter;
 
 /**
  * Clase que se encarga de instanciar un osciloscopio
@@ -152,6 +150,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         elemento.setDibujo(dibujo);
         controlador.getDibujos().add(elemento);
 
+        init2(elemento);
         eventos(elemento);
         Pane.getChildren().add(elemento.getDibujo());
         controlador.setContadorElemento(controlador.getContadorElemento() + 1);
@@ -189,7 +188,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                 eg.getComponente().setConectadoSalida(true);
 
                 // Pasa el buffer al elemento conectado
-                osciloscopio.setBufferY(eg.getComponente().getBufferY());
+                osciloscopio.setDatos(eg.getComponente().getDatos());
                 break;
             }
         }

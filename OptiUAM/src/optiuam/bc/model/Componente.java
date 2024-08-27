@@ -53,7 +53,7 @@ public class Componente {
     /**
      * Buffer que contiene los datos
      */
-    public double[] BufferY;
+    public ArrayList<Double> Datos;
 
     /**
      * Metodo constructor sin parametros
@@ -264,12 +264,12 @@ public class Componente {
         this.nombreid = nombreid;
     }
 
-    public double[] getBufferY() {
-        return BufferY;
+    public ArrayList<Double> getDatos() {
+        return Datos;
     }
 
-    public void setBufferY(double[] bufferY) {
-        BufferY = bufferY;
+    public void setDatos(ArrayList<Double> datos) {
+        Datos = datos;
     }
 
     /**
