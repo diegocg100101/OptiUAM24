@@ -26,7 +26,7 @@
          </font></Button>
       <LineChart fx:id="grafica" layoutX="51.0" layoutY="7.0" prefHeight="340.0" prefWidth="451.0">
         <xAxis>
-          <CategoryAxis side="BOTTOM" fx:id="x" />
+            <NumberAxis fx:id="x" side="BOTTOM" />
         </xAxis>
         <yAxis>
           <NumberAxis fx:id="y" side="LEFT" />

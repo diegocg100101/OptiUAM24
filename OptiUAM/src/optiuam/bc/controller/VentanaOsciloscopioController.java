@@ -96,18 +96,16 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     Pane Pane;
 
     @FXML
-    private LineChart<?, ?> grafica;
+    private LineChart<Number, Number> grafica;
 
     @FXML
-    private CategoryAxis x;
+    private NumberAxis y = new NumberAxis();
 
     @FXML
-    private NumberAxis y;
+    private NumberAxis x = new NumberAxis();
 
     public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane,
                      VentanaOsciloscopioController osciloscopioController) {
-        x.setLabel("Tiempo (s)");
-        y.setLabel("Potencia(db)");
         this.controlador = controlador;
         this.stage = stage;
         this.ventana_principal = ventana;
@@ -347,14 +345,13 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     public void anadirGrafica(){
-        XYChart.Series series = new XYChart.Series();
-
-        for (int i = 0; i < 20 ; i++) {
+        XYChart.Series<Number, Number> series = new XYChart.Series();
+        for (int i = 0; i < 20; i++) {
             series.getData().add(new XYChart.Data(tiempo.get(i), elemento.getComponente().getDatos().get(i)));
         }
+        grafica.getData().addAll(series);
 
-        grafica.getData().add(series);
-
+        System.out.println("prueba");
     }
 
     public static int getIdOsciloscopio() {
