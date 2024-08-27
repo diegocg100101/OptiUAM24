@@ -17,6 +17,10 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -29,6 +33,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import optiuam.bc.model.ElementoGrafico;
 import optiuam.bc.model.Osciloscopio;
+
+import static optiuam.bc.model.Componente.tiempo;
 
 /**
  * Clase que se encarga de instanciar un osciloscopio
@@ -89,13 +95,25 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     @FXML
     Pane Pane;
 
+    @FXML
+    private LineChart<?, ?> grafica;
+
+    @FXML
+    private CategoryAxis x;
+
+    @FXML
+    private NumberAxis y;
+
     public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane,
                      VentanaOsciloscopioController osciloscopioController) {
+        x.setLabel("Tiempo (s)");
+        y.setLabel("Potencia(db)");
         this.controlador = controlador;
         this.stage = stage;
         this.ventana_principal = ventana;
         this.Pane = pane;
         this.osciloscopioControl = osciloscopioController;
+        this.grafica = new LineChart<>(x,y);
 
         osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
         osciloscopioControl.cboxConectarA.getSelectionModel().select(0);
@@ -189,12 +207,13 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
 
                 // Pasa el buffer al elemento conectado
                 osciloscopio.setDatos(eg.getComponente().getDatos());
+                anadirGrafica();
                 break;
             }
         }
 
         idOsciloscopio++;
-        cerrarVentana(event);
+        //cerrarVentana(event);
     }
 
     public void eventos(ElementoGrafico elemento) {
@@ -325,6 +344,17 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         Node source = (Node) event.getSource();
         Stage s = (Stage) source.getScene().getWindow();
         s.close();
+    }
+
+    public void anadirGrafica(){
+        XYChart.Series series = new XYChart.Series();
+
+        for (int i = 0; i < 20 ; i++) {
+            series.getData().add(new XYChart.Data(tiempo.get(i), elemento.getComponente().getDatos().get(i)));
+        }
+
+        grafica.getData().add(series);
+
     }
 
     public static int getIdOsciloscopio() {

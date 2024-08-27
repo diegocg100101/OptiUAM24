@@ -667,6 +667,7 @@ public class Fuente extends Componente {
      */
     public void calcularDatos() {
         ArrayList<Double> datos = new ArrayList<>();
+
         double aux, centro, longitudCentro = 0.005, Fs = Fc / 128;
         for (double t = 0; t <= (longitudCentro) * aleatorio.size(); t += (1 / Fs)) {
             aux = 0;
@@ -676,6 +677,7 @@ public class Fuente extends Componente {
                 centro += longitudCentro;
             }
             datos.add(aux);
+            tiempo.add(t);
         }
         setDatos(datos);
     }

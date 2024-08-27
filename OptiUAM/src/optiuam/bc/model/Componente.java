@@ -55,6 +55,8 @@ public class Componente {
      */
     public ArrayList<Double> Datos;
 
+    public static ArrayList<Double> tiempo = new ArrayList<>();
+
     /**
      * Metodo constructor sin parametros
      */
