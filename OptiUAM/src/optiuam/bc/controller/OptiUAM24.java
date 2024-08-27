@@ -11,7 +11,7 @@ import javafx.stage.StageStyle;
 
 /**
  * Clase principal la cual se encarga de ejecutar la pantalla de inicio del
- * simulador .
+ * simulador
  * @author Arturo Borja
  * @author Karen Cruz
  * @see Application
