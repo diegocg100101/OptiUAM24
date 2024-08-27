@@ -111,7 +111,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         this.ventana_principal = ventana;
         this.Pane = pane;
         this.osciloscopioControl = osciloscopioController;
-        this.grafica = new LineChart<>(x,y);
 
         osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
         osciloscopioControl.cboxConectarA.getSelectionModel().select(0);
@@ -345,12 +344,13 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     public void anadirGrafica(){
-        XYChart.Series<Number, Number> series = new XYChart.Series();
-        for (int i = 0; i < 20; i++) {
-            series.getData().add(new XYChart.Data(tiempo.get(i), elemento.getComponente().getDatos().get(i)));
+        x.setLabel("Tiempo [s]");
+        y.setLabel("Potencia [dB]");
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        for (int i = 0; i < elemento.getComponente().getDatos().size(); i++) {
+            series.getData().add(new XYChart.Data<>(tiempo.get(i), elemento.getComponente().getDatos().get(i)));
         }
-        grafica.getData().addAll(series);
-
+        grafica.getData().add(series);
         System.out.println("prueba");
     }
 
