@@ -104,6 +104,9 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     @FXML
     private NumberAxis x = new NumberAxis();
 
+    @FXML
+    private Slider zoomBar;
+
     public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane,
                      VentanaOsciloscopioController osciloscopioController) {
         this.controlador = controlador;
@@ -112,8 +115,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         this.Pane = pane;
         this.osciloscopioControl = osciloscopioController;
 
-        osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
-        osciloscopioControl.cboxConectarA.getSelectionModel().select(0);
+        // osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
+        // osciloscopioControl.cboxConectarA.getSelectionModel().select(0);
 
         for (int elemento1 = 0; elemento1 < controlador.getElementos().size(); elemento1++) {
             if ("connector".equals(controlador.getElementos().get(elemento1).getNombre()) ||
@@ -346,6 +349,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     public void anadirGrafica(){
         x.setLabel("Tiempo [s]");
         y.setLabel("Potencia [dB]");
+        grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         for (int i = 0; i < elemento.getComponente().getDatos().size(); i++) {
             series.getData().add(new XYChart.Data<>(tiempo.get(i), elemento.getComponente().getDatos().get(i)));

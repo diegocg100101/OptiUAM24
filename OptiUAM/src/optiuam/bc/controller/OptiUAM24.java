@@ -32,7 +32,6 @@ public class OptiUAM24 extends Application {
         primaryStage.getIcons().add(ico);
         primaryStage.initStyle(StageStyle.UNDECORATED);
         Scene scene = new Scene(root);
-        
         primaryStage.setScene(scene);
         primaryStage.show();
     }

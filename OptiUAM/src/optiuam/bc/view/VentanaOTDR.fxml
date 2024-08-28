@@ -21,6 +21,6 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Button fx:id="btnCrear" layoutX="284.0" layoutY="243.0" mnemonicParsing="false" onAction="#crearOTDR" style="-fx-background-color: #00ffe4;" text="OK" />
+      <Button fx:id="btnCrear" layoutX="284.0" layoutY="243.0" mnemonicParsing="false" onAction="#crearOTDR" stylesheets="/Static/CSS/style.css" styleClass="btn" text="OK" />
    </children>
 </AnchorPane>

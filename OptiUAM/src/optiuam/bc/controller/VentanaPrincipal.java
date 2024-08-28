@@ -587,6 +587,7 @@ public class VentanaPrincipal implements Initializable {
             VentanaOsciloscopioController osciloscopioController = loader.getController();
             osciloscopioController.init(controlador, VentanaPrincipal.stage, this, Pane1, osciloscopioController);
             Scene scene = new Scene(root);
+            scene.getStylesheets().add("/Static/CSS/grafica.css");
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);
             s.setTitle("OptiUAM BC - Oscilloscope");
