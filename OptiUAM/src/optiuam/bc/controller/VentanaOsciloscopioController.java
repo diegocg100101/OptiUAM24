@@ -351,7 +351,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
             series.getData().add(new XYChart.Data<>(tiempo.get(i), elemento.getComponente().getDatos().get(i)));
         }
         grafica.getData().add(series);
-        System.out.println("prueba");
     }
 
     public static int getIdOsciloscopio() {

@@ -22,7 +22,7 @@
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Button fx:id="btnCrear" layoutX="823.0" layoutY="82.0" mnemonicParsing="false" onAction="#crearOsciloscopio" prefHeight="25.0" prefWidth="40.0" style="-fx-background-color: #00ffe4;" text="OK" />
+      <Button fx:id="btnCrear" layoutX="823.0" layoutY="82.0" mnemonicParsing="false" onAction="#crearOsciloscopio" prefHeight="25.0" prefWidth="40.0" stylesheets="/Static/CSS/style.css"  styleClass="btnCrear" text="OK" />
       <LineChart fx:id="grafica" layoutX="14.0" layoutY="14.0" prefHeight="556.0" prefWidth="777.0">
         <xAxis>
             <NumberAxis prefWidth="681.0" side="BOTTOM" fx:id="x" />
