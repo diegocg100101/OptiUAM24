@@ -19,7 +19,7 @@
          </image>
       </ImageView>
       <ComboBox fx:id="cboxConectarA" layoutX="788.0" layoutY="102.0" prefHeight="27.0" prefWidth="109.0" promptText="Select" styleClass="cbox" stylesheets="/Static/CSS/style.css" />
-      <Label layoutX="789.0" layoutY="80.0" prefHeight="18.0" prefWidth="102.0" text="Connect to:" textAlignment="CENTER">
+      <Label fx:id="connect" layoutX="789.0" layoutY="80.0" prefHeight="18.0" prefWidth="102.0" text="Connect to:" textAlignment="CENTER">
          <font>
             <Font size="14.0" />
          </font></Label>
@@ -32,7 +32,7 @@
           <NumberAxis fx:id="y" side="LEFT" />
         </yAxis>
       </LineChart>
-      <Slider fx:id="zoomBar" layoutX="836.0" layoutY="244.0" orientation="VERTICAL" stylesheets="/Static/CSS/style.css" styleClass="barra"/>
+      <Slider fx:id="zoomBar" layoutX="836.0" layoutY="244.0" orientation="VERTICAL" styleClass="barra" stylesheets="/Static/CSS/style.css" />
       <Label layoutX="827.0" layoutY="226.0" text="100%" />
       <Label layoutX="834.0" layoutY="384.0" text="0%" />
       <Label layoutX="816.0" layoutY="198.0" prefHeight="27.0" prefWidth="54.0" text="Zoom:">
@@ -40,5 +40,6 @@
             <Font size="18.0" />
          </font>
       </Label>
+      <Button fx:id="btnModify" onAction="#modicarOsciloscopio" layoutX="812.0" layoutY="140.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="MODIFY" />
    </children>
 </AnchorPane>

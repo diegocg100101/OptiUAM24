@@ -388,7 +388,7 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                 } else {
                     elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY() + event.getY() + 1);
                 }
-                if (elem.getComponente().isConectadoSalida() == true) {
+                if (elem.getComponente().isConectadoSalida()) {
                     elem.getComponente().getLinea().setVisible(false);
                     dibujarLinea(elem);
                 }
@@ -790,7 +790,7 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
         conectorController.cboxConectarA.setVisible(true);
         conectorController.btnModificar.setVisible(true);
 
-        if (elemG.getComponente().isConectadoSalida() == true) {
+        if (elemG.getComponente().isConectadoSalida()) {
             if (elemG.getComponente().getElementoConectadoSalida().startsWith("mux")) {
                 conectorControl.cboxConectarA.getSelectionModel().select(elemG.getComponente().getElementoConectadoSalida());
             } else {

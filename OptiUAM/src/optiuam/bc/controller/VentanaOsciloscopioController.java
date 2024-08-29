@@ -31,8 +31,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import optiuam.bc.model.Demultiplexor;
 import optiuam.bc.model.ElementoGrafico;
 import optiuam.bc.model.Osciloscopio;
+import optiuam.bc.model.Splitter;
 
 import static optiuam.bc.model.Componente.tiempo;
 
@@ -49,6 +51,13 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * Identificador del osciloscopio
      */
     static int idOsciloscopio = 0;
+
+    public Label connect;
+
+    /**
+     * Botón para modificar
+     */
+    public Button btnModify;
 
     /**
      * Controlador del simulador
@@ -115,8 +124,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         this.Pane = pane;
         this.osciloscopioControl = osciloscopioController;
 
-        // osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
-        // osciloscopioControl.cboxConectarA.getSelectionModel().select(0);
+        osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
+        osciloscopioController.cboxConectarA.getSelectionModel().select(0);
 
         for (int elemento1 = 0; elemento1 < controlador.getElementos().size(); elemento1++) {
             if ("connector".equals(controlador.getElementos().get(elemento1).getNombre()) ||
@@ -141,6 +150,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     public void initialize(URL url, ResourceBundle resourceBundle) {
         cboxConectarA.setVisible(true);
         btnCrear.setVisible(true);
+        btnModify.setVisible(false);
     }
 
     /**
@@ -169,7 +179,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         controlador.getDibujos().add(elemento);
 
         init2(elemento);
-        eventos(elemento);
         Pane.getChildren().add(elemento.getDibujo());
         controlador.setContadorElemento(controlador.getContadorElemento() + 1);
         osciloscopio.setNombreid(osciloscopio.getNombre() + "_" + osciloscopio.getId());
@@ -195,7 +204,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         osciloscopio.setNombre("oscilloscope");
         guardarOsciloscopio(osciloscopio);
 
-
         // Conexión inicial
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
             if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
@@ -208,12 +216,33 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                 // Pasa el buffer al elemento conectado
                 osciloscopio.setDatos(eg.getComponente().getDatos());
                 anadirGrafica();
+                dibujarLineaAtras(elemento);
                 break;
             }
         }
+        eventos(elemento);
 
         idOsciloscopio++;
         //cerrarVentana(event);
+    }
+
+    public void modicarOsciloscopio(ActionEvent event) throws RuntimeException, InvocationTargetException{
+        Osciloscopio osciloscopio = (Osciloscopio) elemento.getComponente();
+        for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
+            if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+                ElementoGrafico eg = controlador.getDibujos().get(elemento2);
+                osciloscopio.setElementoConectadoEntrada(eg.getDibujo().getText());
+                osciloscopio.setConectadoEntrada(true);
+                eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
+                eg.getComponente().setConectadoSalida(true);
+
+                // Pasa el buffer al elemento conectado
+                osciloscopio.setDatos(eg.getComponente().getDatos());
+                anadirGrafica();
+                dibujarLineaAtras(elemento);
+                break;
+            }
+        }
     }
 
     public void eventos(ElementoGrafico elemento) {
@@ -236,8 +265,14 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                     elemento.getDibujo().setLayoutY(Pane.getChildren().get(index).getLayoutY() + event.getY() + 1);
                 }
                 if (elemento.getComponente().isConectadoEntrada()) {
-                    elemento.getComponente().getLinea().setVisible(false);
-                    dibujarLinea(elemento);
+                    ElementoGrafico aux;
+                    for (int it = 0; it < controlador.getDibujos().size(); it++) {
+                        aux = controlador.getDibujos().get(it);
+                        if (elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
+                            aux.getComponente().getLinea().setVisible(false);
+                            dibujarLineaAtras(elemento);
+                        }
+                    }
                 }
             }
         });
@@ -258,8 +293,16 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
 
                     osciloscopioController.init(controlador, stage, ventana_principal, Pane, osciloscopioController);
                     osciloscopioController.init2(elemento);
+
                     osciloscopioController.btnCrear.setVisible(false);
-                    osciloscopioController.cboxConectarA.setVisible(true);
+
+                    if (elemento.getComponente().isConectadoEntrada()){
+                        osciloscopioController.cboxConectarA.setVisible(false);
+                        osciloscopioController.connect.setVisible(false);
+                        osciloscopioController.btnModify.setVisible(false);
+                    } else {
+                        osciloscopioController.btnModify.setVisible(true);
+                    }
 
                     Scene scene = new Scene(root);
                     Image ico = new Image("images/acercaDe.png");
@@ -311,23 +354,63 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     /**
-     * Método que permite visualizar la conexión
+     * Metodo que permite visualizar la conexion hacia atras del conector
+     * con otro elemento
      *
-     * @param elemG Elemento grafico del conector
+     * @param elem Elemento grafico del conector
      */
-    public void dibujarLinea(ElementoGrafico elemG) {
+    public void dibujarLineaAtras(ElementoGrafico elem) {
         Line line = new Line();
         ElementoGrafico aux = new ElementoGrafico();
-
         for (int it = 0; it < controlador.getDibujos().size(); it++) {
-            if (elemG.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
+            if (elem.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
                 aux = controlador.getDibujos().get(it);
                 line.setStrokeWidth(2);
                 line.setStroke(Color.BLACK);
-                line.setStartX(aux.getDibujo().getLayoutX() + aux.getDibujo().getWidth());
-                line.setStartY(aux.getDibujo().getLayoutY() + 12);
-                line.setEndX(elemG.getDibujo().getLayoutX());
-                line.setEndY(elemG.getDibujo().getLayoutY() + 23);
+
+                if (aux.getDibujo().getText().contains("splitter")) {
+                    Splitter splitter = (Splitter) aux.getComponente();
+                    switch (splitter.getSalidas()) {
+                        case 2:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 50);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (24));
+                            break;
+                        case 4:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 50);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (18));
+                            break;
+                        case 8:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 80);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (10));
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (aux.getDibujo().getText().contains("demux")) {
+                    Demultiplexor de = (Demultiplexor) aux.getComponente();
+                    switch (de.getSalidas()) {
+                        case 2:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 50);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (24));
+                            break;
+                        case 4:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 50);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (18));
+                            break;
+                        case 8:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 65);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (10));
+                            break;
+
+                        default:
+                            break;
+                    }
+                } else {
+                    line.setStartX(aux.getDibujo().getLayoutX() + aux.getDibujo().getWidth() - 3);
+                    line.setStartY(aux.getDibujo().getLayoutY() + 20);
+                }
+                line.setEndX(elem.getDibujo().getLayoutX());
+                line.setEndY(elem.getDibujo().getLayoutY() + 10);
                 line.setVisible(true);
                 Pane.getChildren().add(line);
                 aux.getComponente().setLinea(line);
@@ -351,7 +434,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         y.setLabel("Potencia [dB]");
         grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        for (int i = 0; i < elemento.getComponente().getDatos().size(); i++) {
+        for (int i = 0; i < 20; i++) { // elemento.getComponente().getDatos().size()
             series.getData().add(new XYChart.Data<>(tiempo.get(i), elemento.getComponente().getDatos().get(i)));
         }
         grafica.getData().add(series);

@@ -697,7 +697,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                 } else {
                     elem.getDibujo().setLayoutY(Pane1.getChildren().get(j).getLayoutY() + event.getY() + 1);
                 }
-                if (elem.getComponente().isConectadoSalida() == true) {
+                if (elem.getComponente().isConectadoSalida()) {
                     elem.getComponente().getLinea().setVisible(false);
                     dibujarLinea(elem);
                 }

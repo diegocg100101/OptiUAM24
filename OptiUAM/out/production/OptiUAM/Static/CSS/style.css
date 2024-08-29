@@ -54,6 +54,14 @@
     -fx-text-fill: white;
 }
 
+/*
+.cbox .list-cell:selected {
+    -fx-background-color: #5d97a2;
+    -fx-text-fill: white;
+    -fx-border-radius: 5;
+}
+ */
+
 .barra{
     -fx-background-color: white;
 }
