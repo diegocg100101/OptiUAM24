@@ -12,12 +12,18 @@
     -fx-border-radius: 5;
 }
 
-.etiqueta{
-    -fx-background-color: #8567bb;
-    -fx-text-fill: white;
+.btnComponente{
+    -fx-background-color: #9487cb;
+    -fx-border-color: #665a98;
+    -fx-border-radius: 5;
     -fx-background-radius: 5;
-    -fx-alignment: center;
-    -fx-padding: 5;
+}
+
+.btnComponente:hover{
+    -fx-background-color: white;
+    -fx-border-color: #665a98;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
 }
 
 .cbox{
@@ -65,7 +71,7 @@
 }
 
 .componentesMenu{
-    -fx-background-color: #eeefff;
+    -fx-background-color: #d6cfea;
 }
 
 .chart-series-line{
