@@ -12,19 +12,7 @@
     -fx-border-radius: 5;
 }
 
-.btnComponente{
-    -fx-background-color: #9487cb;
-    -fx-border-color: #665a98;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
-}
-
-.btnComponente:hover{
-    -fx-background-color: white;
-    -fx-border-color: #665a98;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
-}
+/* Lista de elementos conectados */
 
 .cbox{
     -fx-background-color: white;
@@ -78,9 +66,27 @@
     -fx-background-color: #7cbecb;
 }
 
+/* Menú de componentes*/
+
 .componentesMenu{
     -fx-background-color: #d6cfea;
 }
+
+.btnComponente{
+    -fx-background-color: #9487cb;
+    -fx-border-color: #665a98;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.btnComponente:hover{
+    -fx-background-color: white;
+    -fx-border-color: #665a98;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Gráficas */
 
 .chart-series-line{
     -fx-stroke: rgba(127, 0, 190, 0.93);
@@ -90,3 +96,10 @@
     -fx-background-color: transparent;
     -fx-padding: 0;
 }
+
+/*
+.chart-plot-background{
+    -fx-background-color: #21304d;
+}
+ */
+

@@ -54,7 +54,9 @@ public class Componente {
      * Buffer que contiene los datos
      */
     public ArrayList<Double> Datos;
-
+    /**
+     * Arreglo que contiene los datos de tiempo
+     */
     public static ArrayList<Double> tiempo = new ArrayList<>();
 
     /**
@@ -266,10 +268,18 @@ public class Componente {
         this.nombreid = nombreid;
     }
 
+    /**
+     * Método que regresa el buffer de datos (amplitdes)
+     * @return
+     */
     public ArrayList<Double> getDatos() {
         return Datos;
     }
 
+    /**
+     * Método que modifica el buffer de datos (amplitud)
+     * @param datos Amplitudes
+     */
     public void setDatos(ArrayList<Double> datos) {
         Datos = datos;
     }
