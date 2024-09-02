@@ -16,7 +16,7 @@ import optiuam.bc.model.Empalme;
 import optiuam.bc.model.FBG;
 import optiuam.bc.model.Fibra;
 import optiuam.bc.model.Fuente;
-import optiuam.bc.model.MedidorEspectro;
+import optiuam.bc.model.AnalizadorEspectro;
 import optiuam.bc.model.MedidorPotencia;
 import optiuam.bc.model.Multiplexor;
 import optiuam.bc.model.Splitter;
@@ -272,7 +272,7 @@ public class ControladorGeneral {
                             obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else{
-                    MedidorEspectro espectro = (MedidorEspectro)elementos.get(i);
+                    AnalizadorEspectro espectro = (AnalizadorEspectro)elementos.get(i);
                     pw.println(espectro.toString() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());

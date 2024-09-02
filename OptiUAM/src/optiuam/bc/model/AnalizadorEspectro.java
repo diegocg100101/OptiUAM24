@@ -9,7 +9,7 @@ package optiuam.bc.model;
  * @author Daniel Hernandez
  * @see Componente
  */
-public class MedidorEspectro extends Componente {
+public class AnalizadorEspectro extends Componente {
     
     /**Identificador del medidor de espectros. Es diferente al identificador del 
      * componente*/
@@ -18,7 +18,7 @@ public class MedidorEspectro extends Componente {
     /**
     * Metodo constructor sin parametros
     */
-    public MedidorEspectro() {
+    public AnalizadorEspectro() {
     }
     
     /**
@@ -29,8 +29,8 @@ public class MedidorEspectro extends Componente {
      * conectado con el medidor de espectros
      * @param conectado Indica si el componente esta conectado
     */
-    public MedidorEspectro(String nombre, int id, String elementoConectado, 
-            boolean conectado) {
+    public AnalizadorEspectro(String nombre, int id, String elementoConectado,
+                              boolean conectado) {
         this.nombre = nombre;
         this.id = id;
     }

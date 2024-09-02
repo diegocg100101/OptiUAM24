@@ -700,7 +700,7 @@ public class VentanaPrincipal implements Initializable {
         alert.setHeaderText(null);
         alert.showAndWait();
 
-        MedidorEspectro espectro = new MedidorEspectro();
+        AnalizadorEspectro espectro = new AnalizadorEspectro();
         espectro.setNombre("spectrum");
         espectro.setConectadoEntrada(false);
         espectro.setConectadoSalida(false);
@@ -1132,7 +1132,7 @@ public class VentanaPrincipal implements Initializable {
                         alert.setHeaderText(null);
                         alert.showAndWait();
                     } else {
-                        MedidorEspectro aux = (MedidorEspectro) controlador.getElementos().get(elemento);
+                        AnalizadorEspectro aux = (AnalizadorEspectro) controlador.getElementos().get(elemento);
                         controlador.getDibujos().remove(dibujo);
                         controlador.getElementos().remove(aux);
                         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
@@ -1188,7 +1188,7 @@ public class VentanaPrincipal implements Initializable {
                         s.getIcons().add(ico);
                         s.setTitle("OptiUAM BC - Properties");
                         s.initModality(Modality.APPLICATION_MODAL);
-                        MedidorEspectro aux = (MedidorEspectro) controlador.getElementos().get(elemento);
+                        AnalizadorEspectro aux = (AnalizadorEspectro) controlador.getElementos().get(elemento);
                         Label label = new Label("  Name: " + aux.getNombre() +
                                 "\n  Id: " + aux.getIdEspectro() +
                                 "\n  Input: " + aux.getElementoConectadoEntrada()/*+
@@ -1580,7 +1580,7 @@ public class VentanaPrincipal implements Initializable {
                         break;
 
                     case "spectrum":
-                        MedidorEspectro espectro = new MedidorEspectro();
+                        AnalizadorEspectro espectro = new AnalizadorEspectro();
                         espectro.setId(Integer.valueOf(partes[1]));
                         espectro.setNombre(nombre);
                         espectro.setConectadoEntrada(Boolean.valueOf(partes[2]));
@@ -1894,7 +1894,7 @@ public class VentanaPrincipal implements Initializable {
         line.setEndY(elem.getDibujo().getLayoutY() + 6);
 
         if (elem.getDibujo().getText().contains("spectrum")) {
-            MedidorEspectro esp = (MedidorEspectro) elem.getComponente();
+            AnalizadorEspectro esp = (AnalizadorEspectro) elem.getComponente();
             if (esp.isConectadoEntrada() && esp.getElementoConectadoEntrada().startsWith("demux")) {
                 Demultiplexor dem = (Demultiplexor) aux.getComponente();
                 if (dem.isConectadoSalida()) {
