@@ -11,19 +11,19 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="604.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaOsciloscopioController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="639.0" prefWidth="971.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaOsciloscopioController">
    <children>
-      <ImageView fitHeight="659.0" fitWidth="910.0" layoutY="-11.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="694.0" fitWidth="971.0" layoutY="-11.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../images/fondoOsciloscopio.png" />
          </image>
       </ImageView>
-      <ComboBox fx:id="cboxConectarA" layoutX="788.0" layoutY="102.0" prefHeight="27.0" prefWidth="109.0" promptText="Select" styleClass="cbox" stylesheets="/Static/CSS/style.css" />
-      <Label fx:id="connect" layoutX="789.0" layoutY="80.0" prefHeight="18.0" prefWidth="102.0" text="Connect to:" textAlignment="CENTER">
+      <ComboBox fx:id="cboxConectarA" layoutX="853.0" layoutY="90.0" prefHeight="27.0" prefWidth="109.0" promptText="Select" styleClass="cbox" stylesheets="/Static/CSS/style.css" />
+      <Label fx:id="connect" layoutX="856.0" layoutY="70.0" prefHeight="20.0" prefWidth="74.0" text="Connect to:" textAlignment="CENTER">
          <font>
             <Font size="14.0" />
          </font></Label>
-      <Button fx:id="btnCrear" layoutX="823.0" layoutY="140.0" mnemonicParsing="false" onAction="#crearOsciloscopio" prefHeight="25.0" prefWidth="40.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK" />
+      <Button fx:id="btnCrear" layoutX="886.0" layoutY="132.0" mnemonicParsing="false" onAction="#crearOsciloscopio" prefHeight="25.0" prefWidth="40.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK" />
       <LineChart fx:id="grafica" layoutX="14.0" layoutY="14.0" prefHeight="556.0" prefWidth="777.0">
         <xAxis>
             <NumberAxis prefWidth="681.0" side="BOTTOM" fx:id="x" />
@@ -32,9 +32,31 @@
           <NumberAxis fx:id="y" side="LEFT" />
         </yAxis>
       </LineChart>
-      <Slider fx:id="zoomY" layoutX="784.0" layoutY="134.0" orientation="VERTICAL" prefHeight="336.0" prefWidth="14.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
-      <Button fx:id="btnModify" layoutX="812.0" layoutY="140.0" mnemonicParsing="false" onAction="#modicarOsciloscopio" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="MODIFY" />
-      <Button fx:id="btnGraficar" layoutX="812.0" layoutY="513.0" mnemonicParsing="false" onAction="#anadirGrafica" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="GRAPH" />
-      <Slider fx:id="zoomX" layoutX="188.0" layoutY="563.0" prefHeight="14.0" prefWidth="461.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <Slider fx:id="zoomY" layoutX="798.0" layoutY="132.0" orientation="VERTICAL" prefHeight="336.0" prefWidth="14.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <Button fx:id="btnModify" layoutX="877.0" layoutY="132.0" mnemonicParsing="false" onAction="#modicarOsciloscopio" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="MODIFY" />
+      <Button fx:id="btnGraficar" layoutX="877.0" layoutY="551.0" mnemonicParsing="false" onAction="#anadirGraficaWatts" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="GRAPH" />
+      <Slider fx:id="centroX" layoutX="55.0" layoutY="563.0" prefHeight="14.0" prefWidth="726.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <ComboBox fx:id="cboxUnidades" layoutX="865.0" layoutY="264.0" prefHeight="27.0" prefWidth="86.0" promptText="Select" styleClass="cbox" stylesheets="/Static/CSS/style.css" />
+      <Label fx:id="units" layoutX="867.0" layoutY="244.0" prefHeight="20.0" prefWidth="40.0" text="Units:" textAlignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Button fx:id="btnUnidades" layoutX="888.0" layoutY="300.0" mnemonicParsing="false" onAction="#seleccionarUnidades" prefHeight="26.0" prefWidth="40.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK" />
+      <Slider fx:id="zoomX" layoutX="198.0" layoutY="581.0" prefHeight="14.0" prefWidth="461.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <Slider fx:id="centroY" layoutX="784.0" layoutY="39.0" orientation="VERTICAL" prefHeight="505.0" prefWidth="14.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <Label fx:id="zoom" layoutX="152.0" layoutY="577.0" prefHeight="20.0" prefWidth="40.0" text="Zoom:" textAlignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="center" layoutX="7.0" layoutY="560.0" prefHeight="20.0" prefWidth="48.0" text="Center:" textAlignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="center1" layoutX="781.0" layoutY="19.0" prefHeight="20.0" prefWidth="48.0" text="Center:" textAlignment="CENTER" />
+      <Label fx:id="zoom1" layoutX="798.0" layoutY="113.0" prefHeight="20.0" prefWidth="40.0" text="Zoom:" textAlignment="CENTER" />
+      <Button fx:id="btnReset" layoutX="372.0" layoutY="600.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="RESET" />
    </children>
 </AnchorPane>

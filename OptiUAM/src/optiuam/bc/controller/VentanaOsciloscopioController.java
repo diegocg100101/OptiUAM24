@@ -18,7 +18,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -62,6 +61,26 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * Posición del conector en el eje Y
      */
     static double posY;
+
+    /**
+     * Botón para confirmar unidades
+     */
+    public Button btnUnidades;
+
+    /**
+     * Caja con las unidades
+     */
+    public ComboBox cboxUnidades;
+
+    /**
+     * Slider para modificar el centro de X
+     */
+    public Slider centroX;
+
+    /**
+     * Slider para modificar el centro de Y
+     */
+    public Slider centroY;
 
     /**
      * Lista desplegable de elementos para conectar
@@ -152,6 +171,10 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
 
         osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
         osciloscopioController.cboxConectarA.getSelectionModel().select(0);
+
+        osciloscopioController.cboxUnidades.getItems().add("mW");
+        osciloscopioController.cboxUnidades.getItems().add("dBm");
+        osciloscopioController.cboxUnidades.getSelectionModel().select(0);
 
         for (int elemento1 = 0; elemento1 < controlador.getElementos().size(); elemento1++) {
             if ("connector".equals(controlador.getElementos().get(elemento1).getNombre()) ||
@@ -253,7 +276,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
 
                 // Pasa el buffer al elemento conectado
                 osciloscopio.setDatos(eg.getComponente().getDatos());
-                anadirGrafica();
+                anadirGraficaWatts();
                 dibujarLineaAtras(elemento);
                 break;
             }
@@ -282,7 +305,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                 osciloscopio.setDatos(eg.getComponente().getDatos());
 
                 // Realiza la gráfica
-                anadirGrafica();
+                anadirGraficaWatts();
                 dibujarLineaAtras(elemento);
                 break;
             }
@@ -471,13 +494,14 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         s.close();
     }
 
-    public void anadirGrafica(){
+    public void anadirGraficaWatts(){
+        grafica.getData().clear();
         x.setLabel("Tiempo [s]");
-        y.setLabel("Potencia [dB]");
+        y.setLabel("Potencia [mW]");
         grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        for (int i = 0; i < elemento.getComponente().getDatos().size(); i++) { // elemento.getComponente().getDatos().size()
-            series.getData().add(new XYChart.Data<>(tiempo.get(i), elemento.getComponente().getDatos().get(i)));
+        for (int i = 0; i < elemento.getComponente().getDatos().size(); i++) {
+            series.getData().add(new XYChart.Data<>(tiempo.get(i), elemento.getComponente().getDatos().get(i) ));
         }
 
         x.setAutoRanging(false);
@@ -487,26 +511,103 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         y.setLowerBound(Collections.min(elemento.getComponente().getDatos()));
         y.setUpperBound(Collections.max(elemento.getComponente().getDatos()));
 
+        centroX.setMin(x.getLowerBound());
+        centroX.setMax(x.getUpperBound());
+        centroX.setValue((x.getLowerBound() + x.getUpperBound()) / 2 );
 
+        centroY.setMin(y.getLowerBound());
+        centroY.setMax(y.getUpperBound());
+        centroY.setValue((y.getLowerBound() + y.getUpperBound()) / 2 );
+
+        centroX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroX());
+        centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
         zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
-        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomY(newVal.doubleValue()));
+        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
         grafica.getData().add(series);
     }
 
+    public void anadirGraficadBm(){
+        grafica.getData().clear();
+        double dato;
+        x.setLabel("Tiempo [s]");
+        y.setLabel("Potencia [dBm]");
+        grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        for (int i = 0; i < elemento.getComponente().getDatos().size(); i++) {
+            dato = calculaDecibeles(elemento.getComponente().getDatos().get(i));
+            series.getData().add(new XYChart.Data<>(tiempo.get(i), (dato < -60) ? -60 : dato));
+        }
+
+        x.setAutoRanging(false);
+        y.setAutoRanging(false);
+        x.setLowerBound(Collections.min(tiempo));
+        x.setUpperBound(Collections.max(tiempo));
+        y.setLowerBound(-60);
+        y.setUpperBound(calculaDecibeles(Collections.max(elemento.getComponente().getDatos())));
+
+        centroX.setMin(x.getLowerBound());
+        centroX.setMax(x.getUpperBound());
+        centroX.setValue((x.getLowerBound() + x.getUpperBound()) / 2 );
+
+        centroY.setMin(y.getLowerBound());
+        centroY.setMax(y.getUpperBound());
+        centroY.setValue((y.getLowerBound() + y.getUpperBound()) / 2 );
+
+        centroX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroX());
+        centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
+        zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
+        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYdBm(newVal.doubleValue()));
+        grafica.getData().add(series);
+    }
+
+    public double calculaDecibeles(double miliWatts){
+        double decibeles = 0;
+        decibeles = 10 * Math.log10(miliWatts);
+        return decibeles;
+    }
+
     private void ajustarZoomX(double factor){
-        double centro = (x.getUpperBound() + x.getLowerBound()) / 2;
+        double center = (x.getUpperBound() + x.getLowerBound()) / 2;
         double nuevoRango = Collections.max(tiempo) / factor;
-        x.setLowerBound(centro - nuevoRango / 2);
-        x.setUpperBound(centro + nuevoRango / 2);
+        x.setLowerBound(center - nuevoRango / 2);
+        x.setUpperBound(center + nuevoRango / 2);
         x.setTickUnit(nuevoRango / 10);
     }
 
-    private void ajustarZoomY(double factor){
+    private void ajustarZoomYmW(double factor){
         double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
         double nuevoRango = Collections.max(elemento.getComponente().getDatos()) / factor;
         y.setLowerBound(centro - nuevoRango / 2);
         y.setUpperBound(centro + nuevoRango / 2);
         y.setTickUnit(nuevoRango / 10);
+    }
+
+    private void ajustarZoomYdBm(double factor){
+        double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
+        double nuevoRango = calculaDecibeles(Collections.max(elemento.getComponente().getDatos())) / factor;
+        y.setLowerBound(centro - nuevoRango / 2);
+        y.setUpperBound(centro + nuevoRango / 2);
+        y.setTickUnit(nuevoRango / 10);
+    }
+
+    private void ajustarCentroX(){
+        double diferencia = (x.getUpperBound() - x.getLowerBound()) / 2;
+        x.setLowerBound(centroX.getValue() - diferencia);
+        x.setUpperBound(centroX.getValue() + diferencia);
+    }
+
+    private void ajustarCentroY(){
+        double diferencia = (y.getUpperBound() - y.getLowerBound()) / 2;
+        y.setLowerBound(centroY.getValue() - diferencia);
+        y.setUpperBound(centroY.getValue() + diferencia);
+    }
+
+    public void seleccionarUnidades(){
+        if(osciloscopioControl.cboxUnidades.getSelectionModel().getSelectedItem().toString().equals("mW")){
+            anadirGraficaWatts();
+        } else if(osciloscopioControl.cboxUnidades.getSelectionModel().getSelectedItem().toString().equals("dBm")){
+            anadirGraficadBm();
+        }
     }
 
     public static int getIdOsciloscopio() {
