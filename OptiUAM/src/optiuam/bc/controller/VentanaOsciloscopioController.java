@@ -161,6 +161,14 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     VentanaOsciloscopioController osciloscopioControl;
 
 
+    /**
+     * Inicializa el controlador
+     * @param controlador Controlador general
+     * @param stage
+     * @param ventana
+     * @param pane
+     * @param osciloscopioController
+     */
     public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane,
                      VentanaOsciloscopioController osciloscopioController) {
         this.controlador = controlador;
@@ -169,9 +177,11 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         this.Pane = pane;
         this.osciloscopioControl = osciloscopioController;
 
+        // Caja de conexión
         osciloscopioControl.cboxConectarA.getItems().add("Desconnected");
         osciloscopioController.cboxConectarA.getSelectionModel().select(0);
 
+        // Caja de unidades a graficar
         osciloscopioController.cboxUnidades.getItems().add("mW");
         osciloscopioController.cboxUnidades.getItems().add("dBm");
         osciloscopioController.cboxUnidades.getSelectionModel().select(0);
@@ -291,6 +301,12 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         }
     }
 
+    /**
+     * Método para modifica la conexión del osciloscopio
+     * @param event
+     * @throws RuntimeException
+     * @throws InvocationTargetException
+     */
     public void modicarOsciloscopio(ActionEvent event) throws RuntimeException, InvocationTargetException{
         Osciloscopio osciloscopio = (Osciloscopio) elemento.getComponente();
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
@@ -312,6 +328,10 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         }
     }
 
+    /**
+     * Método para gestionar eventos del osciloscopio
+     * @param elemento
+     */
     public void eventos(ElementoGrafico elemento) {
         elemento.getDibujo().setOnMouseDragged((MouseEvent event) -> {
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -494,6 +514,9 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         s.close();
     }
 
+    /**
+     * Método para inicializar los valores de la gráfica en mW, graficar y mapear los Sliders con los ejes
+     */
     public void anadirGraficaWatts(){
         grafica.getData().clear();
         x.setLabel("Tiempo [s]");
@@ -526,6 +549,9 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         grafica.getData().add(series);
     }
 
+    /**
+     * Método para inicializar los valores de la gráfica en dBm, graficar y mapear los Sliders con los ejes
+     */
     public void anadirGraficadBm(){
         grafica.getData().clear();
         double dato;
@@ -560,12 +586,21 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         grafica.getData().add(series);
     }
 
+    /**
+     * Método para transformar la potencia de miliWatts a decibeles
+     * @param miliWatts Valor en miliWatts
+     * @return
+     */
     public double calculaDecibeles(double miliWatts){
         double decibeles = 0;
         decibeles = 10 * Math.log10(miliWatts);
         return decibeles;
     }
 
+    /**
+     * Método para ajustar los límites del eje "x" y permitir el zoom
+     * @param factor Factor por el que se dividirá la ventana
+     */
     private void ajustarZoomX(double factor){
         double center = (x.getUpperBound() + x.getLowerBound()) / 2;
         double nuevoRango = Collections.max(tiempo) / factor;
@@ -574,6 +609,10 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         x.setTickUnit(nuevoRango / 10);
     }
 
+    /**
+     * Método para ajustar los límites del eje "y" y permitir el zoom en la gráfica de miliWatts
+     * @param factor Factor por el que se dividirá la ventana
+     */
     private void ajustarZoomYmW(double factor){
         double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
         double nuevoRango = Collections.max(elemento.getComponente().getDatos()) / factor;
@@ -582,6 +621,10 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         y.setTickUnit(nuevoRango / 10);
     }
 
+    /**
+     * Método para ajustar los límites del eje "y" y permitir el zoom en la gráfica de decibeles
+     * @param factor Factor por el que se dividirá la ventana
+     */
     private void ajustarZoomYdBm(double factor){
         double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
         double nuevoRango = calculaDecibeles(Collections.max(elemento.getComponente().getDatos())) / factor;
@@ -590,18 +633,27 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         y.setTickUnit(nuevoRango / 10);
     }
 
+    /**
+     * Método para ajustar los límites dependiendo el centro en el eje "x" indicado con el Slider
+     */
     private void ajustarCentroX(){
         double diferencia = (x.getUpperBound() - x.getLowerBound()) / 2;
         x.setLowerBound(centroX.getValue() - diferencia);
         x.setUpperBound(centroX.getValue() + diferencia);
     }
 
+    /**
+     * Método para ajustar los límites dependiendo el centro en el eje "y" indicado con el Slider
+     */
     private void ajustarCentroY(){
         double diferencia = (y.getUpperBound() - y.getLowerBound()) / 2;
         y.setLowerBound(centroY.getValue() - diferencia);
         y.setUpperBound(centroY.getValue() + diferencia);
     }
 
+    /**
+     * Grafica nuevamente dependiendo de las unidades que se seleccionen en el ComboBox
+     */
     public void seleccionarUnidades(){
         if(osciloscopioControl.cboxUnidades.getSelectionModel().getSelectedItem().toString().equals("mW")){
             anadirGraficaWatts();
@@ -609,6 +661,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
             anadirGraficadBm();
         }
     }
+
+    // Getters y Setters
 
     public static int getIdOsciloscopio() {
         return idOsciloscopio;
