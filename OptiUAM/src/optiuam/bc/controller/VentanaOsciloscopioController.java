@@ -219,7 +219,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         zoomX.setMin(1);
         zoomX.setMax(100);
         zoomX.setValue(1);
-        zoomY.setMin(0.1);
+        zoomY.setMin(0.01);
         zoomY.setMax(2);
         zoomY.setValue(1);
     }
@@ -604,8 +604,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     private void ajustarZoomX(double factor){
         double center = (x.getUpperBound() + x.getLowerBound()) / 2;
         double nuevoRango = Collections.max(tiempo) / factor;
-        x.setLowerBound(center - nuevoRango / 2);
-        x.setUpperBound(center + nuevoRango / 2);
+        x.setLowerBound(center - nuevoRango);
+        x.setUpperBound(center + nuevoRango);
         x.setTickUnit(nuevoRango / 10);
     }
 
@@ -616,8 +616,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     private void ajustarZoomYmW(double factor){
         double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
         double nuevoRango = Collections.max(elemento.getComponente().getDatos()) / factor;
-        y.setLowerBound(centro - nuevoRango / 2);
-        y.setUpperBound(centro + nuevoRango / 2);
+        y.setLowerBound(centro - nuevoRango);
+        y.setUpperBound(centro + nuevoRango);
         y.setTickUnit(nuevoRango / 10);
     }
 
@@ -628,8 +628,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     private void ajustarZoomYdBm(double factor){
         double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
         double nuevoRango = calculaDecibeles(Collections.max(elemento.getComponente().getDatos())) / factor;
-        y.setLowerBound(centro - nuevoRango / 2);
-        y.setUpperBound(centro + nuevoRango / 2);
+        y.setLowerBound(centro - nuevoRango);
+        y.setUpperBound(centro + nuevoRango);
         y.setTickUnit(nuevoRango / 10);
     }
 
