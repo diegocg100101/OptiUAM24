@@ -57,6 +57,6 @@
       </Label>
       <Label fx:id="center1" layoutX="781.0" layoutY="19.0" prefHeight="20.0" prefWidth="48.0" text="Center:" textAlignment="CENTER" />
       <Label fx:id="zoom1" layoutX="798.0" layoutY="113.0" prefHeight="20.0" prefWidth="40.0" text="Zoom:" textAlignment="CENTER" />
-      <Button fx:id="btnReset" layoutX="372.0" layoutY="600.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="RESET" />
+      <Button fx:id="btnReset" layoutX="372.0" onAction="#resetLimits" layoutY="600.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="RESET" />
    </children>
 </AnchorPane>

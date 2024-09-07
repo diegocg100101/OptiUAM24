@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -81,6 +82,11 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * Slider para modificar el centro de Y
      */
     public Slider centroY;
+
+    /**
+     * Boton para refrescar la grafica
+     */
+    public Button btnReset;
 
     /**
      * Lista desplegable de elementos para conectar
@@ -160,6 +166,9 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      */
     VentanaOsciloscopioController osciloscopioControl;
 
+    private ArrayList<Double> limitesX = new ArrayList<>();
+
+    private ArrayList<Double> limitesY = new ArrayList<>();
 
     /**
      * Inicializa el controlador
@@ -216,12 +225,10 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         btnCrear.setVisible(true);
         btnModify.setVisible(false);
         btnGraficar.setVisible(false);
+        btnReset.setVisible(true);
         zoomX.setMin(1);
         zoomX.setMax(100);
         zoomX.setValue(1);
-        zoomY.setMin(0.01);
-        zoomY.setMax(2);
-        zoomY.setValue(1);
     }
 
     /**
@@ -518,6 +525,9 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * Método para inicializar los valores de la gráfica en mW, graficar y mapear los Sliders con los ejes
      */
     public void anadirGraficaWatts(){
+        zoomY.setMin(0.01);
+        zoomY.setMax(2);
+        zoomY.setValue(1);
         grafica.getData().clear();
         x.setLabel("Tiempo [s]");
         y.setLabel("Potencia [mW]");
@@ -533,6 +543,13 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         x.setUpperBound(Collections.max(tiempo));
         y.setLowerBound(Collections.min(elemento.getComponente().getDatos()));
         y.setUpperBound(Collections.max(elemento.getComponente().getDatos()));
+
+        limitesX.add(x.getLowerBound());
+        limitesX.add(x.getUpperBound());
+
+        limitesY.add(y.getLowerBound());
+        limitesY.add(y.getUpperBound());
+
 
         centroX.setMin(x.getLowerBound());
         centroX.setMax(x.getUpperBound());
@@ -553,6 +570,9 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * Método para inicializar los valores de la gráfica en dBm, graficar y mapear los Sliders con los ejes
      */
     public void anadirGraficadBm(){
+        zoomY.setMin(0.01);
+        zoomY.setMax(0.1);
+        zoomY.setValue(0.05);
         grafica.getData().clear();
         double dato;
         x.setLabel("Tiempo [s]");
@@ -584,6 +604,17 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
         zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYdBm(newVal.doubleValue()));
         grafica.getData().add(series);
+    }
+
+    /**
+     * Metodopara restablecer los limites
+     */
+    public void resetLimits(){
+        x.setLowerBound(limitesX.get(0));
+        x.setUpperBound(limitesX.get(1));
+
+        y.setLowerBound(limitesY.get(0));
+        y.setUpperBound(limitesY.get(1));
     }
 
     /**
