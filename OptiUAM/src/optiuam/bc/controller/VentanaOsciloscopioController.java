@@ -34,10 +34,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import optiuam.bc.model.Demultiplexor;
-import optiuam.bc.model.ElementoGrafico;
-import optiuam.bc.model.Osciloscopio;
-import optiuam.bc.model.Splitter;
+import optiuam.bc.model.*;
 
 import static optiuam.bc.model.Componente.tiempo;
 
@@ -89,6 +86,16 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * Boton para refrescar la grafica
      */
     public Button btnReset;
+    public Button btnDesconectado;
+    public Button btnGraficar2;
+    public TextField lowerBoundX;
+    public TextField upperBoundX;
+    public TextField lowerBoundY;
+    public TextField upperBoundY;
+    public Button btnLimitesY;
+    public Button btnLimitesX;
+    public Label yLabel;
+    public Label xLabel;
 
     /**
      * Lista desplegable de elementos para conectar
@@ -100,7 +107,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * Botón para crear una instancia
      */
     @FXML
-    Button btnCrear;
+    Button btnConectar;
 
     @FXML
     Pane Pane;
@@ -226,13 +233,43 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         cboxConectarA.setVisible(true);
-        btnCrear.setVisible(true);
+        btnConectar.setVisible(false);
         btnModify.setVisible(false);
-        btnGraficar.setVisible(false);
+        btnGraficar.setVisible(true);
         btnReset.setVisible(true);
+        btnUnidades.setVisible(false);
+        btnDesconectado.setVisible(false);
+        btnGraficar2.setVisible(false);
+        btnLimitesX.setVisible(false);
+        btnLimitesY.setVisible(false);
+        
+        lowerBoundX.setVisible(false);
+        lowerBoundY.setVisible(false);
+
+        upperBoundX.setVisible(false);
+        upperBoundY.setVisible(false);
+
+        xLabel.setVisible(false);
+        yLabel.setVisible(false);
+
         zoomX.setMin(1);
         zoomX.setMax(100);
         zoomX.setValue(1);
+
+        // Iniciar implementación de zoom por recuadro**
+        // Crear rectángulo de selección
+        zoomRect = new Rectangle();
+        zoomRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.3));
+        zoomRect.setStroke(Color.BLUE);
+        zoomRect.setVisible(false);
+
+        Pane pane = (Pane) grafica.getParent();
+        pane.getChildren().add(zoomRect);  // Añadir el rectángulo al pane
+
+        // Eventos de clic y arrastre
+        grafica.setOnMousePressed(this::iniciarArrastreZoom);
+        grafica.setOnMouseDragged(this::arrastrarZoom);
+        grafica.setOnMouseReleased(this::soltarArrastreZoom);
     }
 
     /**
@@ -286,22 +323,11 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         osciloscopio.setNombre("oscilloscope");
         guardarOsciloscopio(osciloscopio);
 
-        // Conexión inicial
-        for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
-            if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
-                ElementoGrafico eg = controlador.getDibujos().get(elemento2);
-                osciloscopio.setElementoConectadoEntrada(eg.getDibujo().getText());
-                osciloscopio.setConectadoEntrada(true);
-                eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
-                eg.getComponente().setConectadoSalida(true);
+        conexion();
 
-                // Pasa el buffer al elemento conectado
-                osciloscopio.setDatos(eg.getComponente().getDatos());
-                anadirGraficaWatts();
-                dibujarLineaAtras(elemento);
-                break;
-            }
-        }
+        btnGraficar.setVisible(false);
+        btnUnidades.setVisible(true);
+        seleccionarUnidades();
         eventos(elemento);
 
         idOsciloscopio++;
@@ -310,6 +336,32 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         if(!elemento.getComponente().isConectadoEntrada()){
             cerrarVentana(event);
         }
+    }
+
+    /**
+     * Método para la conexión del osciloscopio
+     */
+    public void conexion(){
+        for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
+            if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+                ElementoGrafico eg = controlador.getDibujos().get(elemento2);
+                elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
+                elemento.getComponente().setConectadoEntrada(true);
+                eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
+                eg.getComponente().setConectadoSalida(true);
+
+                // Pasa el buffer al elemento conectado
+                elemento.getComponente().setDatos(eg.getComponente().getDatos());
+                dibujarLineaAtras(elemento);
+                btnDesconectado.setVisible(true);
+                break;
+            }
+        }
+    }
+
+    public void conectarNuevamente(){
+        conexion();
+        seleccionarUnidades();
     }
 
     /**
@@ -392,13 +444,18 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                     osciloscopioController.init(controlador, stage, ventana_principal, Pane, osciloscopioController);
                     osciloscopioController.init2(elemento);
 
-                    osciloscopioController.btnCrear.setVisible(false);
+                    osciloscopioController.btnGraficar.setVisible(false);
 
                     if (elemento.getComponente().isConectadoEntrada()) {
-                        osciloscopioController.cboxConectarA.setVisible(false);
                         osciloscopioController.connect.setVisible(false);
+                        osciloscopioController.btnGraficar2.setVisible(true);
+                        osciloscopioController.btnDesconectado.setVisible(true);
+                        osciloscopioController.cboxConectarA.setVisible(false);
+                    } else {
+                        osciloscopioController.connect.setVisible(true);
+                        osciloscopioController.cboxConectarA.setVisible(true);
+                        osciloscopioController.btnConectar.setVisible(true);
                     }
-                    osciloscopioController.btnGraficar.setVisible(true);
 
                     Scene scene = new Scene(root);
                     Image ico = new Image("images/acercaDe.png");
@@ -529,6 +586,9 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * Método para inicializar los valores de la gráfica en mW, graficar y mapear los Sliders con los ejes
      */
     public void anadirGraficaWatts(){
+        limitesX.clear();
+        limitesY.clear();
+
         zoomY.setMin(0.01);
         zoomY.setMax(2);
         zoomY.setValue(1);
@@ -568,21 +628,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
         zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
         grafica.getData().add(series);
-
-        // Iniciar implementación de zoom por recuadro**
-        // Crear rectángulo de selección
-        zoomRect = new Rectangle();
-        zoomRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.3));
-        zoomRect.setStroke(Color.BLUE);
-        zoomRect.setVisible(false);
-
-        Pane pane = (Pane) grafica.getParent();
-        pane.getChildren().add(zoomRect);  // Añadir el rectángulo al pane
-
-        // Eventos de clic y arrastre
-        grafica.setOnMousePressed(this::iniciarArrastreZoom);
-        grafica.setOnMouseDragged(this::arrastrarZoom);
-        grafica.setOnMouseReleased(this::soltarArrastreZoom);
     }
 
     private void iniciarArrastreZoom(MouseEvent event) {
@@ -595,10 +640,10 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     private void arrastrarZoom(MouseEvent event) {
-        double width = event.getX() - dragStart.getX();
-        double height = event.getY() - dragStart.getY();
-        zoomRect.setWidth(Math.abs(width));
-        zoomRect.setHeight(Math.abs(height));
+        double ancho = event.getX() - dragStart.getX();
+        double alto = event.getY() - dragStart.getY();
+        zoomRect.setWidth(Math.abs(ancho));
+        zoomRect.setHeight(Math.abs(alto));
         zoomRect.setX(Math.min(dragStart.getX(), event.getX()));
         zoomRect.setY(Math.min(dragStart.getY(), event.getY()));
     }
@@ -622,7 +667,10 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     /**
      * Método para inicializar los valores de la gráfica en dBm, graficar y mapear los Sliders con los ejes
      */
-    public void anadirGraficadBm(){
+    public void anadirGraficadBm() {
+        limitesX.clear();
+        limitesY.clear();
+
         zoomY.setMin(0.01);
         zoomY.setMax(0.1);
         zoomY.setValue(0.05);
@@ -644,6 +692,12 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         y.setLowerBound(-60);
         y.setUpperBound(calculaDecibeles(Collections.max(elemento.getComponente().getDatos())));
 
+        limitesX.add(x.getLowerBound());
+        limitesX.add(x.getUpperBound());
+
+        limitesY.add(y.getLowerBound());
+        limitesY.add(y.getUpperBound());
+
         centroX.setMin(x.getLowerBound());
         centroX.setMax(x.getUpperBound());
         centroX.setValue((x.getLowerBound() + x.getUpperBound()) / 2 );
@@ -660,7 +714,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     /**
-     * Metodopara restablecer los limites
+     * Método para restablecer los limites
      */
     public void resetLimits(){
         x.setLowerBound(limitesX.get(0));
@@ -676,9 +730,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      * @return
      */
     public double calculaDecibeles(double miliWatts){
-        double decibeles = 0;
-        decibeles = 10 * Math.log10(miliWatts);
-        return decibeles;
+        return 10 * Math.log10(miliWatts);
     }
 
     /**
@@ -741,9 +793,82 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     public void seleccionarUnidades(){
         if(osciloscopioControl.cboxUnidades.getSelectionModel().getSelectedItem().toString().equals("mW")){
             anadirGraficaWatts();
+            lowerBoundX.setVisible(true);
+            lowerBoundY.setVisible(true);
+
+            upperBoundX.setVisible(true);
+            upperBoundY.setVisible(true);
+
+            xLabel.setVisible(true);
+            yLabel.setVisible(true);
+
+            btnLimitesX.setVisible(true);
+            btnLimitesY.setVisible(true);
         } else if(osciloscopioControl.cboxUnidades.getSelectionModel().getSelectedItem().toString().equals("dBm")){
             anadirGraficadBm();
+            lowerBoundX.setVisible(true);
+            lowerBoundY.setVisible(true);
+
+            upperBoundX.setVisible(true);
+            upperBoundY.setVisible(true);
+
+            xLabel.setVisible(true);
+            yLabel.setVisible(true);
+
+            btnLimitesX.setVisible(true);
+            btnLimitesY.setVisible(true);
         }
+    }
+
+    /**
+     * Método para cambiar los límites de la ventana en el eje X
+     */
+    public void ajustarLimitesTextFieldX(){
+        x.setLowerBound(Double.parseDouble(lowerBoundX.getText()));
+        x.setUpperBound(Double.parseDouble(upperBoundX.getText()));
+    }
+
+    /**
+     * Método para cambiar los límites de la ventana en el eje Y
+     */
+    public void ajustarLimitesTextFieldY(){
+        y.setLowerBound(Double.parseDouble(lowerBoundY.getText()));
+        y.setUpperBound(Double.parseDouble(upperBoundY.getText()));
+    }
+
+    /**
+     * Método para desconectar la fuente
+     *
+     * @param event Representa cualquier tipo de acción
+     */
+    @FXML
+    private void Desconectar(ActionEvent event) {
+        for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
+            if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+                Componente comp = controlador.getElementos().get(elemento2);
+                comp.setConectadoSalida(false);
+                comp.setElementoConectadoSalida("");
+                comp.getLinea().setVisible(false);
+                break;
+            }
+        }
+        osciloscopioControl.cboxConectarA.getSelectionModel().select(0);
+        if (elemento.getComponente().isConectadoEntrada()) {
+            elemento.getComponente().setConectadoEntrada(false);
+            elemento.getComponente().setElementoConectadoEntrada("");
+        }
+
+        grafica.getData().clear();
+        elemento.getComponente().getDatos().clear();
+
+        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                "\nDisconnected source!",
+                aceptar);
+        alert.setTitle("Succes");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+        cerrarVentana(event);
     }
 
     // Getters y Setters
