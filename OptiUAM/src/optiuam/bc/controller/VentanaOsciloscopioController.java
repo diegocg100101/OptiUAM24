@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -30,6 +31,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import optiuam.bc.model.Demultiplexor;
@@ -169,6 +171,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     private ArrayList<Double> limitesX = new ArrayList<>();
 
     private ArrayList<Double> limitesY = new ArrayList<>();
+    private Rectangle zoomRect;
+    private Point2D dragStart;
 
     /**
      * Inicializa el controlador
@@ -564,6 +568,55 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
         zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
         grafica.getData().add(series);
+
+        // Iniciar implementación de zoom por recuadro**
+        // Crear rectángulo de selección
+        zoomRect = new Rectangle();
+        zoomRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.3));
+        zoomRect.setStroke(Color.BLUE);
+        zoomRect.setVisible(false);
+
+        Pane pane = (Pane) grafica.getParent();
+        pane.getChildren().add(zoomRect);  // Añadir el rectángulo al pane
+
+        // Eventos de clic y arrastre
+        grafica.setOnMousePressed(this::iniciarArrastreZoom);
+        grafica.setOnMouseDragged(this::arrastrarZoom);
+        grafica.setOnMouseReleased(this::soltarArrastreZoom);
+    }
+
+    private void iniciarArrastreZoom(MouseEvent event) {
+        dragStart = new Point2D(event.getX(), event.getY());
+        zoomRect.setX(dragStart.getX());
+        zoomRect.setY(dragStart.getY());
+        zoomRect.setWidth(0);
+        zoomRect.setHeight(0);
+        zoomRect.setVisible(true);
+    }
+
+    private void arrastrarZoom(MouseEvent event) {
+        double width = event.getX() - dragStart.getX();
+        double height = event.getY() - dragStart.getY();
+        zoomRect.setWidth(Math.abs(width));
+        zoomRect.setHeight(Math.abs(height));
+        zoomRect.setX(Math.min(dragStart.getX(), event.getX()));
+        zoomRect.setY(Math.min(dragStart.getY(), event.getY()));
+    }
+
+    private void soltarArrastreZoom(MouseEvent event) {
+        if (zoomRect.getWidth() > 0 && zoomRect.getHeight() > 0) {
+            double xZoomMin = x.getValueForDisplay(zoomRect.getX()).doubleValue();
+            double xZoomMax = x.getValueForDisplay(zoomRect.getX() + zoomRect.getWidth()).doubleValue();
+            double yZoomMin = y.getValueForDisplay(zoomRect.getY() + zoomRect.getHeight()).doubleValue();
+            double yZoomMax = y.getValueForDisplay(zoomRect.getY()).doubleValue();
+
+            // Ajustar límites de los ejes
+            x.setLowerBound(xZoomMin);
+            x.setUpperBound(xZoomMax);
+            y.setLowerBound(yZoomMin);
+            y.setUpperBound(yZoomMax);
+        }
+        zoomRect.setVisible(false);
     }
 
     /**

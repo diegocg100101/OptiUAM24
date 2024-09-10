@@ -27,7 +27,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_fuente" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="100.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaFuente" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_fuente" layoutX="100.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaFuente" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewFuente" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -47,7 +47,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_splitter" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="179.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaSplitter" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_splitter" layoutX="179.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaSplitter" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewSplitter" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -67,7 +67,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_conector" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="258.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaConector" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_conector" layoutX="258.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaConector" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewConector" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -87,7 +87,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_empalme" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="337.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaEmpalme" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_empalme" layoutX="337.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaEmpalme" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewEmpalme" fitHeight="62.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -107,7 +107,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_potencia" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="417.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearPotencia" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_potencia" layoutX="417.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearPotencia" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewPotencia" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -132,7 +132,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_espectro" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="497.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearEspectro" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_espectro" layoutX="497.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearEspectro" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewEspectro" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -157,7 +157,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_fibra" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="20.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaFibra" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_fibra" layoutX="20.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaFibra" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewFibra" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -172,7 +172,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btn_mux" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="577.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaMux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_mux" layoutX="577.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaMux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewMux" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -192,7 +192,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_demux" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="658.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaDemux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_demux" layoutX="658.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaDemux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewDemux" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -212,7 +212,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_fbg" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="739.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearFBG" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_fbg" layoutX="739.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearFBG" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewFBG" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -248,12 +248,12 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="20.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOsciloscopio" prefHeight="64.0" prefWidth="64.0" stylesheets="/Static/CSS/style.css" styleClass="btnComponente">
+                  <Button fx:id="btnOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="20.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOsciloscopio" prefHeight="64.0" prefWidth="64.0" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewOsciloscopio" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
                   </Button>
-                  <Label layoutX="32.0" layoutY="172.0" prefHeight="34.0" prefWidth="70.0" text="Osciloscope" AnchorPane.leftAnchor="13.0">
+                  <Label layoutX="32.0" layoutY="172.0" prefHeight="34.0" prefWidth="70.0" text="Oscilloscope" AnchorPane.leftAnchor="13.0">
                      <font>
                         <Font name="Javanese Text" size="12.0" />
                      </font>
@@ -269,7 +269,7 @@
                         <Image url="@../../../images/upload.PNG" />
                      </image>
                   </ImageView>
-                  <Button fx:id="btnOTDR" stylesheets="/Static/CSS/style.css" styleClass="btnComponente" layoutX="101.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOTDR" prefHeight="64.0" prefWidth="64.0">
+                  <Button fx:id="btnOTDR" layoutX="101.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOTDR" prefHeight="64.0" prefWidth="64.0" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewOTDR" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
