@@ -695,6 +695,9 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                     } else {
                         eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
                         eg.getComponente().setConectadoEntrada(true);
+
+                        // Pasa el buffer
+                        aux.setDatos(eg.getComponente().getDatos());
                     }
                     if (elemG.getComponente().getSeñalEntrada() != null) {
                         elemG.getComponente().setSeñalSalida(null);

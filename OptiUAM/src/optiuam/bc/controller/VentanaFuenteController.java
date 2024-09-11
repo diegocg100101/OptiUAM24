@@ -998,7 +998,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
                 "\nDisconnected source!",
                 aceptar);
-        alert.setTitle("Succes");
+        alert.setTitle("Success");
         alert.setHeaderText(null);
         alert.showAndWait();
         cerrarVentana(event);
