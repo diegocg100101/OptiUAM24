@@ -844,7 +844,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     @FXML
     private void Desconectar(ActionEvent event) {
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
-            if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+            if(elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())){
                 Componente comp = controlador.getElementos().get(elemento2);
                 comp.setConectadoSalida(false);
                 comp.setElementoConectadoSalida("");
@@ -859,7 +859,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         }
 
         grafica.getData().clear();
-        elemento.getComponente().getDatos().clear();
 
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
