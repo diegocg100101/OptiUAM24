@@ -208,7 +208,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                     "source".equals(controlador.getElementos().get(elemento1).getNombre())
                     ||
                     "mux".equals(controlador.getElementos().get(elemento1).getNombre())) {
-                if (!controlador.getElementos().get(elemento1).isConectadoEntrada()) {
+                if (!controlador.getElementos().get(elemento1).isConectadoSalida()) {
                     osciloscopioControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento1).getDibujo().getText());
                 }
             }
@@ -328,31 +328,22 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         } else {
             // Si hay lago conectado, lo busca, verifica que el elemento al que se quiere conectar no tenga otro componente en la salida
             for (int elemento2 = 0; elemento2 < controlador.getElementos().size(); elemento2++) {
-                if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
-                        .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
-                && !controlador.getElementos().get(elemento2).isConectadoSalida()) {
-                    Osciloscopio osciloscopio = new Osciloscopio();
-                    osciloscopio.setConectadoEntrada(false);
-                    osciloscopio.setIdOsciloscopio(idOsciloscopio);
-                    osciloscopio.setNombre("oscilloscope");
-                    guardarOsciloscopio(osciloscopio);
-                    conexion();
-                    btnGraficar.setVisible(false);
-                    btnUnidades.setVisible(true);
-                    seleccionarUnidades();
-                    eventos(elemento);
-                    idOsciloscopio++;
-                    break;
-                } else {
-                    // Si ya hay algo conectado, saca ventana de error
-                    ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                    Alert alert = new Alert(Alert.AlertType.ERROR,
-                            "\nComponent is already connected!",
-                            aceptar);
-                    alert.setTitle("Not available");
-                    alert.setHeaderText(null);
-                    alert.showAndWait();
-                    break;
+                if(!controlador.getElementos().get(elemento2).isConectadoSalida()) {
+                    if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
+                            .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+                        Osciloscopio osciloscopio = new Osciloscopio();
+                        osciloscopio.setConectadoEntrada(false);
+                        osciloscopio.setIdOsciloscopio(idOsciloscopio);
+                        osciloscopio.setNombre("oscilloscope");
+                        guardarOsciloscopio(osciloscopio);
+                        conexion();
+                        btnGraficar.setVisible(false);
+                        btnUnidades.setVisible(true);
+                        seleccionarUnidades();
+                        eventos(elemento);
+                        idOsciloscopio++;
+                        break;
+                    }
                 }
             }
         }
@@ -381,34 +372,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     public void conectarNuevamente() {
-        if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals("Disconnected")) {
-            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "\nNo connection specified!",
-                    aceptar);
-            alert.setTitle("Not available");
-            alert.setHeaderText(null);
-            alert.showAndWait();
-        } else {
-            for (int elemento2 = 0; elemento2 < controlador.getElementos().size(); elemento2++) {
-                if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().
-                        equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
-                            && !controlador.getElementos().get(elemento2).isConectadoSalida()) {
-                    conexion();
-                    seleccionarUnidades();
-                    break;
-                } else {
-                    ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                    Alert alert = new Alert(Alert.AlertType.ERROR,
-                            "\nComponent is already connected!",
-                                aceptar);
-                    alert.setTitle("Not available");
-                    alert.setHeaderText(null);
-                    alert.showAndWait();
-                    break;
-                    }
-            }
-        }
+        conexion();
+        seleccionarUnidades();
     }
 
     /**
@@ -490,10 +455,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                 } catch (IOException ex) {
                     Logger.getLogger(VentanaConectorController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
-        });
-        elemento.getDibujo().setOnMouseClicked((MouseEvent event) -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
+            } else if (event.getButton() == MouseButton.SECONDARY) {
                 mostrarMenu(elemento);
             }
         });
