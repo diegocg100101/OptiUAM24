@@ -29,6 +29,17 @@ public class Osciloscopio extends Componente {
      */
     private double posY;
 
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
+    }
+
+    private int tipo;
+
+
     /**
      * Método constructor sin parametros
      */

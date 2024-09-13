@@ -663,7 +663,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
 
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "\nDuplicate source!",
+                "\nSource duplicated!",
                 aceptar);
         alert.setTitle("Succes");
         alert.setHeaderText(null);
@@ -841,7 +841,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
 
         /**Eliminar*/
         menuItem3.setOnAction(e -> {
-            if (dibujo.getComponente().isConectadoSalida() == true) {
+            if (dibujo.getComponente().isConectadoSalida()) {
                 for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
                     if (dibujo.getComponente().getElementoConectadoSalida().equals(controlador.getDibujos().get(elemento).getDibujo().getText())) {
                         Componente aux = controlador.getElementos().get(elemento);
@@ -871,7 +871,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
             dibujo.getDibujo().setVisible(false);
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "\nRemoved source!",
+                    "\nSource removed!",
                     aceptar);
             alert.setTitle("Succes");
             alert.setHeaderText(null);

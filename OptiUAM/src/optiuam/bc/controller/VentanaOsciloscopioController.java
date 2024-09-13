@@ -34,6 +34,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import optiuam.bc.model.*;
 
 import static optiuam.bc.model.Componente.tiempo;
@@ -327,7 +328,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         } else {
             // Si hay lago conectado, lo busca, verifica que el elemento al que se quiere conectar no tenga otro componente en la salida
             for (int elemento2 = 0; elemento2 < controlador.getElementos().size(); elemento2++) {
-                if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
+                if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
+                        .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
                 && !controlador.getElementos().get(elemento2).isConectadoSalida()) {
                     Osciloscopio osciloscopio = new Osciloscopio();
                     osciloscopio.setConectadoEntrada(false);
@@ -361,7 +363,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
      */
     public void conexion() {
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
-            if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+            if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
+                    .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
                 ElementoGrafico eg = controlador.getDibujos().get(elemento2);
                 elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
                 elemento.getComponente().setConectadoEntrada(true);
@@ -388,7 +391,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
             alert.showAndWait();
         } else {
             for (int elemento2 = 0; elemento2 < controlador.getElementos().size(); elemento2++) {
-                if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
+                if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().
+                        equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
                             && !controlador.getElementos().get(elemento2).isConectadoSalida()) {
                     conexion();
                     seleccionarUnidades();
@@ -435,7 +439,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                     ElementoGrafico aux;
                     for (int it = 0; it < controlador.getDibujos().size(); it++) {
                         aux = controlador.getDibujos().get(it);
-                        if (elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
+                        if (elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos()
+                                .get(it).getDibujo().getText())) {
                             aux.getComponente().getLinea().setVisible(false);
                             dibujarLineaAtras(elemento);
                         }
@@ -487,6 +492,12 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                 }
             }
         });
+        elemento.getDibujo().setOnMouseClicked((MouseEvent event) -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                mostrarMenu(elemento);
+            }
+        });
+
     }
 
     /**
@@ -865,7 +876,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     @FXML
     private void desconectar(ActionEvent event) {
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
-            if (elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+            if (elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(elemento2)
+                    .getDibujo().getText())) {
                 Componente comp = controlador.getElementos().get(elemento2);
                 comp.setConectadoSalida(false);
                 comp.setElementoConectadoSalida("");
@@ -890,6 +902,108 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         alert.showAndWait();
         cerrarVentana(event);
     }
+
+    public void mostrarMenu(ElementoGrafico dibujo) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem menuItem1 = new MenuItem("-Duplicate");
+        MenuItem menuItem3 = new MenuItem("-Delete");
+
+        /*Duplicar*/
+        menuItem1.setOnAction(e -> {
+            for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
+                if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
+                    Osciloscopio osciloscopioAux = new Osciloscopio();
+                    Osciloscopio osciloscopioAux1 = (Osciloscopio) controlador.getElementos().get(elemento);
+                    osciloscopioAux.setIdOsciloscopio(idOsciloscopio);
+                    osciloscopioAux.setNombre("osciloscopio");
+                    osciloscopioAux.setTipo(osciloscopioAux1.getTipo());
+
+
+                    duplicarOsciloscopio(osciloscopioAux, dibujo);
+                    idOsciloscopio++;
+                    break;
+                }
+            }
+        });
+
+        /**Eliminar*/
+        menuItem3.setOnAction(e -> {
+            if (dibujo.getComponente().isConectadoEntrada()) {
+                for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
+                    if (dibujo.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(elemento).getDibujo().getText())) {
+                        Componente aux = controlador.getElementos().get(elemento);
+                        aux.setConectadoSalida(false);
+                        aux.setElementoConectadoSalida("");
+                        aux.getLinea().setVisible(false);
+                    }
+                }
+            }
+            for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
+                if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
+                    Osciloscopio aux = (Osciloscopio) controlador.getElementos().get(elemento);
+                    controlador.getDibujos().remove(dibujo);
+                    controlador.getElementos().remove(aux);
+                }
+            }
+            dibujo.getDibujo().setVisible(false);
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                    "\nOscilloscope removed!",
+                    aceptar);
+            alert.setTitle("Succes");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+        });
+
+        contextMenu.getItems().add(menuItem1);
+        contextMenu.getItems().add(menuItem3);
+        dibujo.getDibujo().setContextMenu(contextMenu);
+    }
+
+    /**
+     * Metodo que duplica una fuente
+     *
+     * @param osciloscopio Fuente a duplicar
+     * @param el     Elemento grafico de la fuente a duplicar
+     */
+    public void duplicarOsciloscopio(Osciloscopio osciloscopio, ElementoGrafico el) {
+        osciloscopio.setId(controlador.getContadorElemento());
+        controlador.getElementos().add(osciloscopio);
+        Label dibujo = new Label();
+        ElementoGrafico elem = new ElementoGrafico();
+
+        osciloscopio.setPosX(dibujo.getLayoutX());
+        osciloscopio.setPosY(dibujo.getLayoutY());
+        setPosX(osciloscopio.getPosX());
+        setPosY(osciloscopio.getPosY());
+
+        elem.setComponente(osciloscopio);
+        elem.setId(controlador.getContadorElemento());
+
+        dibujo.setGraphic(new ImageView(new Image("images/dibujo_osciloscopio2.png")));
+        dibujo.setText(osciloscopio.getNombre() + "_" + osciloscopio.getIdOsciloscopio());
+        dibujo.setContentDisplay(ContentDisplay.TOP);
+        dibujo.setLayoutX(el.getDibujo().getLayoutX() + 35);
+        dibujo.setLayoutY(el.getDibujo().getLayoutY() + 20);
+        elem.setDibujo(dibujo);
+        controlador.getDibujos().add(elem);
+        eventos(elem);
+        Pane.getChildren().add(elem.getDibujo());
+        controlador.setContadorElemento(controlador.getContadorElemento() + 1);
+
+        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                "\nOscilloscope duplicated!",
+                aceptar);
+        alert.setTitle("Osiloscopio");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+
+
+
+
 
     // Getters y Setters
 
