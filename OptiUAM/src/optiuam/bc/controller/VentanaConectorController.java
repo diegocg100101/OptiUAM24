@@ -4,6 +4,8 @@ package optiuam.bc.controller;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -697,7 +699,8 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                         eg.getComponente().setConectadoEntrada(true);
 
                         // Pasa el buffer
-                        aux.setDatos(eg.getComponente().getDatos());
+                        afectarDatos(elemG);
+                        eg.getComponente().setDatos(aux.getDatos());
                     }
                     if (elemG.getComponente().getSeñalEntrada() != null) {
                         elemG.getComponente().setSeñalSalida(null);
@@ -749,6 +752,16 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
             alert.setHeaderText(null);
             alert.showAndWait();
         }
+    }
+
+    public static void afectarDatos(ElementoGrafico elemG){
+        ArrayList<Double> datosModificados = new ArrayList<>();
+        double dB = ((Conector) elemG.getComponente()).getPerdidaInsercion();
+        double mW = -Math.pow(10, dB/10); // Convierte dB a mW
+        for(int i = 0; i < elemG.getComponente().getDatos().size(); i ++){
+            datosModificados.add(elemG.getComponente().getDatos().get(i) * mW);
+        }
+        elemG.getComponente().setDatos(datosModificados);
     }
 
     /**

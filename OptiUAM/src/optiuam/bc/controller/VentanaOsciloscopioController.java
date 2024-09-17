@@ -37,6 +37,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import optiuam.bc.model.*;
 
+import static optiuam.bc.controller.VentanaConectorController.afectarDatos;
 import static optiuam.bc.model.Componente.tiempo;
 
 /**
@@ -355,7 +356,22 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     public void conexion() {
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
             if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
-                    .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+                    .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
+                    && controlador.getElementos().get(elemento2).getNombre().equals("connector")) {
+                ElementoGrafico eg = controlador.getDibujos().get(elemento2);
+                elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
+                elemento.getComponente().setConectadoEntrada(true);
+                eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
+                eg.getComponente().setConectadoSalida(true);
+
+                // Pasa el buffer al elemento conectado
+                afectarDatos(eg);
+                elemento.getComponente().setDatos(eg.getComponente().getDatos());
+                dibujarLineaAtras(elemento);
+                btnDesconectado.setVisible(true);
+                break;
+            } else if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
+                    .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())){
                 ElementoGrafico eg = controlador.getDibujos().get(elemento2);
                 elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
                 elemento.getComponente().setConectadoEntrada(true);
@@ -374,6 +390,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     public void conectarNuevamente() {
         conexion();
         seleccionarUnidades();
+        btnConectar.setVisible(false);
     }
 
     /**

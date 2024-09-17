@@ -8,18 +8,8 @@ import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import optiuam.bc.model.Componente;
-import optiuam.bc.model.Conector;
-import optiuam.bc.model.Demultiplexor;
-import optiuam.bc.model.ElementoGrafico;
-import optiuam.bc.model.Empalme;
-import optiuam.bc.model.FBG;
-import optiuam.bc.model.Fibra;
-import optiuam.bc.model.Fuente;
-import optiuam.bc.model.AnalizadorEspectro;
-import optiuam.bc.model.MedidorPotencia;
-import optiuam.bc.model.Multiplexor;
-import optiuam.bc.model.Splitter;
+
+import optiuam.bc.model.*;
 
 /**
  * Clase ControladorGeneral la cual contiene los métodos y atributos necesarios
@@ -29,7 +19,7 @@ import optiuam.bc.model.Splitter;
  * @author Daniel Hernandez
  */
 public class ControladorGeneral {
-    
+
     /**Elementos creados en la simulacion*/
     public LinkedList<Componente> elementos;
 
@@ -43,7 +33,7 @@ public class ControladorGeneral {
     public VentanaPrincipal ventana_principal;
 
     /**Utilizado para crear los elementos graficos*/
-    public ElementoGrafico manejadorElementos; 
+    public ElementoGrafico manejadorElementos;
 
     /**
      * Metodo constructor sin parametros encargado de inicializar los atributos
@@ -54,19 +44,19 @@ public class ControladorGeneral {
         dibujos = new LinkedList();
         contadorElemento=0;
     }
-    
+
     /**
      * Metodo constructor con parametros
      * @param elementos Elementos creados en la simulacion
      * @param dibujos Elementos mostrados en el area de trabajo
      * @param contadorElemento Contador para asignar nombre a un elemento
-     * @param ventana_principal Utilizado para tener la comunicacion 
+     * @param ventana_principal Utilizado para tener la comunicacion
      * vista-controlador
      * @param manejadorElementos Utilizado para crear los elementos graficos
      */
-    public ControladorGeneral(LinkedList<Componente> elementos, 
-            LinkedList<ElementoGrafico> dibujos, int contadorElemento, 
-            VentanaPrincipal ventana_principal, 
+    public ControladorGeneral(LinkedList<Componente> elementos,
+            LinkedList<ElementoGrafico> dibujos, int contadorElemento,
+            VentanaPrincipal ventana_principal,
             ElementoGrafico manejadorElementos) {
         this.elementos = elementos;
         this.dibujos = dibujos;
@@ -74,7 +64,7 @@ public class ControladorGeneral {
         this.ventana_principal = ventana_principal;
         this.manejadorElementos = manejadorElementos;
     }
-    
+
     /**
      * Metodo que modifica el controlador
      * @return controlador
@@ -98,7 +88,7 @@ public class ControladorGeneral {
     public void setElementos(LinkedList<Componente> elementos) {
         this.elementos = elementos;
     }
-    
+
     /**
      * Metodo que obtiene los elementos mostrados en el area de trabajo
      * @return elementos mostrados en el area de trabajo
@@ -132,7 +122,7 @@ public class ControladorGeneral {
     }
 
     /**
-     * Metodo que muestra la ventana principal para tener la comunicacion 
+     * Metodo que muestra la ventana principal para tener la comunicacion
      * vista-controlador
      * @return ventana principal
      */
@@ -141,7 +131,7 @@ public class ControladorGeneral {
     }
 
     /**
-     * Metodo que modifica la ventana principal para tener la comunicacion 
+     * Metodo que modifica la ventana principal para tener la comunicacion
      * vista-controlador
      * @param ventana_principal  ventana principal
      */
@@ -166,7 +156,7 @@ public class ControladorGeneral {
     }
 
     /**
-     * Metodo utilizado para reiniciar los identificadores de los elementos y el 
+     * Metodo utilizado para reiniciar los identificadores de los elementos y el
      * controlador general al iniciar un nuevo trabajo
      */
     public void reset(){
@@ -182,7 +172,7 @@ public class ControladorGeneral {
         VentanaMultiplexorController.idMux=0;
         VentanaDemultiplexorController.idDemux=0;
     }
-    
+
     /**
      * Metodo que obtiene el elemento grafico de un componente
      * @param id Identificador del elemento grafico
@@ -194,7 +184,7 @@ public class ControladorGeneral {
                 return dibujos.get(i);
         return null;
     }
-    
+
     /**
      * Metodo utilizado para guardar un trabajo realizado en el simulador
      * @param ruta_archivo Nombre elegido para guardar el archivo
@@ -225,13 +215,13 @@ public class ControladorGeneral {
                 }
                 else if(aux.contains("splice")){
                     Empalme empalme= (Empalme) elementos.get(i);
-                    pw.println(empalme.toString() + "," + 
+                    pw.println(empalme.toString() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("fiber")){
                     Fibra fibra = (Fibra) elementos.get(i);
-                    pw.println(fibra.toString() + "," + 
+                    pw.println(fibra.toString() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
@@ -243,19 +233,19 @@ public class ControladorGeneral {
                 }
                 else if(aux.contains("source")){
                     Fuente fuente = (Fuente) elementos.get(i);
-                    pw.println(fuente.toString() + "," + 
+                    pw.println(fuente.toString() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("power")){
                     MedidorPotencia potencia= (MedidorPotencia) elementos.get(i);
-                    pw.println(potencia.toString() + "," + 
+                    pw.println(potencia.toString() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
                 else if(aux.contains("fbg")){
                     FBG fbg= (FBG) elementos.get(i);
-                    pw.println(fbg.toString() + "," + 
+                    pw.println(fbg.toString() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
@@ -271,6 +261,12 @@ public class ControladorGeneral {
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());
                 }
+                else if(aux.contains("oscilloscope")){
+                    Osciloscopio osciloscopio = (Osciloscopio) elementos.get(i);
+                    pw.println(osciloscopio.toString() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
+                            obtenerDibujo(aux1).getDibujo().getLayoutY());
+                }
                 else{
                     AnalizadorEspectro espectro = (AnalizadorEspectro)elementos.get(i);
                     pw.println(espectro.toString() + "," +
@@ -280,7 +276,7 @@ public class ControladorGeneral {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } 
+        }
         finally {
            try {
             if (null != fichero)
@@ -293,5 +289,5 @@ public class ControladorGeneral {
             Logger.getLogger(ControladorGeneral.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
 }

@@ -919,6 +919,9 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                         elemG.getComponente().setSeñalSalida(null);
                         ventana_principal.elemConected(elemG.getComponente(), false);
                     }
+
+                    // Pasa el buffer al elemento conectado
+                    eg.getComponente().setDatos(aux.getDatos());
                     break;
                 }
             }
