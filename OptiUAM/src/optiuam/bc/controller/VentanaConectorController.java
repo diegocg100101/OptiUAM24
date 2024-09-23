@@ -756,8 +756,8 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
 
     public static void afectarDatos(ElementoGrafico elemG){
         ArrayList<Double> datosModificados = new ArrayList<>();
-        double dB = ((Conector) elemG.getComponente()).getPerdidaInsercion();
-        double mW = -Math.pow(10, dB/10); // Convierte dB a mW
+        double dB = - ((Conector) elemG.getComponente()).getPerdidaInsercion();
+        double mW = Math.pow(10, dB/10); // Convierte dB a mW
         for(int i = 0; i < elemG.getComponente().getDatos().size(); i ++){
             datosModificados.add(elemG.getComponente().getDatos().get(i) * mW);
         }
