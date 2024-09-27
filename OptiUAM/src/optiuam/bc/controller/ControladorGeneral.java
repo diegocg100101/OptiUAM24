@@ -221,6 +221,7 @@ public class ControladorGeneral {
                 }
                 else if(aux.contains("fiber")){
                     Fibra fibra = (Fibra) elementos.get(i);
+                    //System.out.println("Escribiendo fibra: " + fibra.toString());
                     pw.println(fibra.toString() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());
@@ -233,6 +234,7 @@ public class ControladorGeneral {
                 }
                 else if(aux.contains("source")){
                     Fuente fuente = (Fuente) elementos.get(i);
+                    System.out.println("Escribiendo fuente: " + fuente.toString());
                     pw.println(fuente.toString() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutX() + "," +
                             obtenerDibujo(aux1).getDibujo().getLayoutY());

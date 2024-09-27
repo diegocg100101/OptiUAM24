@@ -81,6 +81,8 @@ public class VentanaPrincipal implements Initializable {
      * Identificador de la rejilla de Bragg (FBG)
      */
     static int idFBG = 0;
+
+    static int idOsciloscopio = 0;
     /**
      * Conexion (linea) entre componentes
      */
@@ -790,6 +792,87 @@ public class VentanaPrincipal implements Initializable {
         eventosFBG(elem);
 
         controlador.setContadorElemento(controlador.getContadorElemento() + 1);
+    }
+
+    private void eventosOsciloscopio(ElementoGrafico elemento) {
+        elemento.getDibujo().setOnMouseDragged((MouseEvent event) -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                double newX = event.getSceneX();
+                double newY = event.getSceneY();
+                int index = 0;
+                for (int a = 0; a < Pane1.getChildren().size(); a++) {
+                    if (Pane1.getChildren().get(a).toString().contains(elemento.getDibujo().getText())) {
+                        index = a;
+                        break;
+                    }
+                }
+                if (!outSideParentBoundsX(elemento.getDibujo().getLayoutBounds(), newX, newY)) {
+                    elemento.getDibujo().setLayoutX(Pane1.getChildren().get(index).getLayoutX() + event.getX() + 1);
+                }
+
+                if (!outSideParentBoundsY(elemento.getDibujo().getLayoutBounds(), newX, newY)) {
+                    elemento.getDibujo().setLayoutY(Pane1.getChildren().get(index).getLayoutY() + event.getY() + 1);
+                }
+                if (elemento.getComponente().isConectadoEntrada()) {
+                    ElementoGrafico aux;
+                    for (int it = 0; it < controlador.getDibujos().size(); it++) {
+                        aux = controlador.getDibujos().get(it);
+                        if (elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos()
+                                .get(it).getDibujo().getText())) {
+                            aux.getComponente().getLinea().setVisible(false);
+                            dibujarLineaAtras(elemento);
+                        }
+                    }
+                }
+            }
+        });
+        elemento.getDibujo().setOnMouseEntered((MouseEvent event) -> {
+            elemento.getDibujo().setStyle("-fx-border-color: darkblue;");
+            elemento.getDibujo().setCursor(Cursor.OPEN_HAND);
+        });
+        elemento.getDibujo().setOnMouseExited((MouseEvent event) -> {
+            elemento.getDibujo().setStyle("");
+        });
+        elemento.getDibujo().setOnMouseClicked((MouseEvent event) -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                try {
+                    Stage stage1 = new Stage();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaOsciloscopio.fxml"));
+                    Parent root = loader.load();
+                    VentanaOsciloscopioController osciloscopioController = loader.getController();
+
+                    osciloscopioController.init(controlador, stage, this, Pane1, osciloscopioController);
+                    osciloscopioController.init2(elemento);
+
+                    osciloscopioController.btnGraficar.setVisible(false);
+
+                    if (elemento.getComponente().isConectadoEntrada()) {
+                        osciloscopioController.connect.setVisible(false);
+                        osciloscopioController.btnGraficar2.setVisible(true);
+                        osciloscopioController.btnDesconectado.setVisible(true);
+                        osciloscopioController.cboxConectarA.setVisible(false);
+                    } else {
+                        osciloscopioController.connect.setVisible(true);
+                        osciloscopioController.cboxConectarA.setVisible(true);
+                        osciloscopioController.btnConectar.setVisible(true);
+                    }
+
+                    Scene scene = new Scene(root);
+                    Image ico = new Image("images/acercaDe.png");
+                    stage1.getIcons().add(ico);
+                    stage1.setTitle("OptiUAM BC - " + elemento.getDibujo().getText().toUpperCase());
+                    stage1.initModality(Modality.APPLICATION_MODAL);
+                    stage1.setScene(scene);
+                    stage1.setResizable(false);
+                    stage1.showAndWait();
+                } catch (IOException ex) {
+                    Logger.getLogger(VentanaConectorController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (event.getButton() == MouseButton.SECONDARY) {
+                mostrarMenu(elemento);
+            }
+        });
+
     }
 
     /**
@@ -1768,6 +1851,35 @@ public class VentanaPrincipal implements Initializable {
                         aux10.setIdDemux(demux.getIdDemux() + 1);
                         break;
 
+                    case "oscilloscope":
+                        Osciloscopio osciloscopio = new Osciloscopio();
+                        osciloscopio.setId(Integer.valueOf(partes[1]));
+                        osciloscopio.setNombre(nombre);
+                        osciloscopio.setConectadoEntrada(Boolean.valueOf(partes[2]));
+                        osciloscopio.setElementoConectadoEntrada(partes[3]);
+                        osciloscopio.setConectadoSalida(Boolean.valueOf(partes[4]));
+                        osciloscopio.setElementoConectadoSalida(partes[5]);
+                        osciloscopio.setIdOsciloscopio(Integer.valueOf(partes[6]));
+                        con.getElementos().add(osciloscopio);
+
+                        Label dibujo8 = new Label();
+                        dibujo8.setGraphic(new ImageView(new Image("images/dibujo_osciloscopio2.png")));
+                        dibujo8.setText(osciloscopio.getNombre() + "_" + osciloscopio.getIdOsciloscopio());
+                        dibujo8.setLayoutX(Double.parseDouble(partes[7]));
+                        dibujo8.setLayoutY(Double.parseDouble(partes[8]));
+                        dibujo8.setContentDisplay(ContentDisplay.TOP);
+
+                        ElementoGrafico elem8 = new ElementoGrafico();
+                        elem8.setComponente(osciloscopio);
+                        elem8.setDibujo(dibujo8);
+                        elem8.setId(Integer.valueOf(partes[1]));
+                        con.getDibujos().add(elem8);
+                        dibujo8.setVisible(true);
+
+                        Pane1.getChildren().add(dibujo8);
+                        eventosOsciloscopio(elem8);
+                        idOsciloscopio = osciloscopio.getIdOsciloscopio() + 1;
+                        break;
                     default:
                         con.setContadorElemento(Integer.valueOf(partes[0]));
                 }
