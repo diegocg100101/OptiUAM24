@@ -127,7 +127,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_espectro" layoutX="497.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearEspectro" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_espectro" layoutX="497.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaAnalizador" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
                      <graphic>
                         <ImageView fx:id="viewEspectro" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>

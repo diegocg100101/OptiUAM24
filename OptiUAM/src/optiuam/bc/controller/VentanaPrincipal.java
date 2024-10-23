@@ -602,6 +602,30 @@ public class VentanaPrincipal implements Initializable {
         }
     }
 
+    /*
+    Método que abre la ventana del osciloscopio
+     */
+    public void abrirVentanaAnalizador() {
+        try {
+            Stage s = new Stage(StageStyle.UTILITY);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaAnalizador.fxml"));
+            Parent root = loader.load();
+            VentanaAnalizadorController analizadorController = loader.getController();
+            analizadorController.init(controlador, VentanaPrincipal.stage, this, Pane1, analizadorController);
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("/Static/CSS/grafica.css");
+            Image ico = new Image("images/acercaDe.png");
+            s.getIcons().add(ico);
+            s.setTitle("OptiUAM BC - Spectrum Analyzer");
+            s.initModality(Modality.APPLICATION_MODAL);
+            s.setScene(scene);
+            s.setResizable(false);
+            s.showAndWait();
+        } catch (IOException ex) {
+            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /*Metodo que abre la ventana del OTDR
      */
 
@@ -691,7 +715,7 @@ public class VentanaPrincipal implements Initializable {
 
     /**
      * Metodo que crea un analizador de espectro
-     */
+
     @FXML
     public void crearEspectro() {
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
@@ -751,6 +775,7 @@ public class VentanaPrincipal implements Initializable {
         });
         controlador.setContadorElemento(controlador.getContadorElemento() + 1);
     }
++/
 
     /**
      * Metodo que crea una rejilla de Bragg (FBG)
@@ -1214,17 +1239,6 @@ public class VentanaPrincipal implements Initializable {
                         alert.setTitle("Succes");
                         alert.setHeaderText(null);
                         alert.showAndWait();
-                    } else {
-                        AnalizadorEspectro aux = (AnalizadorEspectro) controlador.getElementos().get(elemento);
-                        controlador.getDibujos().remove(dibujo);
-                        controlador.getElementos().remove(aux);
-                        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                                "\nRemoved spectrum meter!",
-                                aceptar);
-                        alert.setTitle("Succes");
-                        alert.setHeaderText(null);
-                        alert.showAndWait();
                     }
                 }
             }
@@ -1261,21 +1275,6 @@ public class VentanaPrincipal implements Initializable {
                                 "\n  Id: " + aux.getIdFBG() +
                                 "\n  Input: " + aux.getElementoConectadoEntrada() +
                                 "\n  Output :" + aux.getElementoConectadoSalida());
-                        Scene scene = new Scene(label, 190, 80);
-                        s.setScene(scene);
-                        s.setResizable(false);
-                        s.showAndWait();
-                    } else {
-                        Stage s = new Stage(StageStyle.DECORATED);
-                        Image ico = new Image("images/dibujo_espectro.png");
-                        s.getIcons().add(ico);
-                        s.setTitle("OptiUAM BC - Properties");
-                        s.initModality(Modality.APPLICATION_MODAL);
-                        AnalizadorEspectro aux = (AnalizadorEspectro) controlador.getElementos().get(elemento);
-                        Label label = new Label("  Name: " + aux.getNombre() +
-                                "\n  Id: " + aux.getIdEspectro() +
-                                "\n  Input: " + aux.getElementoConectadoEntrada()/*+
-                                "\n  Output :"+aux.getElementoConectadoSalida()*/);
                         Scene scene = new Scene(label, 190, 80);
                         s.setScene(scene);
                         s.setResizable(false);
@@ -1670,12 +1669,12 @@ public class VentanaPrincipal implements Initializable {
                         espectro.setElementoConectadoEntrada(partes[3]);
                         espectro.setConectadoSalida(Boolean.valueOf(partes[4]));
                         espectro.setElementoConectadoSalida(partes[5]);
-                        espectro.setIdEspectro(Integer.valueOf(partes[6]));
+                        espectro.setIdAnalizador(Integer.valueOf(partes[6]));
                         con.getElementos().add(espectro);
 
                         Label dibujo6 = new Label();
                         dibujo6.setGraphic(new ImageView(new Image("images/dibujo_espectro.png")));
-                        dibujo6.setText(espectro.getNombre() + "_" + espectro.getIdEspectro());
+                        dibujo6.setText(espectro.getNombre() + "_" + espectro.getIdAnalizador());
                         dibujo6.setLayoutX(Double.parseDouble(partes[7]));
                         dibujo6.setLayoutY(Double.parseDouble(partes[8]));
                         dibujo6.setContentDisplay(ContentDisplay.TOP);
@@ -1689,7 +1688,7 @@ public class VentanaPrincipal implements Initializable {
 
                         Pane1.getChildren().add(dibujo6);
                         eventosEspectro(dibujo6, elem6);
-                        idEspectro = espectro.getIdEspectro() + 1;
+                        idEspectro = espectro.getIdAnalizador() + 1;
                         break;
 
                     case "fbg":
