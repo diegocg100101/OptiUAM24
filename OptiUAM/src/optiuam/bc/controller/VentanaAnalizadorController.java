@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,10 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -39,6 +44,10 @@ import optiuam.bc.model.*;
 
 import static optiuam.bc.controller.VentanaConectorController.afectarDatos;
 import static optiuam.bc.model.Componente.tiempo;
+import static optiuam.bc.model.FFT.*;
+
+import org.apache.commons.math3.transform.*;
+import org.apache.commons.math3.complex.Complex;
 
 /**
  * Clase que se encarga de instanciar un osciloscopio
@@ -639,12 +648,81 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         grafica.getData().add(series);
     }
 
-    private ArrayList<NumeroComplejo> cambiarRealComplejo(ActionEvent event){
-        ArrayList<NumeroComplejo> numerosComplejos = new ArrayList<>();
-        for (Double dato : elemento.getComponente().getDatos()) {
-            numerosComplejos.add(new NumeroComplejo(dato.floatValue(), 0));
+    /**
+     * Método para calulcar la FFT de la señal
+     * @return
+     */
+    @FXML
+    private void obtenerFrecuencias(ActionEvent event){
+        limitesX.clear();
+        limitesY.clear();
+        zoomY.setMin(0.01);
+        zoomY.setMax(2);
+        zoomY.setValue(1);
+        grafica.getData().clear();
+
+        ArrayList<Double> componentes = elemento.getComponente().getDatos();
+        double fs = 8000;
+        double velocidadLuz = 3 * Math.pow(10, 8);
+        double N = componentes.size();
+        double[] datos = new double[(int) Math.pow(2, 14)];
+        int i = 0;
+        double longitudOnda = 0;
+
+        for(Double dato : componentes){
+            datos[i] = dato.floatValue();
+            i++;
         }
-        return numerosComplejos;
+
+        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+        Complex[] transformada = fft.transform(datos, TransformType.FORWARD);
+
+        /*
+        FFT fourier = new FFT(componentes.size(), fs);
+        FFT.NumeroComplejoArray fourierGraph = fourier.fft(datos);
+
+        float[] componentesReales = fourierGraph.getPartesReales();
+        */
+        // Calcular las frecuencias correspondientes al eje X
+        double[] frecuencias = new double[(int) N];
+        for (int k = 0; k < N; k++) {
+            frecuencias[k] = k * (fs / N); // Crear el vector de frecuencias
+        }
+
+        x.setLabel("Frecuencias");
+        y.setLabel("Potencia");
+        grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
+        XYChart.Series<Number, Number> seriesDos = new XYChart.Series<>();
+        for (int j = 0; j < componentes.size(); j++) {
+            seriesDos.getData().add(new XYChart.Data<>(frecuencias[j], transformada[j].getReal()));
+        }
+
+        x.setAutoRanging(false);
+        y.setAutoRanging(false);
+        x.setLowerBound(Collections.min(tiempo));
+        x.setUpperBound(Collections.max(tiempo));
+        y.setLowerBound(Collections.min(elemento.getComponente().getDatos()));
+        y.setUpperBound(Collections.max(elemento.getComponente().getDatos()));
+
+        limitesX.add(x.getLowerBound());
+        limitesX.add(x.getUpperBound());
+
+        limitesY.add(y.getLowerBound());
+        limitesY.add(y.getUpperBound());
+
+
+        centroX.setMin(x.getLowerBound());
+        centroX.setMax(x.getUpperBound());
+        centroX.setValue((x.getLowerBound() + x.getUpperBound()) / 2);
+
+        centroY.setMin(y.getLowerBound());
+        centroY.setMax(y.getUpperBound());
+        centroY.setValue((y.getLowerBound() + y.getUpperBound()) / 2);
+        centroX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroX());
+        centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
+        zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
+        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
+        grafica.getData().add(seriesDos);
     }
 
     private void iniciarArrastreZoom(MouseEvent event) {
