@@ -98,6 +98,15 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         this.Pane = pane;
     }
 
+    /**
+     * Inicializar el controlador con solo el elemento gráfico
+     *
+     * @param elemento Elemento gráfico
+     */
+    public void init2(ElementoGrafico elemento) {
+        this.elemento = elemento;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         cboxConectarA.setVisible(true);
@@ -150,6 +159,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         otdr.setConectadoEntrada(false);
         otdr.setIdOTDR(idOTDR);
         otdr.setNombre("OTDR");
+
         idOTDR++;
         guardarOTDR(otdr);
         cerrarVentana(event);
