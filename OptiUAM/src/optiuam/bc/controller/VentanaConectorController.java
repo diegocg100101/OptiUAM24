@@ -754,6 +754,10 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
         }
     }
 
+    /**
+     * Método utilizado para afectar los datos con la pérdida del conector
+     * @param elemG
+     */
     public static void afectarDatos(ElementoGrafico elemG){
         ArrayList<Double> datosModificados = new ArrayList<>();
         double dB = - ((Conector) elemG.getComponente()).getPerdidaInsercion();

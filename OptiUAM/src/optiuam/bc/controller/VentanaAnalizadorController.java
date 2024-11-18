@@ -250,7 +250,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         btnGraficar2.setVisible(false);
         btnLimitesX.setVisible(false);
         btnLimitesY.setVisible(false);
-        btnPrueba.setVisible(true);
 
         lowerBoundX.setVisible(false);
         lowerBoundY.setVisible(false);
@@ -351,7 +350,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
                         conexion();
                         btnGraficar.setVisible(false);
                         btnUnidades.setVisible(true);
-                        seleccionarUnidades();
+                        obtenerFrecuencias();
                         eventos(elemento);
                         idAnalizador++;
                         break;
@@ -649,11 +648,10 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Método para calulcar la FFT de la señal
+     * Método para calcular la FFT de la señal
      * @return
      */
-    @FXML
-    private void obtenerFrecuencias(ActionEvent event){
+    private void obtenerFrecuencias(){
         limitesX.clear();
         limitesY.clear();
         zoomY.setMin(0.01);
@@ -662,7 +660,8 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         grafica.getData().clear();
 
         ArrayList<Double> componentes = elemento.getComponente().getDatos();
-        double fs = 8000;
+        double fs =  2 * (236 * Math.pow(10, 6));
+        double T = 1 / fs;
         double velocidadLuz = 3 * Math.pow(10, 8);
         double N = componentes.size();
         double[] datos = new double[(int) Math.pow(2, 14)];
@@ -677,32 +676,36 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
         Complex[] transformada = fft.transform(datos, TransformType.FORWARD);
 
-        /*
-        FFT fourier = new FFT(componentes.size(), fs);
-        FFT.NumeroComplejoArray fourierGraph = fourier.fft(datos);
-
-        float[] componentesReales = fourierGraph.getPartesReales();
-        */
-        // Calcular las frecuencias correspondientes al eje X
         double[] frecuencias = new double[(int) N];
         for (int k = 0; k < N; k++) {
-            frecuencias[k] = k * (fs / N); // Crear el vector de frecuencias
+            frecuencias[k] = k * fs; // Crear el vector de frecuencias
         }
+
+        // Dividir Re Im / longitud del vector
+
+        // Magnitud sqrt(real^2 + im^2)
+
+        double componenteRe;
+        double componenteIm;
 
         x.setLabel("Frecuencias");
         y.setLabel("Potencia");
         grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
         XYChart.Series<Number, Number> seriesDos = new XYChart.Series<>();
         for (int j = 0; j < componentes.size(); j++) {
-            seriesDos.getData().add(new XYChart.Data<>(frecuencias[j], transformada[j].getReal()));
+            componenteRe = transformada[j].getReal() / N;
+            componenteIm = transformada[j].getImaginary() / N;
+
+
+            seriesDos.getData().add(new XYChart.Data<>(frecuencias[j], Math.sqrt(Math.pow(componenteRe,2) + Math.pow(componenteIm,2) )));
         }
 
         x.setAutoRanging(false);
         y.setAutoRanging(false);
-        x.setLowerBound(Collections.min(tiempo));
-        x.setUpperBound(Collections.max(tiempo));
-        y.setLowerBound(Collections.min(elemento.getComponente().getDatos()));
-        y.setUpperBound(Collections.max(elemento.getComponente().getDatos()));
+        x.setLowerBound(0);
+        x.setUpperBound(3e12);
+        y.setLowerBound(0);
+        y.setUpperBound(0.5);
 
         limitesX.add(x.getLowerBound());
         limitesX.add(x.getUpperBound());

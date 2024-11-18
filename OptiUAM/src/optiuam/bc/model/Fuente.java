@@ -689,10 +689,6 @@ public class Fuente extends Componente {
         System.out.println("C:" + C + " A0:" + A0 + " Fc:" + Fc + " T0:" + T0 + " M:" + M);
         GeneradorSeAl portadora = new GeneradorSeAl();
         aleatorio = portadora.generar((int) (1000 * velocidad * span));
-        //graficarSennal();
-        //calculaGraficaSennal();
-        //graficarSennalBuffer();
-        //graficaFFT();
     }
 
     /**
