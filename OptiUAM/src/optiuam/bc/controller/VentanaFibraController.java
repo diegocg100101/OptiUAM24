@@ -2,8 +2,10 @@
 package optiuam.bc.controller;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -919,9 +921,21 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                         elemG.getComponente().setSeñalSalida(null);
                         ventana_principal.elemConected(elemG.getComponente(), false);
                     }
+                    atenuar(aux);
+
+                    eg.getComponente().setPotenciaSalida(aux.getAtenuados().get(aux.getAtenuados().size() - 1));
 
                     // Pasa el buffer al elemento conectado
                     eg.getComponente().setDatos(aux.getDatos());
+
+                    // Pasa los valores atenuados
+                    eg.getComponente().setAtenuados(aux.getAtenuados());
+
+                    // Pasa el potencial inicial
+                    eg.getComponente().setPotenciaInicial(aux.getPotenciaInicial());
+
+                    // Pasa la longitud hasta el momento
+                    eg.getComponente().setLongitudTotal(aux.getLongitudTotal() + aux.getLongitud_km());
                     break;
                 }
             }
@@ -1066,6 +1080,12 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                 fibraControl.txtDisp.setText(String.valueOf(fib.getDispersion()));
                 fibraControl.txtDistancia.setText(String.valueOf(fib.getLongitud_km()));
             }
+        }
+    }
+
+    public void atenuar(Fibra fibra) {
+        for (int i = 0; i < fibra.getLongitud_km(); i++) {
+            fibra.getAtenuados().add(fibra.getPotenciaSalida() - fibra.getAtenuacion() * i);
         }
     }
 

@@ -59,6 +59,14 @@ public class Componente {
      */
     public static ArrayList<Double> tiempo = new ArrayList<>();
 
+    public double potenciaInicial;
+
+    public ArrayList<Double> Atenuados = new ArrayList<>();
+
+    public double longitudTotal = 0;
+
+    public double potenciaSalida = 0;
+
     /**
      * Metodo constructor sin parametros
      */
@@ -284,14 +292,37 @@ public class Componente {
         Datos = datos;
     }
 
-    /**
-     * Metodo toString que retorna los atributos de un componente
-     *
-     * @return nombre, id, conectadoEntrada, elementoConectadoEntrada,
-     * conectadoSalida, elementoConectadoSalida
-     */
+    public double getPotenciaInicial() {
+        return potenciaInicial;
+    }
 
+    public void setPotenciaInicial(double potenciaInicial) {
+        this.potenciaInicial = potenciaInicial;
+    }
 
+    public ArrayList<Double> getAtenuados() {
+        return Atenuados;
+    }
+
+    public void setAtenuados(ArrayList<Double> atenuados) {
+        Atenuados = atenuados;
+    }
+
+    public double getLongitudTotal() {
+        return longitudTotal;
+    }
+
+    public void setLongitudTotal(double longitudTotal) {
+        this.longitudTotal = longitudTotal;
+    }
+
+    public double getPotenciaSalida() {
+        return potenciaSalida;
+    }
+
+    public void setPotenciaSalida(double potenciaSalida) {
+        this.potenciaSalida = potenciaSalida;
+    }
 
     @Override
     public String toString() {

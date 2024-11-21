@@ -436,10 +436,14 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
         } else if (rbtnOOK.isSelected()) {
             modulacion = 1;
         }
-        //Se corrobora potencia en mW
-        if (unidadPotencia == 0 && (txtPotencia.getText().isEmpty() ||
+
+        /*
+         ||
                 txtPotencia.getText().compareTo("") == 0 ||
-                !txtPotencia.getText().matches("^(?!0\\\\.000)[0-9]+(\\\\.\\\\d{1,3})?$|^[1-9]\\\\d{0,3}(\\\\.\\\\d{1,3})?$"))) {
+                !txtPotencia.getText().matches("^(0\\\\.0(0[1-9]|[1-9]\\\\d?)|0\\\\.[1-9]\\\\d*|[1-9]\\\\d{0,3}(\\\\.\\\\d+)?|10000)$\n")
+         */
+        //Se corrobora potencia en mW
+        if (unidadPotencia == 0 && (txtPotencia.getText().isEmpty())) {
             System.out.println("Invalid mW power value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -1059,6 +1063,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
 
                     // Pasa el buffer al elemento conectado
                     eg.getComponente().setDatos(aux.getDatos());
+                    eg.getComponente().setPotenciaSalida(aux.getPotencia());
                     break;
                 }
             }
@@ -1069,9 +1074,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
             }
         }
         //Se corrobora potencia en mW
-        if (unidadPotencia == 0 && (txtPotencia.getText().isEmpty() ||
-                txtPotencia.getText().compareTo("") == 0 ||
-                !txtPotencia.getText().matches("^(?!0\\\\.000)[0-9]+(\\\\.\\\\d{1,3})?$|^[1-9]\\\\d{0,3}(\\\\.\\\\d{1,3})?$"))) {
+        if (unidadPotencia == 0 && txtPotencia.getText().isEmpty()) {
             System.out.println("Invalid mW power value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,

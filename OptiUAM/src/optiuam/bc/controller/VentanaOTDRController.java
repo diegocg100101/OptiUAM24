@@ -4,12 +4,30 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -17,43 +35,29 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import optiuam.bc.model.ElementoGrafico;
-import optiuam.bc.model.OTDR;
+import optiuam.bc.model.*;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static optiuam.bc.model.Componente.tiempo;
+
+import org.apache.commons.math3.transform.*;
+import org.apache.commons.math3.complex.Complex;
 
 /**
- * Clase que se encarga de instanciar el OTDR
+ * Clase que se encarga de instanciar un osciloscopio
  *
  * @author Ilse López
  * @author Diego Cantoral
  * @see ControladorGeneral
  */
-
 public class VentanaOTDRController extends ControladorGeneral implements Initializable {
 
     /**
-     * Identificador del OTDR
+     * Identificador del osciloscopio
      */
     static int idOTDR = 0;
-
-
-    /**
-     * Controlador del simulador
-     */
-    ControladorGeneral controlador;
-
-    /**
-     * Escenario en el cual se agregan los objetos creados
-     */
-    Stage stage;
 
     /**
      * Posición del conector en el eje X
@@ -66,36 +70,139 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     static double posY;
 
     /**
-     *
+     * Slider para modificar el centro de X
      */
-    ElementoGrafico elemento;
+    public Slider centroX;
 
     /**
-     * Controlador del OTDR
+     * Slider para modificar el centro de Y
      */
-    VentanaOTDRController OTDRControl;
+    public Slider centroY;
+
+    /**
+     * Boton para refrescar la grafica
+     */
+    public Button btnReset;
+    public Button btnDesconectado;
+    public TextField lowerBoundX;
+    public TextField upperBoundX;
+    public TextField lowerBoundY;
+    public TextField upperBoundY;
+    public Button btnLimitesY;
+    public Button btnLimitesX;
+    public Label yLabel;
+    public Label xLabel;
 
     /**
      * Lista desplegable de elementos para conectar
      */
     @FXML
-    public ComboBox cboxConectarA;
+    ComboBox cboxConectarA;
 
     /**
-     * Botón para crear instancia
+     * Botón para crear una instancia
      */
     @FXML
-    public Button btnCrear;
+    Button btnConectar;
 
     @FXML
     Pane Pane;
 
+    /**
+     * Instancia de LineChart para graficar
+     */
+    @FXML
+    private LineChart<Number, Number> grafica;
 
-    public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane) {
+    /**
+     * Valores para eje "y" (amplitud)
+     */
+    @FXML
+    private NumberAxis y = new NumberAxis();
+
+    /**
+     * Valores para eje "x" (tiempo)
+     */
+    @FXML
+    private NumberAxis x = new NumberAxis();
+
+    /**
+     * Etiqueta de "Connect to:"
+     */
+    public Label connect;
+
+    /**
+     * Botón para graficar después de abrir la ventana nuevamente
+     */
+    public Button btnGraficar;
+
+    /**
+     * Bara para el zoom del eje "y" (amplitud)
+     */
+    public Slider zoomY;
+
+    /**
+     * Bara para el zoom del eje "x" (tiempo)
+     */
+    public Slider zoomX;
+
+    /**
+     * Controlador del simulador
+     */
+    ControladorGeneral controlador;
+
+    /**
+     * Escenario en el cual se agregan los objetos creados
+     */
+    Stage stage;
+
+    /**
+     * Elemento gráfico del osciloscopio
+     */
+    ElementoGrafico elemento;
+
+    /**
+     * Controlador del osciloscopio
+     */
+    VentanaOTDRController otdrController;
+
+    private ArrayList<Double> limitesX = new ArrayList<>();
+
+    private ArrayList<Double> limitesY = new ArrayList<>();
+    private Rectangle zoomRect;
+    private Point2D dragStart;
+
+    /**
+     * Inicializa el controlador
+     *
+     * @param controlador            Controlador general
+     * @param stage
+     * @param ventana
+     * @param pane
+     * @param otdrController
+     */
+    public void init(ControladorGeneral controlador, Stage stage, VentanaPrincipal ventana, Pane pane,
+                     VentanaOTDRController otdrController) {
         this.controlador = controlador;
         this.stage = stage;
         this.ventana_principal = ventana;
         this.Pane = pane;
+        this.otdrController = otdrController;
+
+        // Caja de conexión
+        this.otdrController.cboxConectarA.getItems().add("Disconnected");
+        otdrController.cboxConectarA.getSelectionModel().select(0);
+
+        for (int elemento1 = 0; elemento1 < controlador.getElementos().size(); elemento1++) {
+            if ("connector".equals(controlador.getElementos().get(elemento1).getNombre()) ||
+                    "fiber".equals(controlador.getElementos().get(elemento1).getNombre())
+                    ||
+                    "mux".equals(controlador.getElementos().get(elemento1).getNombre())) {
+                if (!controlador.getElementos().get(elemento1).isConectadoSalida()) {
+                    this.otdrController.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento1).getDibujo().getText());
+                }
+            }
+        }
     }
 
     /**
@@ -107,64 +214,177 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         this.elemento = elemento;
     }
 
+    /**
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         cboxConectarA.setVisible(true);
-        btnCrear.setVisible(true);
+        btnConectar.setVisible(false);
+        btnGraficar.setVisible(true);
+        btnReset.setVisible(true);
+        btnDesconectado.setVisible(false);
+        btnLimitesX.setVisible(false);
+        btnLimitesY.setVisible(false);
 
+        lowerBoundX.setVisible(false);
+        lowerBoundY.setVisible(false);
+
+        upperBoundX.setVisible(false);
+        upperBoundY.setVisible(false);
+
+        xLabel.setVisible(false);
+        yLabel.setVisible(false);
+
+        zoomX.setMin(1);
+        zoomX.setMax(100);
+        zoomX.setValue(1);
+
+        // Iniciar implementación de zoom por recuadro
+        // Crear rectángulo de selección
+        zoomRect = new Rectangle();
+        zoomRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.3));
+        zoomRect.setStroke(Color.BLUE);
+        zoomRect.setVisible(false);
+
+        Pane pane = (Pane) grafica.getParent();
+        pane.getChildren().add(zoomRect);  // Añadir el rectángulo al pane
+
+        // Eventos de clic y arrastre
+        grafica.setOnMousePressed(this::iniciarArrastreZoom);
+        grafica.setOnMouseDragged(this::arrastrarZoom);
+        grafica.setOnMouseReleased(this::soltarArrastreZoom);
     }
 
     /**
-     * @return
+     * @param otdr Objeto de tipo osciloscopio
      */
-    public void guardarOTDR(OTDR OTDR) {
-        OTDR.setId(controlador.getContadorElemento());
-        controlador.getElementos().add(OTDR);
+    public void guardarOTDR(OTDR otdr) {
+        otdr.setId(controlador.getContadorElemento());
+        controlador.getElementos().add(otdr);
 
         Label dibujo = new Label();
         ElementoGrafico elemento = new ElementoGrafico();
 
-        OTDR.setPosX(dibujo.getLayoutX());
-        OTDR.setPosY(dibujo.getLayoutY());
-        setPosX(OTDR.getPosX());
-        setPosY(OTDR.getPosY());
+        otdr.setPosX(dibujo.getLayoutX());
+        otdr.setPosY(dibujo.getLayoutY());
+        setPosX(otdr.getPosX());
+        setPosY(otdr.getPosY());
 
-        elemento.setComponente(OTDR);
+        elemento.setComponente(otdr);
         elemento.setId(controlador.getContadorElemento());
 
-        dibujo.setGraphic(new ImageView(new Image("images/dibujo_otdr.png")));
-        dibujo.setText(OTDR.getNombre() + "_" + OTDR.getIdOTDR());
+        dibujo.setGraphic(new ImageView(new Image("images/dibujo_espectro.png")));
+        dibujo.setText(otdr.getNombre() + "_" + otdr.getIdOTDR());
 
         dibujo.setContentDisplay(ContentDisplay.TOP);
         elemento.setDibujo(dibujo);
         controlador.getDibujos().add(elemento);
 
-        eventos(elemento);
+        init2(elemento);
         Pane.getChildren().add(elemento.getDibujo());
         controlador.setContadorElemento(controlador.getContadorElemento() + 1);
-        OTDR.setNombreid(OTDR.getNombre() + "_" + OTDR.getId());
+        otdr.setNombreid(otdr.getNombre() + "_" + otdr.getId());
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
                 "\nOTDR created!",
                 aceptar);
-        alert.setTitle("Succes");
+        alert.setTitle("Success");
         alert.setHeaderText(null);
         alert.showAndWait();
-
     }
 
-
+    /**
+     * Inicializa una instancia del osciloscopio
+     *
+     * @param event Eventos del sistema
+     * @throws RuntimeException
+     * @throws InvocationTargetException
+     */
     public void crearOTDR(ActionEvent event) throws RuntimeException, InvocationTargetException {
-        OTDR otdr = new OTDR();
-        otdr.setConectadoEntrada(false);
-        otdr.setIdOTDR(idOTDR);
-        otdr.setNombre("OTDR");
-
-        idOTDR++;
-        guardarOTDR(otdr);
-        cerrarVentana(event);
+        // Si no hay nada conectado, se crea una instancia y se agrega al panel
+        if(otdrController.cboxConectarA.getSelectionModel().getSelectedItem().equals("Disconnected")){
+            OTDR otdr = new OTDR();
+            otdr.setConectadoEntrada(false);
+            otdr.setIdOTDR(idOTDR);
+            otdr.setNombre("Spectrum_Analyzer");
+            guardarOTDR(otdr);
+            eventos(elemento);
+            idOTDR++;
+            cerrarVentana(event);
+        } else {
+            // Si hay lago conectado, lo busca, verifica que el elemento al que se quiere conectar no tenga otro componente en la salida
+            for (int elemento2 = 0; elemento2 < controlador.getElementos().size(); elemento2++) {
+                if(!controlador.getElementos().get(elemento2).isConectadoSalida()) {
+                    if (otdrController.cboxConectarA.getSelectionModel().getSelectedItem().toString()
+                            .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
+                        OTDR otdr = new OTDR();
+                        otdr.setConectadoEntrada(false);
+                        otdr.setIdOTDR(idOTDR);
+                        otdr.setNombre("OTDR");
+                        guardarOTDR(otdr);
+                        conexion();
+                        btnGraficar.setVisible(false);;
+                        graficarPotencias();
+                        eventos(elemento);
+                        idOTDR++;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     * Método para la conexión del osciloscopio
+     */
+    public void conexion() {
+        for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
+            if (otdrController.cboxConectarA.getSelectionModel().getSelectedItem().toString()
+                    .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
+                    && controlador.getElementos().get(elemento2).getNombre().equals("connector")) {
+                ElementoGrafico eg = controlador.getDibujos().get(elemento2);
+                elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
+                elemento.getComponente().setConectadoEntrada(true);
+                eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
+                eg.getComponente().setConectadoSalida(true);
+
+                dibujarLineaAtras(elemento);
+
+                // Pasa datos atenuados y longitud [km]
+                elemento.getComponente().setAtenuados(eg.getComponente().getAtenuados());
+                elemento.getComponente().setLongitudTotal(eg.getComponente().getLongitudTotal());
+
+                btnDesconectado.setVisible(true);
+                break;
+            } else if (otdrController.cboxConectarA.getSelectionModel().getSelectedItem().toString()
+                    .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())){
+                ElementoGrafico eg = controlador.getDibujos().get(elemento2);
+                elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
+                elemento.getComponente().setConectadoEntrada(true);
+                eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
+                eg.getComponente().setConectadoSalida(true);
+
+                // Pasa el buffer al elemento conectado
+                elemento.getComponente().setDatos(eg.getComponente().getDatos());
+                dibujarLineaAtras(elemento);
+                btnDesconectado.setVisible(true);
+                break;
+            }
+        }
+    }
+
+    public void conectarNuevamente() {
+        conexion();
+        btnConectar.setVisible(false);
+    }
+
+    /**
+     * Método para gestionar eventos del osciloscopio
+     *
+     * @param elemento
+     */
     public void eventos(ElementoGrafico elemento) {
         elemento.getDibujo().setOnMouseDragged((MouseEvent event) -> {
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -185,14 +405,50 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
                     elemento.getDibujo().setLayoutY(Pane.getChildren().get(index).getLayoutY() + event.getY() + 1);
                 }
                 if (elemento.getComponente().isConectadoEntrada()) {
-                    elemento.getComponente().getLinea().setVisible(false);
-                    dibujarLinea(elemento);
+                    ElementoGrafico aux;
+                    for (int it = 0; it < controlador.getDibujos().size(); it++) {
+                        aux = controlador.getDibujos().get(it);
+                        if (elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos()
+                                .get(it).getDibujo().getText())) {
+                            aux.getComponente().getLinea().setVisible(false);
+                            dibujarLineaAtras(elemento);
+                        }
+                    }
                 }
             }
         });
         elemento.getDibujo().setOnMouseEntered((MouseEvent event) -> {
             elemento.getDibujo().setStyle("-fx-border-color: darkblue;");
             elemento.getDibujo().setCursor(Cursor.OPEN_HAND);
+        });
+        elemento.getDibujo().setOnMouseExited((MouseEvent event) -> {
+            elemento.getDibujo().setStyle("");
+        });
+        elemento.getDibujo().setOnMouseClicked((MouseEvent event) -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                try {
+                    Stage stage1 = new Stage();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaAnalizador.fxml"));
+                    Parent root = loader.load();
+                    VentanaOTDRController otdrController = loader.getController();
+
+                    otdrController.init(controlador, stage, ventana_principal, Pane, otdrController);
+                    otdrController.init2(elemento);
+
+                    Scene scene = new Scene(root);
+                    Image ico = new Image("images/acercaDe.png");
+                    stage1.getIcons().add(ico);
+                    stage1.setTitle("OptiUAM BC - " + elemento.getDibujo().getText().toUpperCase());
+                    stage1.initModality(Modality.APPLICATION_MODAL);
+                    stage1.setScene(scene);
+                    stage1.setResizable(false);
+                    stage1.showAndWait();
+                } catch (IOException ex) {
+                    Logger.getLogger(VentanaConectorController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (event.getButton() == MouseButton.SECONDARY) {
+                mostrarMenu(elemento);
+            }
         });
 
     }
@@ -232,29 +488,68 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     /**
-     * Método que permite visualizar la conexión
+     * Metodo que permite visualizar la conexion hacia atras del conector
+     * con otro elemento
      *
-     * @param elemG Elemento grafico del conector
+     * @param elem Elemento grafico del conector
      */
-    public void dibujarLinea(ElementoGrafico elemG) {
+    public void dibujarLineaAtras(ElementoGrafico elem) {
         Line line = new Line();
         ElementoGrafico aux = new ElementoGrafico();
-
         for (int it = 0; it < controlador.getDibujos().size(); it++) {
-            if (elemG.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
+            if (elem.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
                 aux = controlador.getDibujos().get(it);
                 line.setStrokeWidth(2);
                 line.setStroke(Color.BLACK);
-                line.setStartX(aux.getDibujo().getLayoutX() + aux.getDibujo().getWidth());
-                line.setStartY(aux.getDibujo().getLayoutY() + 12);
-                line.setEndX(elemG.getDibujo().getLayoutX());
-                line.setEndY(elemG.getDibujo().getLayoutY() + 23);
+
+                if (aux.getDibujo().getText().contains("splitter")) {
+                    Splitter splitter = (Splitter) aux.getComponente();
+                    switch (splitter.getSalidas()) {
+                        case 2:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 50);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (24));
+                            break;
+                        case 4:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 50);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (18));
+                            break;
+                        case 8:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 80);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (10));
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (aux.getDibujo().getText().contains("demux")) {
+                    Demultiplexor de = (Demultiplexor) aux.getComponente();
+                    switch (de.getSalidas()) {
+                        case 2:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 50);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (24));
+                            break;
+                        case 4:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 50);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (18));
+                            break;
+                        case 8:
+                            line.setStartX(aux.getDibujo().getLayoutX() + 65);
+                            line.setStartY(aux.getDibujo().getLayoutY() + (10));
+                            break;
+
+                        default:
+                            break;
+                    }
+                } else {
+                    line.setStartX(aux.getDibujo().getLayoutX() + aux.getDibujo().getWidth() - 3);
+                    line.setStartY(aux.getDibujo().getLayoutY() + 20);
+                }
+                line.setEndX(elem.getDibujo().getLayoutX());
+                line.setEndY(elem.getDibujo().getLayoutY() + 10);
                 line.setVisible(true);
                 Pane.getChildren().add(line);
                 aux.getComponente().setLinea(line);
             }
         }
-
     }
 
     /**
@@ -268,13 +563,326 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         s.close();
     }
 
+    /**
+     * Método para calcular la FFT de la señal
+     * @return
+     */
+    private void graficarPotencias() {
+        limitesX.clear();
+        limitesY.clear();
+        zoomY.setMin(0.01);
+        zoomY.setMax(2);
+        zoomY.setValue(1);
+        grafica.getData().clear();
+
+        x.setLabel("Distancia [km]");
+        y.setLabel("Potencia [mW]");
+
+        ArrayList<Double> vectorDistancia = new ArrayList<>();
+        ArrayList<Double> vectorAtenuados = elemento.getComponente().getAtenuados();
+
+        double distanciaTotal = elemento.getComponente().getLongitudTotal();
+
+        for (int j = 0; j < distanciaTotal; j++) {
+            vectorDistancia.add((double) j);
+        }
+
+        grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        for (int i = 0; i < distanciaTotal; i++) {
+            series.getData().add(new XYChart.Data<>(vectorDistancia.get(i), vectorAtenuados.get(i)));
+        }
+
+        x.setAutoRanging(false);
+        y.setAutoRanging(false);
+        x.setLowerBound(0);
+        x.setUpperBound(Collections.max(vectorDistancia));
+        y.setLowerBound(Collections.min(vectorAtenuados));
+        y.setUpperBound(Collections.max(vectorAtenuados));
+
+        limitesX.add(x.getLowerBound());
+        limitesX.add(x.getUpperBound());
+
+        limitesY.add(y.getLowerBound());
+        limitesY.add(y.getUpperBound());
+
+
+        centroX.setMin(x.getLowerBound());
+        centroX.setMax(x.getUpperBound());
+        centroX.setValue((x.getLowerBound() + x.getUpperBound()) / 2);
+
+        centroY.setMin(y.getLowerBound());
+        centroY.setMax(y.getUpperBound());
+        centroY.setValue((y.getLowerBound() + y.getUpperBound()) / 2);
+        centroX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroX());
+        centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
+        zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
+        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
+        grafica.getData().add(series);
+
+        lowerBoundX.setVisible(true);
+        lowerBoundY.setVisible(true);
+
+        upperBoundX.setVisible(true);
+        upperBoundY.setVisible(true);
+
+        xLabel.setVisible(true);
+        yLabel.setVisible(true);
+
+        btnLimitesX.setVisible(true);
+        btnLimitesY.setVisible(true);
+    }
+
+    private void iniciarArrastreZoom(MouseEvent event) {
+        dragStart = new Point2D(event.getX(), event.getY());
+        zoomRect.setX(dragStart.getX());
+        zoomRect.setY(dragStart.getY());
+        zoomRect.setWidth(0);
+        zoomRect.setHeight(0);
+        zoomRect.setVisible(true);
+    }
+
+    private void arrastrarZoom(MouseEvent event) {
+        double ancho = event.getX() - dragStart.getX();
+        double alto = event.getY() - dragStart.getY();
+        zoomRect.setWidth(Math.abs(ancho));
+        zoomRect.setHeight(Math.abs(alto));
+        zoomRect.setX(Math.min(dragStart.getX(), event.getX()));
+        zoomRect.setY(Math.min(dragStart.getY(), event.getY()));
+    }
+
+    private void soltarArrastreZoom(MouseEvent event) {
+        if (zoomRect.getWidth() > 0 && zoomRect.getHeight() > 0) {
+            double xZoomMin = x.getValueForDisplay(zoomRect.getX()).doubleValue();
+            double xZoomMax = x.getValueForDisplay(zoomRect.getX() + zoomRect.getWidth()).doubleValue();
+            double yZoomMin = y.getValueForDisplay(zoomRect.getY() + zoomRect.getHeight()).doubleValue();
+            double yZoomMax = y.getValueForDisplay(zoomRect.getY()).doubleValue();
+
+            // Ajustar límites de los ejes
+            x.setLowerBound(xZoomMin);
+            x.setUpperBound(xZoomMax);
+            y.setLowerBound(yZoomMin);
+            y.setUpperBound(yZoomMax);
+        }
+        zoomRect.setVisible(false);
+    }
+
+    /**
+     * Método para restablecer los limites
+     */
+    public void resetLimits() {
+        x.setLowerBound(limitesX.get(0));
+        x.setUpperBound(limitesX.get(1));
+
+        y.setLowerBound(limitesY.get(0));
+        y.setUpperBound(limitesY.get(1));
+    }
+
+    /**
+     * Método para ajustar los límites del eje "x" y permitir el zoom
+     *
+     * @param factor Factor por el que se dividirá la ventana
+     */
+    private void ajustarZoomX(double factor) {
+        double center = (x.getUpperBound() + x.getLowerBound()) / 2;
+        double nuevoRango = Collections.max(tiempo) / factor;
+        x.setLowerBound(center - nuevoRango);
+        x.setUpperBound(center + nuevoRango);
+        x.setTickUnit(nuevoRango / 10);
+    }
+
+    /**
+     * Método para ajustar los límites del eje "y" y permitir el zoom en la gráfica de miliWatts
+     *
+     * @param factor Factor por el que se dividirá la ventana
+     */
+    private void ajustarZoomYmW(double factor) {
+        double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
+        double nuevoRango = Collections.max(elemento.getComponente().getDatos()) / factor;
+        y.setLowerBound(centro - nuevoRango);
+        y.setUpperBound(centro + nuevoRango);
+        y.setTickUnit(nuevoRango / 10);
+    }
+
+    /**
+     * Método para ajustar los límites dependiendo el centro en el eje "x" indicado con el Slider
+     */
+    private void ajustarCentroX() {
+        double diferencia = (x.getUpperBound() - x.getLowerBound()) / 2;
+        x.setLowerBound(centroX.getValue() - diferencia);
+        x.setUpperBound(centroX.getValue() + diferencia);
+    }
+
+    /**
+     * Método para ajustar los límites dependiendo el centro en el eje "y" indicado con el Slider
+     */
+    private void ajustarCentroY() {
+        double diferencia = (y.getUpperBound() - y.getLowerBound()) / 2;
+        y.setLowerBound(centroY.getValue() - diferencia);
+        y.setUpperBound(centroY.getValue() + diferencia);
+    }
+
+    /**
+     * Método para cambiar los límites de la ventana en el eje X
+     */
+    public void ajustarLimitesTextFieldX() {
+        x.setLowerBound(Double.parseDouble(lowerBoundX.getText()));
+        x.setUpperBound(Double.parseDouble(upperBoundX.getText()));
+    }
+
+    /**
+     * Método para cambiar los límites de la ventana en el eje Y
+     */
+    public void ajustarLimitesTextFieldY() {
+        y.setLowerBound(Double.parseDouble(lowerBoundY.getText()));
+        y.setUpperBound(Double.parseDouble(upperBoundY.getText()));
+    }
+
+    /**
+     * Método para desconectar la fuente
+     *
+     * @param event Representa cualquier tipo de acción
+     */
+    @FXML
+    private void desconectar(ActionEvent event) {
+        for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
+            if (elemento.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(elemento2)
+                    .getDibujo().getText())) {
+                Componente comp = controlador.getElementos().get(elemento2);
+                comp.setConectadoSalida(false);
+                comp.setElementoConectadoSalida("");
+                comp.getLinea().setVisible(false);
+                break;
+            }
+        }
+        otdrController.cboxConectarA.getSelectionModel().select(0);
+        if (elemento.getComponente().isConectadoEntrada()) {
+            elemento.getComponente().setConectadoEntrada(false);
+            elemento.getComponente().setElementoConectadoEntrada("");
+        }
+
+        grafica.getData().clear();
+
+        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                "\nDisconnected oscilloscope!",
+                aceptar);
+        alert.setTitle("Success");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+        cerrarVentana(event);
+    }
+
+    public void mostrarMenu(ElementoGrafico dibujo) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem menuItem1 = new MenuItem("-Duplicate");
+        MenuItem menuItem3 = new MenuItem("-Delete");
+
+        /*Duplicar*/
+        menuItem1.setOnAction(e -> {
+            for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
+                if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
+                    AnalizadorEspectro analizadorAux = new AnalizadorEspectro();
+                    AnalizadorEspectro analizadorAux1 = (AnalizadorEspectro) controlador.getElementos().get(elemento);
+                    analizadorAux.setIdAnalizador(idOTDR);
+                    analizadorAux.setNombre("osciloscopio");
+                    analizadorAux.setTipo(analizadorAux1.getTipo());
+
+
+                    duplicarAnalizador(analizadorAux, dibujo);
+                    idOTDR++;
+                    break;
+                }
+            }
+        });
+
+        /**Eliminar*/
+        menuItem3.setOnAction(e -> {
+            if (dibujo.getComponente().isConectadoEntrada()) {
+                for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
+                    if (dibujo.getComponente().getElementoConectadoEntrada().equals(controlador.getDibujos().get(elemento).getDibujo().getText())) {
+                        Componente aux = controlador.getElementos().get(elemento);
+                        aux.setConectadoSalida(false);
+                        aux.setElementoConectadoSalida("");
+                        aux.getLinea().setVisible(false);
+                    }
+                }
+            }
+            for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
+                if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
+                    Osciloscopio aux = (Osciloscopio) controlador.getElementos().get(elemento);
+                    controlador.getDibujos().remove(dibujo);
+                    controlador.getElementos().remove(aux);
+                }
+            }
+            dibujo.getDibujo().setVisible(false);
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                    "\nOscilloscope removed!",
+                    aceptar);
+            alert.setTitle("Succes");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+        });
+
+        contextMenu.getItems().add(menuItem1);
+        contextMenu.getItems().add(menuItem3);
+        dibujo.getDibujo().setContextMenu(contextMenu);
+    }
+
+    /**
+     * Metodo que duplica una fuente
+     *
+     * @param analizador Fuente a duplicar
+     * @param el     Elemento grafico de la fuente a duplicar
+     */
+    public void duplicarAnalizador(AnalizadorEspectro analizador, ElementoGrafico el) {
+        analizador.setId(controlador.getContadorElemento());
+        controlador.getElementos().add(analizador);
+        Label dibujo = new Label();
+        ElementoGrafico elem = new ElementoGrafico();
+
+        analizador.setPosX(dibujo.getLayoutX());
+        analizador.setPosY(dibujo.getLayoutY());
+        setPosX(analizador.getPosX());
+        setPosY(analizador.getPosY());
+
+        elem.setComponente(analizador);
+        elem.setId(controlador.getContadorElemento());
+
+        dibujo.setGraphic(new ImageView(new Image("images/dibujo_osciloscopio2.png")));
+        dibujo.setText(analizador.getNombre() + "_" + analizador.getIdAnalizador());
+        dibujo.setContentDisplay(ContentDisplay.TOP);
+        dibujo.setLayoutX(el.getDibujo().getLayoutX() + 35);
+        dibujo.setLayoutY(el.getDibujo().getLayoutY() + 20);
+        elem.setDibujo(dibujo);
+        controlador.getDibujos().add(elem);
+        eventos(elem);
+        Pane.getChildren().add(elem.getDibujo());
+        controlador.setContadorElemento(controlador.getContadorElemento() + 1);
+
+        ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                "\nAnalyzer duplicated!",
+                aceptar);
+        alert.setTitle("Spectrum Analyzer");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+
+
+
+
+
+    // Getters y Setters
 
     public static int getIdOTDR() {
         return idOTDR;
     }
 
     public static void setIdOTDR(int idOTDR) {
-        VentanaOTDRController.idOTDR = idOTDR;
+        VentanaOsciloscopioController.idOsciloscopio = idOTDR;
     }
 
     public ControladorGeneral getControlador() {
@@ -293,7 +901,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         this.stage = stage;
     }
 
-
     public ElementoGrafico getElemento() {
         return elemento;
     }
@@ -302,12 +909,12 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         this.elemento = elemento;
     }
 
-    public VentanaOTDRController getOTDRControl() {
-        return OTDRControl;
+    public VentanaOTDRController getOtdrController() {
+        return otdrController;
     }
 
-    public void setOTDRControl(VentanaOTDRController OTDRControl) {
-        this.OTDRControl = OTDRControl;
+    public void setOtdrController(VentanaOTDRController otdrController) {
+        this.otdrController = otdrController;
     }
 
     public static double getPosX() {
@@ -315,7 +922,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     public static void setPosX(double posX) {
-        VentanaOTDRController.posX = posX;
+        VentanaOsciloscopioController.posX = posX;
     }
 
     public static double getPosY() {
@@ -323,8 +930,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     public static void setPosY(double posY) {
-        VentanaOTDRController.posY = posY;
+        VentanaOsciloscopioController.posY = posY;
     }
-
-
 }

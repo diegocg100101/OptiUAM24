@@ -5,9 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
-import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -74,16 +72,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     static double posY;
 
     /**
-     * Botón para confirmar unidades
-     */
-    public Button btnUnidades;
-
-    /**
-     * Caja con las unidades
-     */
-    public ComboBox cboxUnidades;
-
-    /**
      * Slider para modificar el centro de X
      */
     public Slider centroX;
@@ -98,7 +86,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
      */
     public Button btnReset;
     public Button btnDesconectado;
-    public Button btnGraficar2;
     public TextField lowerBoundX;
     public TextField upperBoundX;
     public TextField lowerBoundY;
@@ -107,7 +94,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     public Button btnLimitesX;
     public Label yLabel;
     public Label xLabel;
-    public Button btnPrueba;
 
     /**
      * Lista desplegable de elementos para conectar
@@ -209,11 +195,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         analizadorControl.cboxConectarA.getItems().add("Disconnected");
         analizadorController.cboxConectarA.getSelectionModel().select(0);
 
-        // Caja de unidades a graficar
-        analizadorController.cboxUnidades.getItems().add("mW");
-        analizadorController.cboxUnidades.getItems().add("dBm");
-        analizadorController.cboxUnidades.getSelectionModel().select(0);
-
         for (int elemento1 = 0; elemento1 < controlador.getElementos().size(); elemento1++) {
             if ("connector".equals(controlador.getElementos().get(elemento1).getNombre()) ||
                     "source".equals(controlador.getElementos().get(elemento1).getNombre())
@@ -245,9 +226,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         btnConectar.setVisible(false);
         btnGraficar.setVisible(true);
         btnReset.setVisible(true);
-        btnUnidades.setVisible(false);
         btnDesconectado.setVisible(false);
-        btnGraficar2.setVisible(false);
         btnLimitesX.setVisible(false);
         btnLimitesY.setVisible(false);
 
@@ -348,8 +327,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
                         analizador.setNombre("Spectrum_Analyzer");
                         guardarAnalizador(analizador);
                         conexion();
-                        btnGraficar.setVisible(false);
-                        btnUnidades.setVisible(true);
+                        btnGraficar.setVisible(false);;
                         obtenerFrecuencias();
                         eventos(elemento);
                         idAnalizador++;
@@ -399,7 +377,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
 
     public void conectarNuevamente() {
         conexion();
-        seleccionarUnidades();
         btnConectar.setVisible(false);
     }
 
@@ -462,7 +439,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
 
                     if (elemento.getComponente().isConectadoEntrada()) {
                         analizadorController.connect.setVisible(false);
-                        analizadorController.btnGraficar2.setVisible(true);
                         analizadorController.btnDesconectado.setVisible(true);
                         analizadorController.cboxConectarA.setVisible(false);
                     } else {
@@ -600,58 +576,10 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Método para inicializar los valores de la gráfica en mW, graficar y mapear los Sliders con los ejes
-     */
-    public void anadirGraficaWatts() {
-        limitesX.clear();
-        limitesY.clear();
-
-        zoomY.setMin(0.01);
-        zoomY.setMax(2);
-        zoomY.setValue(1);
-        grafica.getData().clear();
-        x.setLabel("Tiempo [s]");
-        y.setLabel("Potencia [mW]");
-        grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        for (int i = 0; i < elemento.getComponente().getDatos().size(); i++) {
-            series.getData().add(new XYChart.Data<>(tiempo.get(i), elemento.getComponente().getDatos().get(i)));
-        }
-
-        x.setAutoRanging(false);
-        y.setAutoRanging(false);
-        x.setLowerBound(Collections.min(tiempo));
-        x.setUpperBound(Collections.max(tiempo));
-        y.setLowerBound(Collections.min(elemento.getComponente().getDatos()));
-        y.setUpperBound(Collections.max(elemento.getComponente().getDatos()));
-
-        limitesX.add(x.getLowerBound());
-        limitesX.add(x.getUpperBound());
-
-        limitesY.add(y.getLowerBound());
-        limitesY.add(y.getUpperBound());
-
-
-        centroX.setMin(x.getLowerBound());
-        centroX.setMax(x.getUpperBound());
-        centroX.setValue((x.getLowerBound() + x.getUpperBound()) / 2);
-
-        centroY.setMin(y.getLowerBound());
-        centroY.setMax(y.getUpperBound());
-        centroY.setValue((y.getLowerBound() + y.getUpperBound()) / 2);
-
-        centroX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroX());
-        centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
-        zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
-        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
-        grafica.getData().add(series);
-    }
-
-    /**
      * Método para calcular la FFT de la señal
      * @return
      */
-    private void obtenerFrecuencias(){
+    private void obtenerFrecuencias() {
         limitesX.clear();
         limitesY.clear();
         zoomY.setMin(0.01);
@@ -660,30 +588,28 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         grafica.getData().clear();
 
         ArrayList<Double> componentes = elemento.getComponente().getDatos();
-        double fs =  2 * (236 * Math.pow(10, 6));
-        double T = 1 / fs;
-        double velocidadLuz = 3 * Math.pow(10, 8);
+        double fs = 2 * (236 * Math.pow(10, 6)); // 472 MHz
+        double velocidadLuz = 3 * Math.pow(10, 8); // Velocidad de la luz
+        double tamanio = Math.pow(2, 14);
         double N = componentes.size();
-        double[] datos = new double[(int) Math.pow(2, 14)];
         int i = 0;
+        int muestreo = 1024;
+        double[] datos = new double[(int) muestreo]; //
         double longitudOnda = 0;
 
-        for(Double dato : componentes){
-            datos[i] = dato.floatValue();
-            i++;
+        for (int l = 0; l < muestreo; l++) {
+            if (l * muestreo < N) {
+                datos[l] = componentes.get(l * muestreo);
+            }
         }
 
         FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
         Complex[] transformada = fft.transform(datos, TransformType.FORWARD);
 
-        double[] frecuencias = new double[(int) N];
-        for (int k = 0; k < N; k++) {
-            frecuencias[k] = k * fs; // Crear el vector de frecuencias
+        double[] frecuencias = new double[(int) muestreo];
+        for (int k = 0; k < muestreo; k++) {
+            frecuencias[k] = k * fs * muestreo; // Crear el vector de frecuencias
         }
-
-        // Dividir Re Im / longitud del vector
-
-        // Magnitud sqrt(real^2 + im^2)
 
         double componenteRe;
         double componenteIm;
@@ -692,10 +618,9 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         y.setLabel("Potencia");
         grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
         XYChart.Series<Number, Number> seriesDos = new XYChart.Series<>();
-        for (int j = 0; j < componentes.size(); j++) {
-            componenteRe = transformada[j].getReal() / N;
-            componenteIm = transformada[j].getImaginary() / N;
-
+        for (int j = 0; j < muestreo; j++) {
+            componenteRe = transformada[j].getReal() / tamanio;
+            componenteIm = transformada[j].getImaginary() / tamanio;
 
             seriesDos.getData().add(new XYChart.Data<>(frecuencias[j], Math.sqrt(Math.pow(componenteRe,2) + Math.pow(componenteIm,2) )));
         }
@@ -726,6 +651,18 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
         zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
         grafica.getData().add(seriesDos);
+
+        lowerBoundX.setVisible(true);
+        lowerBoundY.setVisible(true);
+
+        upperBoundX.setVisible(true);
+        upperBoundY.setVisible(true);
+
+        xLabel.setVisible(true);
+        yLabel.setVisible(true);
+
+        btnLimitesX.setVisible(true);
+        btnLimitesY.setVisible(true);
     }
 
     private void iniciarArrastreZoom(MouseEvent event) {
@@ -763,55 +700,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Método para inicializar los valores de la gráfica en dBm, graficar y mapear los Sliders con los ejes
-     */
-    public void anadirGraficadBm() {
-        limitesX.clear();
-        limitesY.clear();
-
-        zoomY.setMin(0.01);
-        zoomY.setMax(0.1);
-        zoomY.setValue(0.05);
-        grafica.getData().clear();
-        double dato;
-        x.setLabel("Tiempo [s]");
-        y.setLabel("Potencia [dBm]");
-        grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        for (int i = 0; i < elemento.getComponente().getDatos().size(); i++) {
-            dato = calculaDecibeles(elemento.getComponente().getDatos().get(i));
-            series.getData().add(new XYChart.Data<>(tiempo.get(i), (dato < -60) ? -60 : dato));
-        }
-
-        x.setAutoRanging(false);
-        y.setAutoRanging(false);
-        x.setLowerBound(Collections.min(tiempo));
-        x.setUpperBound(Collections.max(tiempo));
-        y.setLowerBound(-60);
-        y.setUpperBound(calculaDecibeles(Collections.max(elemento.getComponente().getDatos())));
-
-        limitesX.add(x.getLowerBound());
-        limitesX.add(x.getUpperBound());
-
-        limitesY.add(y.getLowerBound());
-        limitesY.add(y.getUpperBound());
-
-        centroX.setMin(x.getLowerBound());
-        centroX.setMax(x.getUpperBound());
-        centroX.setValue((x.getLowerBound() + x.getUpperBound()) / 2);
-
-        centroY.setMin(y.getLowerBound());
-        centroY.setMax(y.getUpperBound());
-        centroY.setValue((y.getLowerBound() + y.getUpperBound()) / 2);
-
-        centroX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroX());
-        centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
-        zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
-        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYdBm(newVal.doubleValue()));
-        grafica.getData().add(series);
-    }
-
-    /**
      * Método para restablecer los limites
      */
     public void resetLimits() {
@@ -820,16 +708,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
 
         y.setLowerBound(limitesY.get(0));
         y.setUpperBound(limitesY.get(1));
-    }
-
-    /**
-     * Método para transformar la potencia de miliWatts a decibeles
-     *
-     * @param miliWatts Valor en miliWatts
-     * @return
-     */
-    public double calculaDecibeles(double miliWatts) {
-        return 10 * Math.log10(miliWatts);
     }
 
     /**
@@ -859,19 +737,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Método para ajustar los límites del eje "y" y permitir el zoom en la gráfica de decibeles
-     *
-     * @param factor Factor por el que se dividirá la ventana
-     */
-    private void ajustarZoomYdBm(double factor) {
-        double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
-        double nuevoRango = calculaDecibeles(Collections.max(elemento.getComponente().getDatos())) / factor;
-        y.setLowerBound(centro - nuevoRango);
-        y.setUpperBound(centro + nuevoRango);
-        y.setTickUnit(nuevoRango / 10);
-    }
-
-    /**
      * Método para ajustar los límites dependiendo el centro en el eje "x" indicado con el Slider
      */
     private void ajustarCentroX() {
@@ -887,39 +752,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         double diferencia = (y.getUpperBound() - y.getLowerBound()) / 2;
         y.setLowerBound(centroY.getValue() - diferencia);
         y.setUpperBound(centroY.getValue() + diferencia);
-    }
-
-    /**
-     * Grafica nuevamente dependiendo de las unidades que se seleccionen en el ComboBox
-     */
-    public void seleccionarUnidades() {
-        if (analizadorControl.cboxUnidades.getSelectionModel().getSelectedItem().toString().equals("mW")) {
-            anadirGraficaWatts();
-            lowerBoundX.setVisible(true);
-            lowerBoundY.setVisible(true);
-
-            upperBoundX.setVisible(true);
-            upperBoundY.setVisible(true);
-
-            xLabel.setVisible(true);
-            yLabel.setVisible(true);
-
-            btnLimitesX.setVisible(true);
-            btnLimitesY.setVisible(true);
-        } else if (analizadorControl.cboxUnidades.getSelectionModel().getSelectedItem().toString().equals("dBm")) {
-            anadirGraficadBm();
-            lowerBoundX.setVisible(true);
-            lowerBoundY.setVisible(true);
-
-            upperBoundX.setVisible(true);
-            upperBoundY.setVisible(true);
-
-            xLabel.setVisible(true);
-            yLabel.setVisible(true);
-
-            btnLimitesX.setVisible(true);
-            btnLimitesY.setVisible(true);
-        }
     }
 
     /**

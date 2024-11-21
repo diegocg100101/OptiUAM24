@@ -635,7 +635,7 @@ public class VentanaPrincipal implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaOTDR.fxml"));
             Parent root = loader.load();
             VentanaOTDRController OTDRController = loader.getController();
-            OTDRController.init(controlador, VentanaPrincipal.stage,this, Pane1);
+            OTDRController.init(controlador, VentanaPrincipal.stage,this, Pane1, OTDRController);
             Scene scene = new Scene(root);
             Image ico = new Image("images/acercaDe.png");
             s.getIcons().add(ico);

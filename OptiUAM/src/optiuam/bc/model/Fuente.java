@@ -487,14 +487,14 @@ public class Fuente extends Componente {
      *                                              se divide entre cero
      */
     public LinkedList<Listas> calcularPulso2() throws ExcepcionDivideCero {
-        double Fsamp = 2 * (236 * Math.pow(10, 6)); //2*FcMaxima*10^6
+        double Fsamp = 2 * (236 * Math.pow(10, 6)); // 2*FcMaxima*10^6
         float t0Aux = (float) (T0 * Math.pow(10, -6));
         float t_finalsim = (float) (1 * Math.pow(10, -6));
-        float fcAux = (float) (Fc * Math.pow(10, 6)); //MHz
+        float fcAux = (float) (Fc * Math.pow(10, 6)); // MHz
 
-        int NFFT = 4096; //tamaño de muestra
+        int NFFT = 4096; // tamaño de muestra
 
-        double Wc = 2 * (Math.PI) * (fcAux); //2*pi*Fc*10^6
+        double Wc = 2 * (Math.PI) * (fcAux); // 2*pi*Fc*10^6
 
         NumeroComplejo jC = new NumeroComplejo(-1, (float) C); //-1+jC
         NumeroComplejo n1 = NumeroComplejo.cociente(jC, 2); //-1+jC / 2

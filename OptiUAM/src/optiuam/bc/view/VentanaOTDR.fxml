@@ -5,32 +5,69 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaOTDRController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="695.0" prefWidth="1052.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaOTDRController">
    <children>
-      <ImageView fitHeight="423.0" fitWidth="690.0" layoutY="-23.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="703.0" fitWidth="1055.0" layoutX="-1.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../images/fondoOsciloscopio.png" />
          </image>
       </ImageView>
-      <ComboBox fx:id="cboxConectarA" layoutX="506.0" layoutY="239.0" prefHeight="25.0" prefWidth="80.0" promptText="Select" />
-      <Label layoutX="516.0" layoutY="216.0" prefHeight="0.0" prefWidth="60.0" text="Connect to: ">
+      <ComboBox fx:id="cboxConectarA" layoutX="865.0" layoutY="286.0" prefHeight="27.0" prefWidth="109.0" promptText="Select" styleClass="cbox" stylesheets="/Static/CSS/style.css" />
+      <Label fx:id="connect" layoutX="865.0" layoutY="259.0" prefHeight="20.0" prefWidth="74.0" text="Connect to:" textAlignment="CENTER">
          <font>
-            <Font size="11.0" />
+            <Font size="14.0" />
+         </font></Label>
+      <Button fx:id="btnConectar" layoutX="991.0" layoutY="285.0" mnemonicParsing="false" onAction="#conectarNuevamente" prefHeight="20.0" prefWidth="40.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK">
+         <font>
+            <Font size="14.0" />
+         </font></Button>
+      <LineChart fx:id="grafica" layoutX="14.0" layoutY="14.0" prefHeight="556.0" prefWidth="777.0">
+        <xAxis>
+            <NumberAxis prefWidth="681.0" side="BOTTOM" fx:id="x" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis fx:id="y" side="LEFT" />
+        </yAxis>
+      </LineChart>
+      <Slider fx:id="zoomY" layoutX="798.0" layoutY="132.0" orientation="VERTICAL" prefHeight="336.0" prefWidth="14.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <Button fx:id="btnGraficar" layoutX="889.0" layoutY="322.0" mnemonicParsing="false" onAction="#crearOTDR" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="CREATE" />
+      <Slider fx:id="centroX" layoutX="55.0" layoutY="563.0" prefHeight="14.0" prefWidth="726.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <Slider fx:id="zoomX" layoutX="198.0" layoutY="581.0" prefHeight="14.0" prefWidth="461.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <Slider fx:id="centroY" layoutX="784.0" layoutY="39.0" orientation="VERTICAL" prefHeight="505.0" prefWidth="14.0" styleClass="barra" stylesheets="/Static/CSS/style.css" />
+      <Label fx:id="zoom" layoutX="152.0" layoutY="577.0" prefHeight="20.0" prefWidth="40.0" text="Zoom:" textAlignment="CENTER">
+         <font>
+            <Font size="14.0" />
          </font>
       </Label>
-      <Button fx:id="btnCrear" layoutX="530.0" layoutY="277.0" mnemonicParsing="false" onAction="#crearOTDR" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK" />
-      <LineChart fx:id="grafica" layoutY="-6.0" prefHeight="429.0" prefWidth="495.0">
-         <xAxis>
-            <NumberAxis prefWidth="681.0" side="BOTTOM" fx:id="x" />
-         </xAxis>
-         <yAxis>
-            <NumberAxis fx:id="y" side="LEFT" />
-         </yAxis>
-      </LineChart>
+      <Label fx:id="center" layoutX="7.0" layoutY="560.0" prefHeight="20.0" prefWidth="48.0" text="Center:" textAlignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="center1" layoutX="781.0" layoutY="19.0" prefHeight="20.0" prefWidth="48.0" text="Center:" textAlignment="CENTER" />
+      <Label fx:id="zoom1" layoutX="798.0" layoutY="113.0" prefHeight="20.0" prefWidth="40.0" text="Zoom:" textAlignment="CENTER" />
+      <Button fx:id="btnReset" layoutX="368.0" layoutY="607.0" mnemonicParsing="false" onAction="#resetLimits" prefHeight="43.0" prefWidth="86.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="RESET">
+         <font>
+            <Font size="16.0" />
+         </font></Button>
+      <Button fx:id="btnDesconectado" layoutX="860.0" layoutY="513.0" mnemonicParsing="false" onAction="#desconectar" prefHeight="31.0" prefWidth="120.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="DISCONNECT">
+         <font>
+            <Font size="15.0" />
+         </font></Button>
+      <TextField fx:id="lowerBoundX" layoutX="829.0" layoutY="363.0" prefHeight="25.0" prefWidth="86.0" promptText="Lower bound" />
+      <TextField fx:id="upperBoundX" layoutX="920.0" layoutY="363.0" prefHeight="25.0" prefWidth="86.0" promptText="Upper bound" />
+      <TextField fx:id="lowerBoundY" layoutX="829.0" layoutY="408.0" prefHeight="25.0" prefWidth="86.0" promptText="Lower bound" />
+      <TextField fx:id="upperBoundY" layoutX="920.0" layoutY="408.0" prefHeight="25.0" prefWidth="86.0" promptText="Upper bound" />
+      <Label layoutX="813.0" layoutY="367.0" text="X:" fx:id="xLabel" />
+      <Label fx:id="yLabel" layoutX="813.0" layoutY="412.0" text="Y:" />
+      <Button fx:id="btnLimitesY" layoutX="1011.0" layoutY="408.0" mnemonicParsing="false" onAction="#ajustarLimitesTextFieldY" prefHeight="26.0" prefWidth="40.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK" />
+      <Button fx:id="btnLimitesX" layoutX="1011.0" layoutY="363.0" mnemonicParsing="false" onAction="#ajustarLimitesTextFieldX" prefHeight="26.0" prefWidth="40.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK" />
    </children>
 </AnchorPane>

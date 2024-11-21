@@ -700,7 +700,19 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
 
                         // Pasa el buffer
                         afectarDatos(elemG);
+
+                        // Pasa el buffer al elemento conectado
                         eg.getComponente().setDatos(aux.getDatos());
+
+                        // Pasa los valores atenuados
+                        eg.getComponente().setAtenuados(aux.getAtenuados());
+
+                        // Pasa el potencial inicial
+                        eg.getComponente().setPotenciaSalida(aux.getPotenciaSalida());
+
+                        // Pasa la longitud hasta el momento
+                        eg.getComponente().setLongitudTotal(aux.getLongitudTotal());
+
                     }
                     if (elemG.getComponente().getSeñalEntrada() != null) {
                         elemG.getComponente().setSeñalSalida(null);
