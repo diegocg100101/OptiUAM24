@@ -923,6 +923,7 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                     }
                     atenuar(aux);
 
+                    // Pasa la potencia de salida de la fibra
                     eg.getComponente().setPotenciaSalida(aux.getAtenuados().get(aux.getAtenuados().size() - 1));
 
                     // Pasa el buffer al elemento conectado
@@ -930,9 +931,6 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
 
                     // Pasa los valores atenuados
                     eg.getComponente().setAtenuados(aux.getAtenuados());
-
-                    // Pasa el potencial inicial
-                    eg.getComponente().setPotenciaInicial(aux.getPotenciaInicial());
 
                     // Pasa la longitud hasta el momento
                     eg.getComponente().setLongitudTotal(aux.getLongitudTotal() + aux.getLongitud_km());

@@ -1063,6 +1063,8 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
 
                     // Pasa el buffer al elemento conectado
                     eg.getComponente().setDatos(aux.getDatos());
+
+                    // Pasa la potencia de salida de la fuente
                     eg.getComponente().setPotenciaSalida(aux.getPotencia());
                     break;
                 }

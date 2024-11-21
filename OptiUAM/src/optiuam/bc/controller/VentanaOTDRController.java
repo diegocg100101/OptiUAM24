@@ -275,7 +275,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         elemento.setComponente(otdr);
         elemento.setId(controlador.getContadorElemento());
 
-        dibujo.setGraphic(new ImageView(new Image("images/dibujo_espectro.png")));
+        dibujo.setGraphic(new ImageView(new Image("images/dibujo_otdr.png")));
         dibujo.setText(otdr.getNombre() + "_" + otdr.getIdOTDR());
 
         dibujo.setContentDisplay(ContentDisplay.TOP);
@@ -308,7 +308,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
             OTDR otdr = new OTDR();
             otdr.setConectadoEntrada(false);
             otdr.setIdOTDR(idOTDR);
-            otdr.setNombre("Spectrum_Analyzer");
+            otdr.setNombre("OTDR");
             guardarOTDR(otdr);
             eventos(elemento);
             idOTDR++;
@@ -584,7 +584,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         double distanciaTotal = elemento.getComponente().getLongitudTotal();
 
         for (int j = 0; j < distanciaTotal; j++) {
-            vectorDistancia.add((double) j);
+            vectorDistancia.add((double) j + 1);
         }
 
         grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());

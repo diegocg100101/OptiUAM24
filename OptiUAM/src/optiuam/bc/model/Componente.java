@@ -59,8 +59,6 @@ public class Componente {
      */
     public static ArrayList<Double> tiempo = new ArrayList<>();
 
-    public double potenciaInicial;
-
     public ArrayList<Double> Atenuados = new ArrayList<>();
 
     public double longitudTotal = 0;
@@ -290,14 +288,6 @@ public class Componente {
      */
     public void setDatos(ArrayList<Double> datos) {
         Datos = datos;
-    }
-
-    public double getPotenciaInicial() {
-        return potenciaInicial;
-    }
-
-    public void setPotenciaInicial(double potenciaInicial) {
-        this.potenciaInicial = potenciaInicial;
     }
 
     public ArrayList<Double> getAtenuados() {
