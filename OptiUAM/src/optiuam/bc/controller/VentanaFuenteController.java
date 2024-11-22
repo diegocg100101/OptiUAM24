@@ -454,9 +454,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
             txtPotencia.setText("");
         }
         //Se corrobora potencia en dBm
-        else if (unidadPotencia == 1 && (txtPotencia.getText().isEmpty() ||
-                txtPotencia.getText().compareTo("") == 0 ||
-                !txtPotencia.getText().matches("^-?((3[0-9]|[0-2]?[0-9])(\\\\.\\\\d+)?|40(\\\\.0+)?)$"))) {
+        else if (unidadPotencia == 1 && txtPotencia.getText().isEmpty()) {
             System.out.println("Invalid dBm power value");
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -592,6 +590,7 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
 
             // Calcula el buffer de datos con todos los datos previamente especificados
             fuente.calcularDatos();
+
 
             System.out.println("prueba");
         }
@@ -1064,8 +1063,10 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                     // Pasa el buffer al elemento conectado
                     eg.getComponente().setDatos(aux.getDatos());
 
-                    // Pasa la potencia de salida de la fuente
-                    eg.getComponente().setPotenciaSalida(aux.getPotencia());
+                    // Pasa la potencia de salida de la fuente. Está en mW, por ende, se pasa a dBm
+                    eg.getComponente().setPotenciaSalida(10 * Math.log10(aux.getPotencia()));
+
+                    eg.getComponente().setFc(aux.getFc());
                     break;
                 }
             }

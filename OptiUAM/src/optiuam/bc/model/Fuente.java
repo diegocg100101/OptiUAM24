@@ -663,7 +663,7 @@ public class Fuente extends Componente {
     }
 
     /**
-     * Método para obtener el Buffer circular de la fuente
+     * Método para obtener el Buffer de la fuente
      */
     public void calcularDatos() {
         ArrayList<Double> datos = new ArrayList<>();

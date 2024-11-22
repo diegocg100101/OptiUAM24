@@ -44,6 +44,7 @@ import static optiuam.bc.controller.VentanaConectorController.afectarDatos;
 import static optiuam.bc.model.Componente.tiempo;
 import static optiuam.bc.model.FFT.*;
 
+import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.transform.*;
 import org.apache.commons.math3.complex.Complex;
 
@@ -355,6 +356,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
                 // Pasa el buffer al elemento conectado
                 afectarDatos(eg);
                 elemento.getComponente().setDatos(eg.getComponente().getDatos());
+                elemento.getComponente().setFc(eg.getComponente().getFc());
                 dibujarLineaAtras(elemento);
                 btnDesconectado.setVisible(true);
                 break;
@@ -368,6 +370,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
 
                 // Pasa el buffer al elemento conectado
                 elemento.getComponente().setDatos(eg.getComponente().getDatos());
+                elemento.getComponente().setFc(eg.getComponente().getFc());
                 dibujarLineaAtras(elemento);
                 btnDesconectado.setVisible(true);
                 break;
@@ -588,47 +591,44 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         grafica.getData().clear();
 
         ArrayList<Double> componentes = elemento.getComponente().getDatos();
-        double fs = 2 * (236 * Math.pow(10, 6)); // 472 MHz
-        double velocidadLuz = 3 * Math.pow(10, 8); // Velocidad de la luz
-        double tamanio = Math.pow(2, 14);
+        double fs = elemento.getComponente().getFc() / 128; // 228849.20458 / 128; // Frecuencia del generador
         double N = componentes.size();
-        int i = 0;
-        int muestreo = 1024;
-        double[] datos = new double[(int) muestreo]; //
-        double longitudOnda = 0;
 
-        for (int l = 0; l < muestreo; l++) {
-            if (l * muestreo < N) {
-                datos[l] = componentes.get(l * muestreo);
-            }
+        // Se reducen los datos a 8192 para ser potencia de 2
+        int potenciaDos = 16384;  // 2^14
+        double[] datos = new double[potenciaDos];
+
+        // Convierte valores a double[]
+        for (int i = 0; i < N; i++) {
+            datos[i] = componentes.get(i);
         }
 
-        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
-        Complex[] transformada = fft.transform(datos, TransformType.FORWARD);
+        // Instancia para la FFT
+        FastFourierTransformer fourier = new FastFourierTransformer(DftNormalization.STANDARD);
 
-        double[] frecuencias = new double[(int) muestreo];
-        for (int k = 0; k < muestreo; k++) {
-            frecuencias[k] = k * fs * muestreo; // Crear el vector de frecuencias
+        // Calcula la FFT de los datos
+        Complex[] fft = fourier.transform(datos, TransformType.FORWARD);
+
+        // Calcula el vector de frecuencias
+        double[] frecuencias = new double[fft.length];
+        for (int i = 0; i < fft.length; i++) {
+            frecuencias[i] = (i * fs)/fft.length;
         }
 
-        double componenteRe;
-        double componenteIm;
-
-        x.setLabel("Frecuencias");
-        y.setLabel("Potencia");
+        // Grafica la FFT
+        x.setLabel("Frecuencias [THz]");
+        y.setLabel("Amplitud");
         grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
-        XYChart.Series<Number, Number> seriesDos = new XYChart.Series<>();
-        for (int j = 0; j < muestreo; j++) {
-            componenteRe = transformada[j].getReal() / tamanio;
-            componenteIm = transformada[j].getImaginary() / tamanio;
-
-            seriesDos.getData().add(new XYChart.Data<>(frecuencias[j], Math.sqrt(Math.pow(componenteRe,2) + Math.pow(componenteIm,2) )));
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        for (int i = 0; i < N; i++) {
+            // Añade los valores a la gráfica
+            series.getData().add(new XYChart.Data<>(frecuencias[i], fft[i].abs()/fft.length));
         }
 
         x.setAutoRanging(false);
         y.setAutoRanging(false);
         x.setLowerBound(0);
-        x.setUpperBound(3e12);
+        x.setUpperBound(frecuencias[(int) N]);
         y.setLowerBound(0);
         y.setUpperBound(0.5);
 
@@ -650,7 +650,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
         zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
         zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
-        grafica.getData().add(seriesDos);
+        grafica.getData().add(series);
 
         lowerBoundX.setVisible(true);
         lowerBoundY.setVisible(true);

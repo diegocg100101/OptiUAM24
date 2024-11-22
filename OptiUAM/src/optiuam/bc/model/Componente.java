@@ -65,6 +65,8 @@ public class Componente {
 
     public double potenciaSalida = 0;
 
+    public double Fc = 0;
+
     /**
      * Metodo constructor sin parametros
      */
@@ -312,6 +314,14 @@ public class Componente {
 
     public void setPotenciaSalida(double potenciaSalida) {
         this.potenciaSalida = potenciaSalida;
+    }
+
+    public double getFc() {
+        return Fc;
+    }
+
+    public void setFc(double fc) {
+        Fc = fc;
     }
 
     @Override

@@ -576,7 +576,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         grafica.getData().clear();
 
         x.setLabel("Distancia [km]");
-        y.setLabel("Potencia [mW]");
+        y.setLabel("Potencia [dBm]");
 
         ArrayList<Double> vectorDistancia = new ArrayList<>();
         ArrayList<Double> vectorAtenuados = elemento.getComponente().getAtenuados();
