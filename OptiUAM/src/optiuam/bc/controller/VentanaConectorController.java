@@ -637,7 +637,7 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
                 "\nDisconnected connector!",
                 aceptar);
-        alert.setTitle("Succes");
+        alert.setTitle("Success");
         alert.setHeaderText(null);
         alert.showAndWait();
         cerrarVentana(event);
@@ -713,6 +713,8 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                         // Pasa la longitud hasta el momento
                         eg.getComponente().setLongitudTotal(aux.getLongitudTotal());
 
+                        // Pasa el Series para la gráfica
+                        eg.getComponente().setSeries(aux.getSeries());
                     }
                     if (elemG.getComponente().getSeñalEntrada() != null) {
                         elemG.getComponente().setSeñalSalida(null);

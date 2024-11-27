@@ -20,6 +20,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -923,17 +924,14 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                     }
                     atenuar(aux);
 
-                    // Pasa la potencia de salida de la fibra
-                    eg.getComponente().setPotenciaSalida(aux.getAtenuados().get(aux.getAtenuados().size() - 1));
-
                     // Pasa el buffer al elemento conectado
                     eg.getComponente().setDatos(aux.getDatos());
 
-                    // Pasa los valores atenuados
-                    eg.getComponente().setAtenuados(aux.getAtenuados());
-
                     // Pasa la longitud hasta el momento
                     eg.getComponente().setLongitudTotal(aux.getLongitudTotal() + aux.getLongitud_km());
+
+                    // Pasa el Series para la gráfica
+                    eg.getComponente().setSeries(aux.getSeries());
                     break;
                 }
             }
@@ -1082,8 +1080,12 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
     }
 
     public void atenuar(Fibra fibra) {
-        for (int i = 0; i < fibra.getLongitud_km(); i++) {
-            fibra.getAtenuados().add(fibra.getPotenciaSalida() - fibra.getAtenuacion() * i);
+        double ultimo = Double.parseDouble(fibra.getSeries().getData().get(fibra.getSeries().getData().size() - 1).getXValue().toString());
+        double potencia = (double) fibra.getSeries().getData().get(fibra.getSeries().getData().size() - 1).getYValue();
+        int indice = 0;
+        for (int i = 1; i < fibra.getLongitud_km() + 1; i++) {
+            indice = (int) ultimo + i;
+            fibra.getSeries().getData().add(new XYChart.Data<>(indice , potencia - fibra.getAtenuacion() * i));
         }
     }
 

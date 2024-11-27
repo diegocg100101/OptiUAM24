@@ -1,6 +1,7 @@
 
 package optiuam.bc.model;
 
+import javafx.scene.chart.XYChart;
 import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
@@ -66,6 +67,8 @@ public class Componente {
     public double potenciaSalida = 0;
 
     public double Fc = 0;
+
+    public XYChart.Series<Number, Number> series = new XYChart.Series<>();
 
     /**
      * Metodo constructor sin parametros
@@ -322,6 +325,14 @@ public class Componente {
 
     public void setFc(double fc) {
         Fc = fc;
+    }
+
+    public XYChart.Series<Number, Number> getSeries() {
+        return series;
+    }
+
+    public void setSeries(XYChart.Series<Number, Number> series) {
+        this.series = series;
     }
 
     @Override

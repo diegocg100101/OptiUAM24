@@ -166,6 +166,8 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
      */
     VentanaOTDRController otdrController;
 
+    public Button btnGraficar2;
+
     private ArrayList<Double> limitesX = new ArrayList<>();
 
     private ArrayList<Double> limitesY = new ArrayList<>();
@@ -227,6 +229,8 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         btnDesconectado.setVisible(false);
         btnLimitesX.setVisible(false);
         btnLimitesY.setVisible(false);
+        btnGraficar2.setVisible(false);
+
 
         lowerBoundX.setVisible(false);
         lowerBoundY.setVisible(false);
@@ -355,6 +359,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
                 // Pasa datos atenuados y longitud [km]
                 elemento.getComponente().setAtenuados(eg.getComponente().getAtenuados());
                 elemento.getComponente().setLongitudTotal(eg.getComponente().getLongitudTotal());
+                elemento.getComponente().setSeries(eg.getComponente().getSeries());
 
                 btnDesconectado.setVisible(true);
                 break;
@@ -428,12 +433,15 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
             if (event.getButton() == MouseButton.PRIMARY) {
                 try {
                     Stage stage1 = new Stage();
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaAnalizador.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/VentanaOTDR.fxml"));
                     Parent root = loader.load();
                     VentanaOTDRController otdrController = loader.getController();
 
                     otdrController.init(controlador, stage, ventana_principal, Pane, otdrController);
                     otdrController.init2(elemento);
+
+                    btnGraficar.setVisible(false);
+                    btnGraficar2.setVisible(true);
 
                     Scene scene = new Scene(root);
                     Image ico = new Image("images/acercaDe.png");
@@ -567,6 +575,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
      * Método para calcular la FFT de la señal
      * @return
      */
+    @FXML
     private void graficarPotencias() {
         limitesX.clear();
         limitesY.clear();
@@ -578,27 +587,35 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         x.setLabel("Distancia [km]");
         y.setLabel("Potencia [dBm]");
 
-        ArrayList<Double> vectorDistancia = new ArrayList<>();
-        ArrayList<Double> vectorAtenuados = elemento.getComponente().getAtenuados();
+        /*
+             ArrayList<Double> vectorDistancia = new ArrayList<>();
+            ArrayList<Double> vectorAtenuados = elemento.getComponente().getAtenuados();
 
-        double distanciaTotal = elemento.getComponente().getLongitudTotal();
+            double distanciaTotal = elemento.getComponente().getLongitudTotal();
 
-        for (int j = 0; j < distanciaTotal; j++) {
-            vectorDistancia.add((double) j + 1);
-        }
+            for (int j = 0; j < distanciaTotal; j++) {
+                vectorDistancia.add((double) j + 1);
+            }
+
+            grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            for (int i = 0; i < distanciaTotal; i++) {
+                series.getData().add(new XYChart.Data<>(vectorDistancia.get(i), vectorAtenuados.get(i)));
+            }
+         */
+
+        double upperY = Double.parseDouble(elemento.getComponente().getSeries().getData().get(0).getYValue().toString());
+        double upperX = Double.parseDouble(elemento.getComponente().getSeries().getData().get(
+                elemento.getComponente().getSeries().getData().size() - 1
+        ).getXValue().toString());
 
         grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        for (int i = 0; i < distanciaTotal; i++) {
-            series.getData().add(new XYChart.Data<>(vectorDistancia.get(i), vectorAtenuados.get(i)));
-        }
-
         x.setAutoRanging(false);
         y.setAutoRanging(false);
         x.setLowerBound(0);
-        x.setUpperBound(Collections.max(vectorDistancia));
-        y.setLowerBound(Collections.min(vectorAtenuados));
-        y.setUpperBound(Collections.max(vectorAtenuados));
+        x.setUpperBound(upperX);
+        y.setLowerBound(0);
+        y.setUpperBound(upperY);
 
         limitesX.add(x.getLowerBound());
         limitesX.add(x.getUpperBound());
@@ -618,7 +635,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
         zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
         zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
-        grafica.getData().add(series);
+        grafica.getData().add(elemento.getComponente().getSeries());
 
         lowerBoundX.setVisible(true);
         lowerBoundY.setVisible(true);

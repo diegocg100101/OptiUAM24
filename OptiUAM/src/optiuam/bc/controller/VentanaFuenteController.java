@@ -17,6 +17,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -1065,6 +1066,10 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
 
                     // Pasa la potencia de salida de la fuente. Está en mW, por ende, se pasa a dBm
                     eg.getComponente().setPotenciaSalida(10 * Math.log10(aux.getPotencia()));
+
+                    // Pasa los datos con el primer valor
+                    aux.getSeries().getData().add(new XYChart.Data<>(0, 10 * Math.log10(aux.getPotencia())));
+                    eg.getComponente().setSeries(aux.getSeries());
 
                     eg.getComponente().setFc(aux.getFc());
                     break;
