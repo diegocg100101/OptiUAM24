@@ -22,7 +22,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -41,9 +40,6 @@ import javafx.stage.Stage;
 import optiuam.bc.model.*;
 
 import static optiuam.bc.model.Componente.tiempo;
-
-import org.apache.commons.math3.transform.*;
-import org.apache.commons.math3.complex.Complex;
 
 /**
  * Clase que se encarga de instanciar un osciloscopio
@@ -134,7 +130,8 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     /**
      * Botón para graficar después de abrir la ventana nuevamente
      */
-    public Button btnGraficar;
+    @FXML
+    public Button btnCrear;
 
     /**
      * Bara para el zoom del eje "y" (amplitud)
@@ -166,7 +163,8 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
      */
     VentanaOTDRController otdrController;
 
-    public Button btnGraficar2;
+    @FXML
+    public Button btnGraficar;
 
     private ArrayList<Double> limitesX = new ArrayList<>();
 
@@ -224,12 +222,12 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     public void initialize(URL url, ResourceBundle resourceBundle) {
         cboxConectarA.setVisible(true);
         btnConectar.setVisible(false);
-        btnGraficar.setVisible(true);
+        btnCrear.setVisible(true);
         btnReset.setVisible(true);
         btnDesconectado.setVisible(false);
         btnLimitesX.setVisible(false);
         btnLimitesY.setVisible(false);
-        btnGraficar2.setVisible(false);
+        btnGraficar.setVisible(false);
 
 
         lowerBoundX.setVisible(false);
@@ -329,7 +327,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
                         otdr.setNombre("OTDR");
                         guardarOTDR(otdr);
                         conexion();
-                        btnGraficar.setVisible(false);;
+                        btnCrear.setVisible(false);
                         graficarPotencias();
                         eventos(elemento);
                         idOTDR++;
@@ -383,6 +381,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     public void conectarNuevamente() {
         conexion();
         btnConectar.setVisible(false);
+        graficarPotencias();
     }
 
     /**
@@ -440,8 +439,18 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
                     otdrController.init(controlador, stage, ventana_principal, Pane, otdrController);
                     otdrController.init2(elemento);
 
-                    btnGraficar.setVisible(false);
-                    btnGraficar2.setVisible(true);
+                    otdrController.btnCrear.setVisible(false);
+
+
+                    if(elemento.getComponente().isConectadoEntrada()){
+                        otdrController.btnGraficar.setVisible(true);
+                        otdrController.btnConectar.setVisible(false);
+                        otdrController.cboxConectarA.setVisible(false);
+                        otdrController.connect.setVisible(false);
+                        otdrController.btnDesconectado.setVisible(true);
+                    } else {
+                        otdrController.btnConectar.setVisible(true);
+                    }
 
                     Scene scene = new Scene(root);
                     Image ico = new Image("images/acercaDe.png");
@@ -586,23 +595,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
 
         x.setLabel("Distancia [km]");
         y.setLabel("Potencia [dBm]");
-
-        /*
-             ArrayList<Double> vectorDistancia = new ArrayList<>();
-            ArrayList<Double> vectorAtenuados = elemento.getComponente().getAtenuados();
-
-            double distanciaTotal = elemento.getComponente().getLongitudTotal();
-
-            for (int j = 0; j < distanciaTotal; j++) {
-                vectorDistancia.add((double) j + 1);
-            }
-
-            grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
-            XYChart.Series<Number, Number> series = new XYChart.Series<>();
-            for (int i = 0; i < distanciaTotal; i++) {
-                series.getData().add(new XYChart.Data<>(vectorDistancia.get(i), vectorAtenuados.get(i)));
-            }
-         */
 
         double upperY = Double.parseDouble(elemento.getComponente().getSeries().getData().get(0).getYValue().toString());
         double upperX = Double.parseDouble(elemento.getComponente().getSeries().getData().get(

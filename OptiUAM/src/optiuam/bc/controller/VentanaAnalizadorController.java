@@ -95,6 +95,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     public Button btnLimitesX;
     public Label yLabel;
     public Label xLabel;
+    public Button btnGraficarNuevamente;
 
     /**
      * Lista desplegable de elementos para conectar
@@ -230,6 +231,8 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         btnDesconectado.setVisible(false);
         btnLimitesX.setVisible(false);
         btnLimitesY.setVisible(false);
+        btnGraficarNuevamente.setVisible(false);
+
 
         lowerBoundX.setVisible(false);
         lowerBoundY.setVisible(false);
@@ -381,6 +384,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     public void conectarNuevamente() {
         conexion();
         btnConectar.setVisible(false);
+        obtenerFrecuencias();
     }
 
     /**
@@ -444,6 +448,9 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
                         analizadorController.connect.setVisible(false);
                         analizadorController.btnDesconectado.setVisible(true);
                         analizadorController.cboxConectarA.setVisible(false);
+                        analizadorController.btnGraficarNuevamente.setVisible(true);
+                        analizadorController.btnConectar.setVisible(false);
+
                     } else {
                         analizadorController.connect.setVisible(true);
                         analizadorController.cboxConectarA.setVisible(true);
@@ -582,6 +589,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
      * Método para calcular la FFT de la señal
      * @return
      */
+    @FXML
     private void obtenerFrecuencias() {
         limitesX.clear();
         limitesY.clear();

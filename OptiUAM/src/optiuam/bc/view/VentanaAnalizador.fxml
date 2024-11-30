@@ -69,5 +69,6 @@
       <Label fx:id="yLabel" layoutX="813.0" layoutY="412.0" text="Y:" />
       <Button fx:id="btnLimitesY" layoutX="1011.0" layoutY="408.0" mnemonicParsing="false" onAction="#ajustarLimitesTextFieldY" prefHeight="26.0" prefWidth="40.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK" />
       <Button fx:id="btnLimitesX" layoutX="1011.0" layoutY="363.0" mnemonicParsing="false" onAction="#ajustarLimitesTextFieldX" prefHeight="26.0" prefWidth="40.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="OK" />
+      <Button fx:id="btnGraficarNuevamente" onAction="#obtenerFrecuencias" layoutX="889.0" layoutY="456.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" styleClass="btn" stylesheets="/Static/CSS/style.css" text="GRAPH" />
    </children>
 </AnchorPane>
