@@ -756,15 +756,15 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
             if (elemG.getComponente().getSeñalEntrada() != null) {
                 elemG.getComponente().setSeñalSalida(null);
                 ventana_principal.elemConected(aux, true);
+                VentanaPrincipal.btnStart = false;
+                ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                        "\nModified connector!",
+                        aceptar);
+                alert.setTitle("Succes");
+                alert.setHeaderText(null);
+                alert.showAndWait();
             }
-            VentanaPrincipal.btnStart = false;
-            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "\nModified connector!",
-                    aceptar);
-            alert.setTitle("Succes");
-            alert.setHeaderText(null);
-            alert.showAndWait();
         }
     }
 
