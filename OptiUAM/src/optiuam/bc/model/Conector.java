@@ -13,18 +13,30 @@ import java.util.LinkedList;
  */
 public class Conector extends Componente {
     
-    /**Perdida de insercion*/
+    /**
+     * Perdida de insercion
+     */
     private double perdidaInsercion;
+
     /**Longitud de onda*/
-    private int longitudOnda; 
+    private int longitudOnda;
+
     /*Modo del conector. Puede ser monomodo o multimodo*/
     private int modo;
+
     /**Identificador del conector. Es diferente al identificador del componente*/
     private int idConector;
+
     /**Posicion en el eje X del conector*/
     private double posX;
+
     /**Posicion en el eje Y del conector*/
     private double posY;
+
+    /**
+     * Valor de la reflectancia dependiendo del tipo
+     */
+    private double reflectancia;
     
     /**
     * Metodo constructor sin parametros
@@ -148,7 +160,15 @@ public class Conector extends Componente {
     public void setPosY(double posY) {
         this.posY = posY;
     }
-    
+
+    public double getReflectancia() {
+        return reflectancia;
+    }
+
+    public void setReflectancia(double reflectancia) {
+        this.reflectancia = reflectancia;
+    }
+
     /**
      * Metodo que multiplica los valores de la señal actual con la atenuacion del
      * conector
@@ -164,9 +184,9 @@ public class Conector extends Componente {
             valores.get(n).setMagnitud(aux.magnitud());
             n++;
         }
-        return valores; 
+        return valores;
     }
-    
+
     /**
      * Metodo toString que retorna los atributos de un conector
      * @return nombre, id, conectadoEntrada, elementoConectadoEntrada, 

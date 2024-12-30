@@ -291,5 +291,4 @@ public class ControladorGeneral {
             Logger.getLogger(ControladorGeneral.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 }
