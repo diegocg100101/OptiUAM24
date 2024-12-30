@@ -42,9 +42,7 @@ import optiuam.bc.model.*;
 
 import static optiuam.bc.controller.VentanaConectorController.afectarDatos;
 import static optiuam.bc.model.Componente.tiempo;
-import static optiuam.bc.model.FFT.*;
 
-import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.transform.*;
 import org.apache.commons.math3.complex.Complex;
 
@@ -595,7 +593,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         limitesY.clear();
         zoomY.setMin(0.01);
         zoomY.setMax(2);
-        zoomY.setValue(1);
+        zoomY.setValue(0.5);
         grafica.getData().clear();
 
         ArrayList<Double> componentes = elemento.getComponente().getDatos();
@@ -633,12 +631,21 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
             series.getData().add(new XYChart.Data<>(frecuencias[i], fft[i].abs()/fft.length));
         }
 
+        double maxComponente = 0.0;
+
+        for (Complex componente : fft) {
+            double magnitud = componente.abs() / fft.length;
+            if (magnitud > maxComponente) {
+                maxComponente = magnitud;
+            }
+        }
+
         x.setAutoRanging(false);
         y.setAutoRanging(false);
         x.setLowerBound(0);
         x.setUpperBound(frecuencias[(int) N]);
         y.setLowerBound(0);
-        y.setUpperBound(0.5);
+        y.setUpperBound(maxComponente);
 
         limitesX.add(x.getLowerBound());
         limitesX.add(x.getUpperBound());
@@ -656,8 +663,9 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         centroY.setValue((y.getLowerBound() + y.getUpperBound()) / 2);
         centroX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroX());
         centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
-        zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
-        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
+        zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue(), frecuencias[(int) N]));
+        double finalMaxComponente = maxComponente;
+        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomY(newVal.doubleValue(), finalMaxComponente));
         grafica.getData().add(series);
 
         lowerBoundX.setVisible(true);
@@ -723,9 +731,9 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
      *
      * @param factor Factor por el que se dividirá la ventana
      */
-    private void ajustarZoomX(double factor) {
+    private void ajustarZoomX(double factor, double max) {
         double center = (x.getUpperBound() + x.getLowerBound()) / 2;
-        double nuevoRango = Collections.max(tiempo) / factor;
+        double nuevoRango = max / factor;
         x.setLowerBound(center - nuevoRango);
         x.setUpperBound(center + nuevoRango);
         x.setTickUnit(nuevoRango / 10);
@@ -736,9 +744,9 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
      *
      * @param factor Factor por el que se dividirá la ventana
      */
-    private void ajustarZoomYmW(double factor) {
+    private void ajustarZoomY(double factor, double max) {
         double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
-        double nuevoRango = Collections.max(elemento.getComponente().getDatos()) / factor;
+        double nuevoRango = max / factor;
         y.setLowerBound(centro - nuevoRango);
         y.setUpperBound(centro + nuevoRango);
         y.setTickUnit(nuevoRango / 10);
