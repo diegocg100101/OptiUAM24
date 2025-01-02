@@ -12,26 +12,38 @@ import java.util.LinkedList;
  * @see Componente
  */
 public class Conector extends Componente {
-    
-    /**Perdida de insercion*/
+
+    /**
+     * Perdida de insercion
+     */
     private double perdidaInsercion;
+
     /**Longitud de onda*/
-    private int longitudOnda; 
+    private int longitudOnda;
+
     /*Modo del conector. Puede ser monomodo o multimodo*/
     private int modo;
+
     /**Identificador del conector. Es diferente al identificador del componente*/
     private int idConector;
+
     /**Posicion en el eje X del conector*/
     private double posX;
+
     /**Posicion en el eje Y del conector*/
     private double posY;
-    
+
     /**
-    * Metodo constructor sin parametros
-    */
+     * Valor de la reflectancia dependiendo del tipo
+     */
+    private double reflectancia;
+
+    /**
+     * Metodo constructor sin parametros
+     */
     public Conector() {
     }
-    
+
     /**
      * Metodo constructor con parametros
      * @param nombre Nombre del componente
@@ -42,17 +54,17 @@ public class Conector extends Componente {
      * @param longitudOnda Longitud de onda del conector
      * @param modo Modo del conector
      * @param perdidaInsercion Perdida de insercion del conector
-    */
-    public Conector(String nombre, int id, String elementoConectado, 
-            boolean conectado, int longitudOnda, int modo, 
-            double perdidaInsercion) {
+     */
+    public Conector(String nombre, int id, String elementoConectado,
+                    boolean conectado, int longitudOnda, int modo,
+                    double perdidaInsercion) {
         this.perdidaInsercion = perdidaInsercion;
         this.longitudOnda = longitudOnda;
         this.modo = modo;
         this.nombre = nombre;
         this.id = id;
     }
-    
+
     /**
      * Metodo que muestra la perdida de insercion del conector
      * @return perdidaInsercion
@@ -116,7 +128,7 @@ public class Conector extends Componente {
     public void setIdConector(int idConector) {
         this.idConector = idConector;
     }
-    
+
     /**
      * Metodo que muestra la posicion en el eje X del conector
      * @return posX
@@ -148,7 +160,15 @@ public class Conector extends Componente {
     public void setPosY(double posY) {
         this.posY = posY;
     }
-    
+
+    public double getReflectancia() {
+        return reflectancia;
+    }
+
+    public void setReflectancia(double reflectancia) {
+        this.reflectancia = reflectancia;
+    }
+
     /**
      * Metodo que multiplica los valores de la señal actual con la atenuacion del
      * conector
@@ -164,9 +184,9 @@ public class Conector extends Componente {
             valores.get(n).setMagnitud(aux.magnitud());
             n++;
         }
-        return valores; 
+        return valores;
     }
-    
+
     /**
      * Metodo toString que retorna los atributos de un conector
      * @return nombre, id, conectadoEntrada, elementoConectadoEntrada, 
@@ -175,8 +195,8 @@ public class Conector extends Componente {
      */
     @Override
     public String toString() {
-        return super.toString() + "," + longitudOnda + 
+        return super.toString() + "," + longitudOnda +
                 "," + modo+ "," + perdidaInsercion +","+idConector;
     }
-    
+
 }
