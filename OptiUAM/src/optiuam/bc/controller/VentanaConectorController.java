@@ -19,6 +19,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,12 +31,7 @@ import javafx.scene.shape.Line;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import optiuam.bc.model.Componente;
-import optiuam.bc.model.Conector;
-import optiuam.bc.model.Demultiplexor;
-import optiuam.bc.model.ElementoGrafico;
-import optiuam.bc.model.Multiplexor;
-import optiuam.bc.model.Splitter;
+import optiuam.bc.model.*;
 
 /**
  * Clase VentanaConectorController la cual se encarga de instanciar un conector
@@ -51,6 +47,17 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
      * Identificador del conector
      */
     static int idConector = 0;
+
+    /**
+     * Tipo UPC del conector
+     */
+    public RadioButton rbtnUpc;
+
+    /**
+     * Tipo APC del conector
+     */
+    public RadioButton rbtnAPC;
+
     /**
      * Controlador del simulador
      */
@@ -234,7 +241,7 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
      */
     public void enviarDatos(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException {
         int modo = 0, longitudOnda = 0;
-        double perdidaInsercion, perdidaMax = 0.5;
+        double perdidaInsercion, perdidaMax = 0.5, reflectancia = 0;
 
         if (rbtnMono.isSelected()) {
             modo = 0;
@@ -247,6 +254,12 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
         } else if (rbtn1550.isSelected()) {
             longitudOnda = 1550;
         }
+        if (rbtnAPC.isSelected()) {
+            reflectancia = -65;
+        } else if (rbtnUpc.isSelected()) {
+            reflectancia = -55;
+        }
+
         if (txtPerdida.getText().isEmpty() || txtPerdida.getText().compareTo("") == 0
                 || !txtPerdida.getText().matches("[0-9]*?\\d*(\\.\\d+)?")) {
             System.out.println("\nInvalid loss value");
@@ -279,6 +292,7 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
             con.setNombre("connector");
             con.setPerdidaInsercion(perdidaInsercion);
             con.setModo(modo);
+            con.setReflectancia(reflectancia);
             guardarConector(con);
             idConector++;
             cerrarVentana(event);
@@ -444,7 +458,7 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                     Parent root = loader.load();
                     VentanaConectorController conectorController = (VentanaConectorController) loader.getController();
                     /*Se necesito usar otro init (init2) de forma que el controller sepa cual es el elemento
-                    con el que se esta trabajando ademas de que se manda el mismo controller para 
+                    con el que se esta trabajando ademas de que se manda el mismo controller para
                     iniciar con los valores del elemento mandado.*/
                     conectorController.init(controlador, stage, Pane1, scroll, ventana_principal);
                     conectorController.init2(controlador, stage, Pane1, elem, conectorController);
@@ -654,7 +668,7 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
     public void modificar(ActionEvent event) throws RuntimeException, InvocationTargetException, NumberFormatException {
         Conector aux = (Conector) elemG.getComponente();
         int modo = 0, longitudOnda = 0;
-        double perdidaInsercion, perdidaMax = 0.5;
+        double perdidaInsercion, perdidaMax = 0.5, reflectancia = 0;
 
         if (rbtnMono.isSelected()) {
             modo = 0;
@@ -666,6 +680,11 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
             longitudOnda = 1310;
         } else if (rbtn1550.isSelected()) {
             longitudOnda = 1550;
+        }
+        if (rbtnAPC.isSelected()) {
+            reflectancia = -65;
+        } else if (rbtnUpc.isSelected()) {
+            reflectancia = -55;
         }
         if ((conectorControl.cboxConectarA.getSelectionModel().getSelectedIndex()) == 0) {
             if (elemG.getComponente().isConectadoSalida()) {
@@ -713,6 +732,9 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                         // Pasa la longitud hasta el momento
                         eg.getComponente().setLongitudTotal(aux.getLongitudTotal());
 
+                        // Atenua los datos
+                        atenuar(aux);
+
                         // Pasa el Series para la gráfica
                         eg.getComponente().setSeries(aux.getSeries());
                     }
@@ -752,31 +774,68 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
             aux.setNombre("connector");
             aux.setPerdidaInsercion(perdidaInsercion);
             aux.setModo(modo);
+            aux.setReflectancia(reflectancia);
             cerrarVentana(event);
             if (elemG.getComponente().getSeñalEntrada() != null) {
                 elemG.getComponente().setSeñalSalida(null);
                 ventana_principal.elemConected(aux, true);
-                VentanaPrincipal.btnStart = false;
-                ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                        "\nModified connector!",
-                        aceptar);
-                alert.setTitle("Succes");
-                alert.setHeaderText(null);
-                alert.showAndWait();
             }
+            VentanaPrincipal.btnStart = false;
+            ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                    "\nModified connector!",
+                    aceptar);
+            alert.setTitle("Succes");
+            alert.setHeaderText(null);
+            alert.showAndWait();
         }
     }
 
     /**
+     * Método que atenua la señal dependiendo de la pérdida de inserción y la reflectancia
+     *
+     * @param conector
+     */
+    public void atenuar(Conector conector) {
+        double ultimoX = Double.parseDouble(conector.getSeries().getData().get(conector.getSeries().getData().size() - 1).getXValue().toString());
+        double ultimoY = Double.parseDouble(conector.getSeries().getData().get(conector.getSeries().getData().size() - 1).getYValue().toString());
+        conector.getSeries().getData().add(new XYChart.Data<>(ultimoX, obtenerPicoOTDR(conector, ultimoY)));
+        conector.getSeries().getData().add(new XYChart.Data<>(ultimoX, ultimoY - conector.getPerdidaInsercion()));
+    }
+
+    /**
+     * Método para calular la potencia reflejada con base a la reflectancia
+     *
+     * @param conector
+     * @param potenciaIncidente
+     * @return
+     */
+    public double obtenerPicoOTDR(Conector conector, double potenciaIncidente) {
+        double mWReflectancia = dBmTomW(conector.getReflectancia());
+        double mWPotenciaIncidente = dBmTomW(potenciaIncidente);
+        double aumento = mWReflectancia + mWPotenciaIncidente;
+
+        return mWTodBm(aumento);
+    }
+
+    public double dBmTomW(double dBm) {
+        return Math.pow(10, dBm / 10);
+    }
+
+    public double mWTodBm(double mW) {
+        return 10 * Math.log10(mW);
+    }
+
+    /**
      * Método utilizado para afectar los datos con la pérdida del conector
+     *
      * @param elemG
      */
-    public static void afectarDatos(ElementoGrafico elemG){
+    public static void afectarDatos(ElementoGrafico elemG) {
         ArrayList<Double> datosModificados = new ArrayList<>();
-        double dB = - ((Conector) elemG.getComponente()).getPerdidaInsercion();
-        double mW = Math.pow(10, dB/10); // Convierte dB a mW
-        for(int i = 0; i < elemG.getComponente().getDatos().size(); i ++){
+        double dB = -((Conector) elemG.getComponente()).getPerdidaInsercion();
+        double mW = Math.pow(10, dB / 10); // Convierte dB a mW
+        for (int i = 0; i < elemG.getComponente().getDatos().size(); i++) {
             datosModificados.add(elemG.getComponente().getDatos().get(i) * mW);
         }
         elemG.getComponente().setDatos(datosModificados);

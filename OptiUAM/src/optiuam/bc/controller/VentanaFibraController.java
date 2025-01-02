@@ -930,8 +930,9 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                     // Pasa la longitud hasta el momento
                     eg.getComponente().setLongitudTotal(aux.getLongitudTotal() + aux.getLongitud_km());
 
-                    // Pasa el Series para la gráfica
+                    // Pasa el Series para la gráfica del OTDR
                     eg.getComponente().setSeries(aux.getSeries());
+
                     break;
                 }
             }
@@ -1079,6 +1080,10 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
         }
     }
 
+    /**
+     * Método para atenuar los datos a través de la fibra
+     * @param fibra
+     */
     public void atenuar(Fibra fibra) {
         double ultimo = Double.parseDouble(fibra.getSeries().getData().get(fibra.getSeries().getData().size() - 1).getXValue().toString());
         double potencia = (double) fibra.getSeries().getData().get(fibra.getSeries().getData().size() - 1).getYValue();

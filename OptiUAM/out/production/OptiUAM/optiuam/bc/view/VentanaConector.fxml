@@ -17,9 +17,9 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="VentanaConector" fx:id="ConectorVentana" prefHeight="306.0" prefWidth="384.0" style="-fx-background-color: lightcyan;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaConectorController">
+<AnchorPane id="VentanaConector" fx:id="ConectorVentana" prefHeight="360.0" prefWidth="403.0" style="-fx-background-color: lightcyan;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaConectorController">
    <children>
-      <ImageView fitHeight="306.0" fitWidth="403.0" layoutY="-2.0" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <ImageView fitHeight="360.0" fitWidth="403.0" layoutY="-2.0" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
             <Image url="@../../../images/FondoAzul.png" />
          </image>
@@ -44,10 +44,10 @@
       <Label fx:id="lblPerdida" layoutX="54.0" layoutY="163.0" text="Insertion Loss" />
       <TextField fx:id="txtPerdida" layoutX="147.0" layoutY="158.0" prefHeight="25.0" prefWidth="84.0" promptText="-Into-" />
       <Label fx:id="lbldB" layoutX="239.0" layoutY="163.0" text="dB" />
-      <Label fx:id="lblConectarA" layoutX="54.0" layoutY="207.0" text="Connect to" />
-      <ComboBox fx:id="cboxConectarA" layoutX="147.0" layoutY="203.0" prefHeight="25.0" prefWidth="116.0" promptText="-Select-" />
-      <Button fx:id="btnDesconectar" layoutX="274.0" layoutY="203.0" mnemonicParsing="false" onAction="#Desconectar" text="Disconnect" />
-      <Button fx:id="btnCrear" layoutX="46.0" layoutY="262.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: #7fff00;" text="CREATE">
+      <Label fx:id="lblConectarA" layoutX="55.0" layoutY="241.0" text="Connect to" />
+      <ComboBox fx:id="cboxConectarA" layoutX="148.0" layoutY="237.0" prefHeight="25.0" prefWidth="116.0" promptText="-Select-" />
+      <Button fx:id="btnDesconectar" layoutX="277.0" layoutY="237.0" mnemonicParsing="false" onAction="#Desconectar" text="Disconnect" />
+      <Button fx:id="btnCrear" layoutX="52.0" layoutY="301.0" mnemonicParsing="false" onAction="#enviarDatos" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: #7fff00;" text="CREATE">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
@@ -70,7 +70,7 @@
             </LinearGradient>
          </textFill>
       </Button>
-      <Button fx:id="btnModificar" layoutX="282.0" layoutY="262.0" mnemonicParsing="false" onAction="#modificar" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: violet;" text="MODIFY">
+      <Button fx:id="btnModificar" layoutX="282.0" layoutY="301.0" mnemonicParsing="false" onAction="#modificar" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: violet;" text="MODIFY">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
@@ -93,6 +93,13 @@
             </LinearGradient>
          </textFill>
       </Button>
+      <Label layoutX="52.0" layoutY="200.0" text="Type:" />
+      <RadioButton fx:id="rbtnUpc" layoutX="146.0" layoutY="200.0" mnemonicParsing="false" selected="true" text="UPC">
+         <toggleGroup>
+            <ToggleGroup fx:id="Tipo" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="rbtnAPC" layoutX="253.0" layoutY="200.0" mnemonicParsing="false" text="APC" toggleGroup="$Tipo" />
    </children>
    <effect>
       <InnerShadow choke="0.14" color="#224779" height="71.41" radius="30.7575" width="53.62" />
