@@ -4,6 +4,8 @@ package optiuam.bc.controller;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,9 +42,7 @@ import javafx.scene.shape.Line;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import optiuam.bc.model.Componente;
-import optiuam.bc.model.ElementoGrafico;
-import optiuam.bc.model.Multiplexor;
+import optiuam.bc.model.*;
 
 /**
  * Clase VentanMultiplexorController la cual se encarga de instanciar un
@@ -57,6 +57,7 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
      * Identificador del multiplexor
      */
     static int idMux = 0;
+    private static Object señalEntrada;
     /**
      * Controlador del simulador
      */
@@ -512,6 +513,24 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
         });
     }
 
+    public static void datos(ElementoGrafico elemG){
+        Multiplexor mux = (Multiplexor) elemG.getComponente();
+        int entradas = mux.getEntradas();
+
+        double sumaSeñales = 0;
+
+        if (mux.getSeñalesTotal() !=null && mux.getSeñalesTotal().size() >=entradas) {
+            for (int i = 0; i < entradas; i++) {
+               Listas lista = mux.getSeñalesTotal().get(i);
+               Señal señalEntrada = lista.getFftseñal();
+
+            }
+
+        }
+    }
+
+
+
     /**
      * Metodo el cual muestra un menu de acciones para duplicar, eliminar o
      * ver propiedades del multiplexor
@@ -693,7 +712,7 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
             for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
                 if (multiplexorControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().equals(controlador.getDibujos().get(elemento2).getDibujo().getText())) {
                     ElementoGrafico eg = controlador.getDibujos().get(elemento2);
-                    aux.setElementoConectadoSalida(eg.getDibujo().getText());
+                    aux.setElementoConectadoSalida(multiplexorControl.cboxConectarA.getSelectionModel().getSelectedItem().toString());
                     aux.setConectadoSalida(true);
                     eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
                     eg.getComponente().setConectadoEntrada(true);
@@ -702,17 +721,28 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
                     for (int f = 0; f < muxAu.getConexionEntradas().size(); f++) {
                         if (muxAu.getSeñalEntrada() != null) {
                             ventana_principal.elemConected(elemG.getComponente(), false);
-                            break;
                         } else if (muxAu.getConexionEntradas().get(f).getSeñalEntrada() != null) {
                             ventana_principal.elemConected(elemG.getComponente(), false);
-                            break;
+                        }else{
+                            eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
+                            eg.getComponente().setConectadoEntrada(true);
+
+                            //Datos multiplexor
+                            datos(elemG);
+
+                            // Pasa el buffer al elemento conectado
+                            eg.getComponente().setDatos(aux.getDatos());
+
+                            // Pasa el Series para la gráfica
+                            eg.getComponente().setSeries(aux.getSeries());
+
+
                         }
                     }
                     if (elemG.getComponente().getSeñalEntrada() != null) {
                         elemG.getComponente().setSeñalSalida(null);
                         ventana_principal.elemConected(aux, true);
                     }
-                    break;
                 }
             }
             dibujarLinea(elemG);
@@ -791,6 +821,7 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
             alert.showAndWait();
         }
     }
+
 
     /**
      * Metodo que proporciona lo necesario para que la ventana reconozca a

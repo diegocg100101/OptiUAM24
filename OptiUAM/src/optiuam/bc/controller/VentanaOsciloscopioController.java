@@ -30,14 +30,17 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import optiuam.bc.model.*;
 
 import static optiuam.bc.controller.VentanaConectorController.afectarDatos;
+import static optiuam.bc.controller.VentanaMultiplexorController.datos;
 import static optiuam.bc.model.Componente.tiempo;
 
 /**
@@ -98,6 +101,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     public Button btnLimitesX;
     public Label yLabel;
     public Label xLabel;
+    public Button btnApuntador;
 
     /**
      * Lista desplegable de elementos para conectar
@@ -264,10 +268,36 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         Pane pane = (Pane) grafica.getParent();
         pane.getChildren().add(zoomRect);  // Añadir el rectángulo al pane
 
+
         // Eventos de clic y arrastre
         grafica.setOnMousePressed(this::iniciarArrastreZoom);
         grafica.setOnMouseDragged(this::arrastrarZoom);
         grafica.setOnMouseReleased(this::soltarArrastreZoom);
+
+        //Iniciar punteros
+        // Crear el puntero 
+        puntero = new Circle(5); // Un círculo de radio 5
+        puntero.setFill(Color.RED); // Color del puntero
+
+        // Crear el texto para los valores
+        textoPuntero = new Text();
+        textoPuntero.setFill(Color.BLACK);
+        textoPuntero.setStyle("-fx-font-size: 12px;");
+
+        // Añadir el puntero y el texto al contenedor de la gráfica
+        pane.getChildren().addAll(puntero, textoPuntero);
+
+        // Configurar el botón
+        btnApuntador.setOnAction(event -> {
+            punteroActivo = !punteroActivo;  // Cambiar el estado del puntero
+            if (punteroActivo) {
+                activarPuntero();  // Activar el puntero
+            } else {
+                desactivarPuntero();  // Desactivar el puntero
+            }
+        });
+
+
     }
 
     /**
@@ -383,6 +413,22 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                 dibujarLineaAtras(elemento);
                 btnDesconectado.setVisible(true);
                 break;
+            }else if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
+                    .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
+                    && controlador.getElementos().get(elemento2).getNombre().equals("mux") ){
+                ElementoGrafico eg = controlador.getDibujos().get(elemento2);
+                elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
+                elemento.getComponente().setConectadoEntrada(true);
+                eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
+                eg.getComponente().setConectadoSalida(true);
+
+                // Pasa el buffer al elemento conectado
+                datos(eg);
+                elemento.getComponente().setDatos(eg.getComponente().getDatos());
+                dibujarLineaAtras(elemento);
+                btnDesconectado.setVisible(true);
+                break;
+
             }
         }
     }
@@ -979,6 +1025,53 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         alert.showAndWait();
     }
 
+    // Variable para controlar el estado del puntero
+    private Circle puntero; // El puntero
+    private Text textoPuntero; // El texto para mostrar las coordenadas
+    private boolean punteroActivo = false; // Estado del puntero
+
+
+    // Activar la actualización del puntero
+    private void activarPuntero() {
+        // Hacer visible el puntero
+        puntero.setVisible(true);
+        textoPuntero.setVisible(true);
+
+        // Activar el movimiento del ratón para actualizar la posición del puntero
+        grafica.setOnMouseMoved(this::moverPuntero);
+    }
+
+    // Desactivar el puntero
+    private void desactivarPuntero() {
+        // Ocultar el puntero y el texto
+        puntero.setVisible(false);
+        textoPuntero.setVisible(false);
+
+        // Desactivar el movimiento del ratón
+        grafica.setOnMouseMoved(null);
+    }
+
+    // Manejar el movimiento del ratón
+    private void moverPuntero(MouseEvent event) {
+        if (punteroActivo) {
+            // Obtener la posición del ratón
+            double xPos = event.getX();
+            double yPos = event.getY();
+
+            // Establecer la posición del puntero (alfiler)
+            puntero.setCenterX(xPos);
+            puntero.setCenterY(yPos);
+
+            // Mostrar el texto con los valores exactos
+            double valorX = x.getValueForDisplay(xPos).doubleValue(); // Convertir la coordenada x a valor de la gráfica
+            double valorY = y.getValueForDisplay(yPos).doubleValue(); // Convertir la coordenada y a valor de la gráfica
+
+            // Actualizar el texto del puntero
+            textoPuntero.setText(String.format("X: %.2f, Y: %.2f", valorX, valorY));
+            textoPuntero.setX(xPos + 10); // Ajusta la posición del texto
+            textoPuntero.setY(yPos - 10);
+        }
+    }
 
 
 

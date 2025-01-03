@@ -42,10 +42,7 @@ import javafx.scene.shape.Line;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import optiuam.bc.model.Componente;
-import optiuam.bc.model.ElementoGrafico;
-import optiuam.bc.model.ExcepcionDivideCero;
-import optiuam.bc.model.Fuente;
+import optiuam.bc.model.*;
 
 /**
  * Clase VentanaFuenteController la cual se encarga de instanciar una fuente
@@ -1298,7 +1295,9 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                 if ("connector".equals(controlador.getElementos().get(elemento).getNombre())
                         || "spectrum".equals(controlador.getElementos().get(elemento).getNombre())
                         || "demux".equals(controlador.getElementos().get(elemento).getNombre())
-                        || "oscilloscope".equals(controlador.getElementos().get(elemento).getNombre())) {
+                        || "oscilloscope".equals(controlador.getElementos().get(elemento).getNombre())
+                        || "mux".equals(controlador.getElementos().get(elemento).getNombre()))
+                {
                     if (!controlador.getElementos().get(elemento).isConectadoEntrada()) {
                         fuenteControl.cboxConectarA.getItems().add(controlador.getDibujos().get(elemento).getDibujo().getText());
                     }
@@ -1373,6 +1372,61 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                 aux = controlador.getDibujos().get(it);
             }
         }
+        for (int it = 0; it < controlador.getDibujos().size(); it++) {
+            if (controlador.getDibujos().get(it).getDibujo().getText().startsWith("mux")) {
+                if (elemG.getComponente().getElementoConectadoSalida().startsWith(controlador.getDibujos().get(it).getDibujo().getText())) {
+                    aux = controlador.getDibujos().get(it);
+                }
+            } else if (elemG.getComponente().getElementoConectadoSalida().equals(controlador.getDibujos().get(it).getDibujo().getText())) {
+                aux = controlador.getDibujos().get(it);
+            }
+        }
+        if (aux.getDibujo().getText().startsWith("mux")) {
+            Multiplexor mul = (Multiplexor) aux.getComponente();
+            int num = mul.getEntradas();
+            if (elemG.getComponente().getElementoConectadoSalida().endsWith("input1")) {
+                switch (num) {
+                    case 2:
+                        line.setEndX(aux.getDibujo().getLayoutX());
+                        line.setEndY(aux.getDibujo().getLayoutY() + 20);
+                        break;
+                    case 4:
+                        line.setEndX(aux.getDibujo().getLayoutX());
+                        line.setEndY(aux.getDibujo().getLayoutY() + 14);
+                        break;
+                    case 8:
+                        line.setEndX(aux.getDibujo().getLayoutX());
+                        line.setEndY(aux.getDibujo().getLayoutY() + 7);
+                        break;
+                }
+            } else {
+                int num2 = 0;
+                for (int cr = 0; cr < num - 1; cr++) {
+                    if (mul.getConexionEntradas().get(cr).getElementoConectadoEntrada().equals(elemG.getDibujo().getText())) {
+                        num2 = cr + 1;
+                        break;
+                    }
+                }
+                switch (num) {
+                    case 2:
+                        line.setEndX(aux.getDibujo().getLayoutX());
+                        line.setEndY(aux.getDibujo().getLayoutY() + 20 + 13);
+                        break;
+                    case 4:
+                        line.setEndX(aux.getDibujo().getLayoutX());
+                        line.setEndY(aux.getDibujo().getLayoutY() + 14 + (num2 * 10));
+                        break;
+                    case 8:
+                        line.setEndX(aux.getDibujo().getLayoutX() + 8);
+                        line.setEndY(aux.getDibujo().getLayoutY() + 7 + (num2 * 9.4));
+                        break;
+                }
+            }
+        } else {
+            line.setEndX(aux.getDibujo().getLayoutX() + 3);
+            line.setEndY(aux.getDibujo().getLayoutY() + 4);
+        }
+
         line.setStrokeWidth(2);
         line.setStroke(Color.BLACK);
         line.setEndX(aux.getDibujo().getLayoutX());
@@ -1380,7 +1434,6 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
         line.setVisible(true);
         Pane1.getChildren().add(line);
         elemG.getComponente().setLinea(line);
-
     }
 
     /**

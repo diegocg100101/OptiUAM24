@@ -1,6 +1,8 @@
 
 package optiuam.bc.model;
 
+import java.util.ArrayList;
+
 /**
  * Clase PuertoEntrada la cual contiene los atributos principales del puerto
  * entrada para un multiplexor
@@ -59,11 +61,10 @@ public class PuertoEntrada {
 
     /**
      * Metodo que muestra la señal de entrada
+     *
      * @return señalEntrada
      */
-    public Señal getSeñalEntrada() {
-        return señalEntrada;
-    }
+    public Señal getSeñalEntrada(){return señalEntrada;}
 
     /**
      * Metodo que modifica la señal de entrada

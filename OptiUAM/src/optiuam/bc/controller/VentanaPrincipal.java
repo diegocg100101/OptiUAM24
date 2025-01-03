@@ -2325,7 +2325,7 @@ public class VentanaPrincipal implements Initializable {
                                     Señal señal2 = new Señal();
                                     señal2 = clonarSeñal(señal);
                                     muxAux.getConexionEntradas().get(h).setSeñalEntrada(señal2);
-                                    muxAux.getConexionEntradas().get(h).getSeñalEntrada().setSumado(false);
+                                    //muxAux.getConexionEntradas().get(h).getSeñalEntrada().setSumado(false);
                                     break;
                                 }
                             }

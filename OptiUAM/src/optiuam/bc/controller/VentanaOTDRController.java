@@ -339,7 +339,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     /**
-     * Método para la conexión del osciloscopio
+     * Método para la conexión del OTDR
      */
     public void conexion() {
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
