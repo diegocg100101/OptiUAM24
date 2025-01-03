@@ -2385,20 +2385,20 @@ public class VentanaPrincipal implements Initializable {
             Multiplexor mux = (Multiplexor) actual;
             if (mux.isConectadoEntrada() && mux.getSeñalEntrada() != null) {
                 if (!iniciado) {
-                    mux.setSeñalesTotal(mux.getSeñalEntrada().getValoresMagnitud());
+                    mux.setSenalesTotal(mux.getSeñalEntrada().getValoresMagnitud());
                     mux.getSeñalEntrada().setSumado(true);
                     iniciado = true;
                 } else {
                     if (!mux.getSeñalEntrada().isSumado()) {
-                        if (mux.getSeñalEntrada().getValoresMagnitud().size() <= mux.getSeñalesTotal().size()) {
+                        if (mux.getSeñalEntrada().getValoresMagnitud().size() <= mux.getSenalesTotal().size()) {
                             for (int j = 0; j < mux.getSeñalEntrada().getValoresMagnitud().size(); j++) {
                                 NumeroComplejo complex = new NumeroComplejo(mux.getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getRealPart(), mux.getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getImaginaryPart());
-                                mux.getSeñalesTotal().get(j).getComplejo().sumar(complex, false);
+                                mux.getSenalesTotal().get(j).getComplejo().sumar(complex, false);
                             }
                         } else {
-                            for (int j = 0; j < mux.getSeñalesTotal().size(); j++) {
+                            for (int j = 0; j < mux.getSenalesTotal().size(); j++) {
                                 NumeroComplejo complex2 = new NumeroComplejo(mux.getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getRealPart(), mux.getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getImaginaryPart());
-                                mux.getSeñalesTotal().get(j).getComplejo().sumar(complex2, false);
+                                mux.getSenalesTotal().get(j).getComplejo().sumar(complex2, false);
                             }
                         }
                         mux.getSeñalEntrada().setSumado(true);
@@ -2408,22 +2408,22 @@ public class VentanaPrincipal implements Initializable {
             for (int g = 0; g < mux.getConexionEntradas().size(); g++) {
                 if (mux.getConexionEntradas().get(g).isConectadoEntrada() && mux.getConexionEntradas().get(g).getSeñalEntrada() != null) {
                     if (!iniciado) {
-                        mux.setSeñalesTotal(mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud());
+                        mux.setSenalesTotal(mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud());
                         iniciado = true;
                         mux.getConexionEntradas().get(g).getSeñalEntrada().setSumado(true);
                     } else {
                         if (!mux.getConexionEntradas().get(g).getSeñalEntrada().isSumado()) {
-                            if (mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().size() <= mux.getSeñalesTotal().size()) {
+                            if (mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().size() <= mux.getSenalesTotal().size()) {
                                 for (int j = 0; j < mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().size(); j++) {
                                     NumeroComplejo complex = new NumeroComplejo(mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getRealPart(), mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getImaginaryPart());
-                                    NumeroComplejo complex2 = new NumeroComplejo(mux.getSeñalesTotal().get(j).getComplejo().getRealPart(), mux.getSeñalesTotal().get(j).getComplejo().getImaginaryPart());
-                                    mux.getSeñalesTotal().get(j).setComplejo(complex.sumar(complex2, true));
+                                    NumeroComplejo complex2 = new NumeroComplejo(mux.getSenalesTotal().get(j).getComplejo().getRealPart(), mux.getSenalesTotal().get(j).getComplejo().getImaginaryPart());
+                                    mux.getSenalesTotal().get(j).setComplejo(complex.sumar(complex2, true));
                                 }
                             } else {
-                                for (int j = 0; j < mux.getSeñalesTotal().size(); j++) {
+                                for (int j = 0; j < mux.getSenalesTotal().size(); j++) {
                                     NumeroComplejo complex2 = new NumeroComplejo(mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getRealPart(), mux.getConexionEntradas().get(g).getSeñalEntrada().getValoresMagnitud().get(j).getComplejo().getImaginaryPart());
-                                    NumeroComplejo complex = new NumeroComplejo(mux.getSeñalesTotal().get(j).getComplejo().getRealPart(), mux.getSeñalesTotal().get(j).getComplejo().getImaginaryPart());
-                                    mux.getSeñalesTotal().get(j).setComplejo(complex2.sumar(complex, true));
+                                    NumeroComplejo complex = new NumeroComplejo(mux.getSenalesTotal().get(j).getComplejo().getRealPart(), mux.getSenalesTotal().get(j).getComplejo().getImaginaryPart());
+                                    mux.getSenalesTotal().get(j).setComplejo(complex2.sumar(complex, true));
                                 }
                             }
                             mux.getConexionEntradas().get(g).getSeñalEntrada().setSumado(true);
@@ -2432,7 +2432,7 @@ public class VentanaPrincipal implements Initializable {
                 }
             }
             Señal señal = new Señal();
-            señal.setValoresMagnitud(mux.getSeñalesTotal());
+            señal.setValoresMagnitud(mux.getSenalesTotal());
             mux.setSeñalSalida(señal);
             if (mux.isConectadoSalida()) {
                 for (int c = 0; c < controlador.getElementos().size(); c++) {

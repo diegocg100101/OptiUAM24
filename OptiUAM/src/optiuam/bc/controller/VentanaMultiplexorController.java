@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -324,6 +323,39 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
             mux.setNombre("mux");
             mux.setIdMux(idMux);
             mux.modificarEntradas(entradas);
+
+            switch (entradas){
+                case 2:
+                    for(int i = 0; i < 2; i++) {
+                        mux.getSenales().add(new ArrayList<>());
+                    }
+                    break;
+                case 4:
+                    for(int i = 0; i < 4; i++) {
+                        mux.getSenales().add(new ArrayList<>());
+                    }
+                case 8:
+                    for(int i = 0; i < 8; i++) {
+                        mux.getSenales().add(new ArrayList<>());
+                    }
+            }
+
+//            /*
+//            Este es el arreglo de la salida
+//            Es la suma de cada una de las componentes de las señales
+//             */
+//
+//            Esta es la señal de salida que se obtiene con mux.getSenalSalida()
+//            ArrayList<Double> senalSalida = new ArrayList<>();
+//
+//            for(int i = 0; i < 8000; i++) {
+//                double aux = 0;
+//                for(ArrayList<Double> datos : mux.getSenales()){
+//                    aux += datos.get(i);
+//                }
+//                sumaSenal.add(aux);
+//            }
+
             idMux++;
             guardarMultiplexor(mux);
             cerrarVentana(event);
@@ -519,9 +551,9 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
 
         double sumaSeñales = 0;
 
-        if (mux.getSeñalesTotal() !=null && mux.getSeñalesTotal().size() >=entradas) {
+        if (mux.getSenalesTotal() !=null && mux.getSenalesTotal().size() >=entradas) {
             for (int i = 0; i < entradas; i++) {
-               Listas lista = mux.getSeñalesTotal().get(i);
+               Listas lista = mux.getSenalesTotal().get(i);
                Señal señalEntrada = lista.getFftseñal();
 
             }
@@ -805,6 +837,25 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
                 entradas = 8;
                 elemG.getDibujo().setGraphic(new ImageView(new Image("images/dibujo_mux8.png")));
             }
+
+            ((Multiplexor) elemG.getComponente()).getSenales().clear();
+
+            switch (entradas){
+                case 2:
+                    for(int i = 0; i < 2; i++) {
+                        ((Multiplexor) elemG.getComponente()).getSenales().add(new ArrayList<>());
+                    }
+                    break;
+                case 4:
+                    for(int i = 0; i < 4; i++) {
+                        ((Multiplexor) elemG.getComponente()).getSenales().add(new ArrayList<>());
+                    }
+                case 8:
+                    for(int i = 0; i < 8; i++) {
+                        ((Multiplexor) elemG.getComponente()).getSenales().add(new ArrayList<>());
+                    }
+            }
+
             perdida = Double.parseDouble(txtPerdidaInsercion.getText());
             txtPerdidaInsercion.setText(String.valueOf(perdida));
             aux.setPerdidaInsercion(perdida);

@@ -416,19 +416,23 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
             }else if (osciloscopioControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
                     .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
                     && controlador.getElementos().get(elemento2).getNombre().equals("mux") ){
+                // eg = mux
                 ElementoGrafico eg = controlador.getDibujos().get(elemento2);
+
+                // elemento = osciloscopio
                 elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
                 elemento.getComponente().setConectadoEntrada(true);
                 eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
                 eg.getComponente().setConectadoSalida(true);
 
-                // Pasa el buffer al elemento conectado
-                datos(eg);
-                elemento.getComponente().setDatos(eg.getComponente().getDatos());
+
+                Multiplexor mux = (Multiplexor) eg.getComponente();
+                mux.sumarDatos();
+
+                elemento.getComponente().setDatos(mux.getSenalSalida());
                 dibujarLineaAtras(elemento);
                 btnDesconectado.setVisible(true);
                 break;
-
             }
         }
     }
@@ -1073,12 +1077,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         }
     }
 
-
-
-
-
     // Getters y Setters
-
     public static int getIdOsciloscopio() {
         return idOsciloscopio;
     }

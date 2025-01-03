@@ -705,12 +705,15 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                             && conectorControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().endsWith("input1")) {
                         eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
                         eg.getComponente().setConectadoEntrada(true);
+                        Multiplexor mux = (Multiplexor) eg.getComponente();
+                        mux.getSenales().set(0, aux.getDatos());
                     } else if (conectorControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().startsWith("mux")) {
-                        Multiplexor m = (Multiplexor) controlador.getElementos().get(elemento2);
-                        for (int j = 0; j < m.getEntradas(); j++) {
+                        Multiplexor mux = (Multiplexor) controlador.getElementos().get(elemento2);
+                        for (int j = 0; j < mux.getEntradas(); j++) {
                             if (conectorControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().endsWith(String.valueOf(j + 2))) {
-                                m.getConexionEntradas().get(j).setConectadoEntrada(true);
-                                m.getConexionEntradas().get(j).setElementoConectadoEntrada(elemG.getDibujo().getText());
+                                mux.getConexionEntradas().get(j).setConectadoEntrada(true);
+                                mux.getConexionEntradas().get(j).setElementoConectadoEntrada(elemG.getDibujo().getText());
+                                mux.getSenales().set(j + 1, aux.getDatos());
                             }
                         }
                     } else {

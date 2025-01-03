@@ -1,6 +1,7 @@
 
 package optiuam.bc.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -23,7 +24,17 @@ public class Multiplexor extends Componente {
     /**Perdida de insercion del multiplexor*/
     private double perdidaInsercion;
     /**Lista de las señales en el multiplexor*/
-    private LinkedList<Listas> señalesTotal;
+    private LinkedList<Listas> senalesTotal;
+
+    /**
+     * Almacena las señales de las entradas
+     */
+    public ArrayList<ArrayList<Double>> senales = new ArrayList<>();
+
+    /**
+     * Almacena la suma de las señales de entrada
+     */
+    public ArrayList<Double> senalSalida = new ArrayList<>();
     
     /**
     * Metodo constructor sin parametros
@@ -141,6 +152,17 @@ public class Multiplexor extends Componente {
             cEntradas.append(conexionEntradas.get(i).toString());
         }
     }
+
+    public void sumarDatos() {
+        //            for(int i = 0; i < 8000; i++) {
+//                double aux = 0;
+//                for(ArrayList<Double> datos : mux.getSenales()){
+//                    aux += datos.get(i);
+//                }
+//                senalSalida.add(aux);
+//            }
+;
+    }
     
     /**
      * Metodo que multiplica los valores de la señal actual con la atenuacion 
@@ -163,18 +185,34 @@ public class Multiplexor extends Componente {
      * Metodo que muestra la lista de las señales en el multiplexor
      * @return señalesTotal
      */
-    public LinkedList<Listas> getSeñalesTotal() {
-        return señalesTotal;
+    public LinkedList<Listas> getSenalesTotal() {
+        return senalesTotal;
     }
 
     /**
      * Metodo que modifica la lista de las señales en el multiplexor
-     * @param señalesTotal Lista de señales que hay en el multiplexor
+     * @param senalesTotal Lista de señales que hay en el multiplexor
      */
-    public void setSeñalesTotal(LinkedList<Listas> señalesTotal) {
-        this.señalesTotal = señalesTotal;
+    public void setSenalesTotal(LinkedList<Listas> senalesTotal) {
+        this.senalesTotal = senalesTotal;
     }
-    
+
+    public ArrayList<ArrayList<Double>> getSenales() {
+        return senales;
+    }
+
+    public void setSenales(ArrayList<ArrayList<Double>> senales) {
+        this.senales = senales;
+    }
+
+    public ArrayList<Double> getSenalSalida() {
+        return senalSalida;
+    }
+
+    public void setSenalSalida(ArrayList<Double> senalSalida) {
+        this.senalSalida = senalSalida;
+    }
+
     /**
      * Metodo toString que retorna los atributos del multiplexor
      * @return nombre, id, conectadoEntrada, elementoConectadoEntrada, 
