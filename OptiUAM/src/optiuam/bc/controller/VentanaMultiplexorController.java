@@ -340,22 +340,6 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
                     }
             }
 
-//            /*
-//            Este es el arreglo de la salida
-//            Es la suma de cada una de las componentes de las señales
-//             */
-//
-//            Esta es la señal de salida que se obtiene con mux.getSenalSalida()
-//            ArrayList<Double> senalSalida = new ArrayList<>();
-//
-//            for(int i = 0; i < 8000; i++) {
-//                double aux = 0;
-//                for(ArrayList<Double> datos : mux.getSenales()){
-//                    aux += datos.get(i);
-//                }
-//                sumaSenal.add(aux);
-//            }
-
             idMux++;
             guardarMultiplexor(mux);
             cerrarVentana(event);

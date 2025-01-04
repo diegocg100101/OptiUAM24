@@ -241,8 +241,8 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         xLabel.setVisible(false);
         yLabel.setVisible(false);
 
-        zoomX.setMin(1);
-        zoomX.setMax(100);
+        zoomX.setMin(0);
+        zoomX.setMax(10);
         zoomX.setValue(1);
 
         // Iniciar implementación de zoom por recuadro
@@ -591,9 +591,9 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     private void obtenerFrecuencias() {
         limitesX.clear();
         limitesY.clear();
-        zoomY.setMin(0.01);
-        zoomY.setMax(2);
-        zoomY.setValue(0.5);
+        zoomY.setMin(0);
+        zoomY.setMax(10);
+        zoomY.setValue(1);
         grafica.getData().clear();
 
         ArrayList<Double> componentes = elemento.getComponente().getDatos();
@@ -733,7 +733,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
      */
     private void ajustarZoomX(double factor, double max) {
         double center = (x.getUpperBound() + x.getLowerBound()) / 2;
-        double nuevoRango = max / factor;
+        double nuevoRango = max * factor;
         x.setLowerBound(center - nuevoRango);
         x.setUpperBound(center + nuevoRango);
         x.setTickUnit(nuevoRango / 10);
@@ -746,7 +746,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
      */
     private void ajustarZoomY(double factor, double max) {
         double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
-        double nuevoRango = max / factor;
+        double nuevoRango = max * factor;
         y.setLowerBound(centro - nuevoRango);
         y.setUpperBound(centro + nuevoRango);
         y.setTickUnit(nuevoRango / 10);
