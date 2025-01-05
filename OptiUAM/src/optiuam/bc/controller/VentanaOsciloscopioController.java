@@ -298,6 +298,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         });
 
 
+
     }
 
     /**
@@ -427,8 +428,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
 
 
                 Multiplexor mux = (Multiplexor) eg.getComponente();
-                mux.sumarDatos();
-
+                mux.sumarDatos(eg);
                 elemento.getComponente().setDatos(mux.getSenalSalida());
                 dibujarLineaAtras(elemento);
                 btnDesconectado.setVisible(true);
@@ -1058,23 +1058,39 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     // Manejar el movimiento del ratón
     private void moverPuntero(MouseEvent event) {
         if (punteroActivo) {
-            // Obtener la posición del ratón
+            // Obtener la posición del ratón dentro del gráfico
             double xPos = event.getX();
             double yPos = event.getY();
 
-            // Establecer la posición del puntero (alfiler)
-            puntero.setCenterX(xPos);
-            puntero.setCenterY(yPos);
+            // Obtener los límites del gráfico
+            double minX = 0;
+            double minY = 0;
+            double maxX = grafica.getWidth();
+            double maxY = grafica.getHeight();
 
-            // Mostrar el texto con los valores exactos
-            double valorX = x.getValueForDisplay(xPos).doubleValue(); // Convertir la coordenada x a valor de la gráfica
-            double valorY = y.getValueForDisplay(yPos).doubleValue(); // Convertir la coordenada y a valor de la gráfica
+            // Limitar las coordenadas del puntero dentro del gráfico
+            double xBound = Math.max(minX, Math.min(xPos, maxX));
+            double yBound = Math.max(minY, Math.min(yPos, maxY));
 
-            // Actualizar el texto del puntero
+            // Establecer la posición del puntero
+            puntero.setCenterX(xBound);
+            puntero.setCenterY(yBound);
+
+            // Convertir las coordenadas a valores de la gráfica
+            double valorX = x.getValueForDisplay(xBound).doubleValue(); // Coordenada X en valores del gráfico
+            double valorY = y.getValueForDisplay(yBound).doubleValue(); // Coordenada Y en valores del gráfico
+
+            // Actualizar el texto del puntero, asegurándote de que no salga del área visible
             textoPuntero.setText(String.format("X: %.2f, Y: %.2f", valorX, valorY));
-            textoPuntero.setX(xPos + 10); // Ajusta la posición del texto
-            textoPuntero.setY(yPos - 10);
+
+            // Ajustar la posición del texto del puntero
+            double textoX = Math.min(xBound + 10, maxX - textoPuntero.getLayoutBounds().getWidth() - 5);
+            double textoY = Math.max(yBound - 10, textoPuntero.getLayoutBounds().getHeight() + 5);
+
+            textoPuntero.setX(textoX);
+            textoPuntero.setY(textoY);
         }
+
     }
 
     // Getters y Setters

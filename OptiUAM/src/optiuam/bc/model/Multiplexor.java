@@ -4,6 +4,8 @@ package optiuam.bc.model;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+
+
 /**
  * Clase Multiplexor la cual contiene los atributos principales de un
  * multiplexor
@@ -178,7 +180,15 @@ public class Multiplexor extends Componente {
         }
     }
 
-    public void sumarDatos() {
+    public void sumarDatos(ElementoGrafico elemG) {
+        Multiplexor mux = new Multiplexor();
+        for (int i = 0; i < 8940; i++) {
+            double aux=0;
+            for (ArrayList<Double> datos : mux.getSenales()){
+                aux+=datos.get(i);
+            }
+            senalSalida.add(aux);
+        }
         //            for(int i = 0; i < 8000; i++) {
 //                double aux = 0;
 //                for(ArrayList<Double> datos : mux.getSenales()){
