@@ -933,6 +933,9 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
                     // Pasa el Series para la gráfica del OTDR
                     eg.getComponente().setSeries(aux.getSeries());
 
+                    // Pasa la frecuencia
+                    eg.getComponente().setFc(aux.getFc());
+
                     break;
                 }
             }

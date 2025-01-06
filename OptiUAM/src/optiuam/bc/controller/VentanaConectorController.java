@@ -707,6 +707,9 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                         eg.getComponente().setConectadoEntrada(true);
                         Multiplexor mux = (Multiplexor) eg.getComponente();
                         mux.getSenales().set(0, aux.getDatos());
+
+                        // Pasa la frecuencia
+                        eg.getComponente().setFc(aux.getFc());
                     } else if (conectorControl.cboxConectarA.getSelectionModel().getSelectedItem().toString().startsWith("mux")) {
                         Multiplexor mux = (Multiplexor) controlador.getElementos().get(elemento2);
                         for (int j = 0; j < mux.getEntradas(); j++) {
@@ -734,6 +737,9 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
 
                         // Pasa la longitud hasta el momento
                         eg.getComponente().setLongitudTotal(aux.getLongitudTotal());
+
+                        // Pasa la frecuencia
+                        eg.getComponente().setFc(aux.getFc());
 
                         // Atenua los datos
                         atenuar(aux);

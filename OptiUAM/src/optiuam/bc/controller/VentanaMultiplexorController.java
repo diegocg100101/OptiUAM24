@@ -752,6 +752,9 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
                             // Pasa el Series para la gráfica
                             eg.getComponente().setSeries(aux.getSeries());
 
+                            // Pasa la frecuencia
+                            eg.getComponente().setFc(aux.getFc());
+
 
                         }
                     }
