@@ -182,7 +182,17 @@ public class Multiplexor extends Componente {
 
     public void sumarDatos() {
         double aux;
-        for (int i = 0; i < 7000; i++) {
+        double menor = Double.POSITIVE_INFINITY;
+
+        // Encuentra el arreglo con menor datos para que no haya problema al graficar
+        for(ArrayList<Double> datos : getSenales()) {
+            if (datos.size() < menor) {
+                menor = datos.size();
+            }
+        }
+
+        // Realiza la suma punto de señales
+        for (int i = 0; i < menor; i++) {
             aux = 0.0;
             for (ArrayList<Double> datos : getSenales()){
                 aux += datos.get(i);
