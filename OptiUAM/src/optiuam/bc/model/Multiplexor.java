@@ -180,40 +180,15 @@ public class Multiplexor extends Componente {
         }
     }
 
-    public void sumarDatos(ElementoGrafico elemG) {
-        Multiplexor mux = new Multiplexor();
-        for (int i = 0; i < 8940; i++) {
-            double aux=0;
-            for (ArrayList<Double> datos : mux.getSenales()){
-                aux+=datos.get(i);
+    public void sumarDatos() {
+        double aux;
+        for (int i = 0; i < 7000; i++) {
+            aux = 0.0;
+            for (ArrayList<Double> datos : getSenales()){
+                aux += datos.get(i);
             }
             senalSalida.add(aux);
         }
-        //            for(int i = 0; i < 8000; i++) {
-//                double aux = 0;
-//                for(ArrayList<Double> datos : mux.getSenales()){
-//                    aux += datos.get(i);
-//                }
-//                senalSalida.add(aux);
-//            }
-
-
-
-        //            /*
-//            Este es el arreglo de la salida
-//            Es la suma de cada una de las componentes de las señales
-//             */
-//
-//            Esta es la señal de salida que se obtiene con mux.getSenalSalida()
-//            ArrayList<Double> senalSalida = new ArrayList<>();
-//
-//            for(int i = 0; i < 8000; i++) {
-//                double aux = 0;
-//                for(ArrayList<Double> datos : mux.getSenales()){
-//                    aux += datos.get(i);
-//                }
-//                sumaSenal.add(aux);
-//            }
     }
 
     /**
