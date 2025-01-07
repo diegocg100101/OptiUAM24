@@ -843,8 +843,8 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
 
     public void mostrarMenu(ElementoGrafico dibujo) {
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem menuItem1 = new MenuItem("-Duplicate");
-        MenuItem menuItem3 = new MenuItem("-Delete");
+        MenuItem menuItem1 = new MenuItem("° Duplicate");
+        MenuItem menuItem3 = new MenuItem("° Delete");
 
         /*Duplicar*/
         menuItem1.setOnAction(e -> {
@@ -853,7 +853,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
                     AnalizadorEspectro analizadorAux = new AnalizadorEspectro();
                     AnalizadorEspectro analizadorAux1 = (AnalizadorEspectro) controlador.getElementos().get(elemento);
                     analizadorAux.setIdAnalizador(idAnalizador);
-                    analizadorAux.setNombre("osciloscopio");
+                    analizadorAux.setNombre("Spectrum_Analyzer");
                     analizadorAux.setTipo(analizadorAux1.getTipo());
 
 
@@ -878,7 +878,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
             }
             for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
                 if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
-                    Osciloscopio aux = (Osciloscopio) controlador.getElementos().get(elemento);
+                    AnalizadorEspectro aux = (AnalizadorEspectro) controlador.getElementos().get(elemento);
                     controlador.getDibujos().remove(dibujo);
                     controlador.getElementos().remove(aux);
                 }
@@ -886,9 +886,9 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
             dibujo.getDibujo().setVisible(false);
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "\nOscilloscope removed!",
+                    "\nSpectrum Analyzer removed!",
                     aceptar);
-            alert.setTitle("Succes");
+            alert.setTitle("Success");
             alert.setHeaderText(null);
             alert.showAndWait();
         });
@@ -918,7 +918,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         elem.setComponente(analizador);
         elem.setId(controlador.getContadorElemento());
 
-        dibujo.setGraphic(new ImageView(new Image("images/dibujo_osciloscopio2.png")));
+        dibujo.setGraphic(new ImageView(new Image("images/dibujo_espectro.png")));
         dibujo.setText(analizador.getNombre() + "_" + analizador.getIdAnalizador());
         dibujo.setContentDisplay(ContentDisplay.TOP);
         dibujo.setLayoutX(el.getDibujo().getLayoutX() + 35);

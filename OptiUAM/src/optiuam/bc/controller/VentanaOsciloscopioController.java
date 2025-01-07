@@ -40,7 +40,6 @@ import javafx.stage.StageStyle;
 import optiuam.bc.model.*;
 
 import static optiuam.bc.controller.VentanaConectorController.afectarDatos;
-import static optiuam.bc.controller.VentanaMultiplexorController.datos;
 import static optiuam.bc.model.Componente.tiempo;
 
 /**
@@ -934,8 +933,8 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
 
     public void mostrarMenu(ElementoGrafico dibujo) {
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem menuItem1 = new MenuItem("-Duplicate");
-        MenuItem menuItem3 = new MenuItem("-Delete");
+        MenuItem menuItem1 = new MenuItem("° Duplicate");
+        MenuItem menuItem3 = new MenuItem("° Delete");
 
         /*Duplicar*/
         menuItem1.setOnAction(e -> {

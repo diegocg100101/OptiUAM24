@@ -18,6 +18,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -56,7 +57,7 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
      * Identificador del multiplexor
      */
     static int idMux = 0;
-    private static Object señalEntrada;
+
     /**
      * Controlador del simulador
      */
@@ -324,20 +325,22 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
             mux.setIdMux(idMux);
             mux.modificarEntradas(entradas);
 
-            switch (entradas){
+            switch (entradas) {
                 case 2:
-                    for(int i = 0; i < 2; i++) {
+                    for (int i = 0; i < 2; i++) {
                         mux.getSenales().add(new ArrayList<>());
                     }
                     break;
                 case 4:
-                    for(int i = 0; i < 4; i++) {
+                    for (int i = 0; i < 4; i++) {
                         mux.getSenales().add(new ArrayList<>());
                     }
+                    break;
                 case 8:
-                    for(int i = 0; i < 8; i++) {
+                    for (int i = 0; i < 8; i++) {
                         mux.getSenales().add(new ArrayList<>());
                     }
+                    break;
             }
 
             idMux++;
@@ -528,23 +531,6 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
             }
         });
     }
-
-    public static void datos(ElementoGrafico elemG){
-        Multiplexor mux = (Multiplexor) elemG.getComponente();
-        int entradas = mux.getEntradas();
-
-        double sumaSeñales = 0;
-
-        if (mux.getSenalesTotal() !=null && mux.getSenalesTotal().size() >=entradas) {
-            for (int i = 0; i < entradas; i++) {
-               Listas lista = mux.getSenalesTotal().get(i);
-               Señal señalEntrada = lista.getFftseñal();
-
-            }
-
-        }
-    }
-
 
 
     /**
@@ -739,22 +725,21 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
                             ventana_principal.elemConected(elemG.getComponente(), false);
                         } else if (muxAu.getConexionEntradas().get(f).getSeñalEntrada() != null) {
                             ventana_principal.elemConected(elemG.getComponente(), false);
-                        }else{
+                        } else {
                             eg.getComponente().setElementoConectadoEntrada(elemG.getDibujo().getText());
                             eg.getComponente().setConectadoEntrada(true);
 
-                            //Datos multiplexor
-                            datos(elemG);
-
                             // Pasa el buffer al elemento conectado
-                            eg.getComponente().setDatos(aux.getDatos());
+                            eg.getComponente().setDatos(aux.getSenalSalida());
+
+                            // Atenúa los datos
+                            atenuar(aux);
 
                             // Pasa el Series para la gráfica
                             eg.getComponente().setSeries(aux.getSeries());
 
                             // Pasa la frecuencia
                             eg.getComponente().setFc(aux.getFc());
-
 
                         }
                     }
@@ -827,22 +812,6 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
 
             ((Multiplexor) elemG.getComponente()).getSenales().clear();
 
-            switch (entradas){
-                case 2:
-                    for(int i = 0; i < 2; i++) {
-                        ((Multiplexor) elemG.getComponente()).getSenales().add(new ArrayList<>());
-                    }
-                    break;
-                case 4:
-                    for(int i = 0; i < 4; i++) {
-                        ((Multiplexor) elemG.getComponente()).getSenales().add(new ArrayList<>());
-                    }
-                case 8:
-                    for(int i = 0; i < 8; i++) {
-                        ((Multiplexor) elemG.getComponente()).getSenales().add(new ArrayList<>());
-                    }
-            }
-
             perdida = Double.parseDouble(txtPerdidaInsercion.getText());
             txtPerdidaInsercion.setText(String.valueOf(perdida));
             aux.setPerdidaInsercion(perdida);
@@ -860,6 +829,11 @@ public class VentanaMultiplexorController extends ControladorGeneral implements 
         }
     }
 
+    public void atenuar(Multiplexor mux) {
+        double ultimoX = Double.parseDouble(mux.getSeries().getData().get(mux.getSeries().getData().size() - 1).getXValue().toString());
+        double ultimoY = Double.parseDouble(mux.getSeries().getData().get(mux.getSeries().getData().size() - 1).getYValue().toString());
+        mux.getSeries().getData().add(new XYChart.Data<>(ultimoX, ultimoY - mux.getPerdidaInsercion()));
+    }
 
     /**
      * Metodo que proporciona lo necesario para que la ventana reconozca a

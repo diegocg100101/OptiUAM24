@@ -741,7 +741,7 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
                         // Pasa la frecuencia
                         eg.getComponente().setFc(aux.getFc());
 
-                        // Atenua los datos
+                        // Atenúa los datos
                         atenuar(aux);
 
                         // Pasa el Series para la gráfica
