@@ -1093,13 +1093,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     // Getters y Setters
-    public static int getIdOsciloscopio() {
-        return idOsciloscopio;
-    }
-
-    public static void setIdOsciloscopio(int idOsciloscopio) {
-        VentanaOsciloscopioController.idOsciloscopio = idOsciloscopio;
-    }
 
     public ControladorGeneral getControlador() {
         return controlador;

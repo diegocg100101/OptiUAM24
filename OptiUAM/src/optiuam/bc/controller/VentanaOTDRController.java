@@ -886,14 +886,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
 
     // Getters y Setters
 
-    public static int getIdOTDR() {
-        return idOTDR;
-    }
-
-    public static void setIdOTDR(int idOTDR) {
-        VentanaOsciloscopioController.idOsciloscopio = idOTDR;
-    }
-
     public ControladorGeneral getControlador() {
         return controlador;
     }

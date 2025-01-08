@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -1605,10 +1606,15 @@ public class VentanaPrincipal implements Initializable {
                         fuente.setPotencia(Double.parseDouble(partes[7]));
                         fuente.setAnchura(Double.parseDouble(partes[8]));
                         fuente.setVelocidad(Double.parseDouble(partes[9]));
-                        fuente.setLongitudOnda(Integer.parseInt(partes[10]));
+                        fuente.setLongitudOnda(Double.parseDouble(partes[10]));
                         fuente.setPulso(Float.parseFloat(partes[11]), Float.parseFloat(partes[12]), Float.parseFloat(partes[13]), Float.parseFloat(partes[14]), (int) Float.parseFloat(partes[15]));
                         fuente.setIdFuente(Integer.parseInt(partes[16]));
+                        fuente.setSpan(Double.parseDouble(partes[17]));
                         con.getElementos().add(fuente);
+
+                        fuente.setPulso(Math.sqrt(2 * fuente.getPotencia()), fuente.getAnchura() * 1e-3, fuente.getLongitudOnda() * 1e3, fuente.getChirp(), fuente.getTipo());
+                        fuente.graficas();
+                        fuente.calcularDatos();
 
                         Label dibujo4 = new Label();
                         dibujo4.setGraphic(new ImageView(new Image("images/dibujo_fuente.png")));
@@ -1879,11 +1885,90 @@ public class VentanaPrincipal implements Initializable {
                         eventosOsciloscopio(elem8);
                         idOsciloscopio = osciloscopio.getIdOsciloscopio() + 1;
                         break;
+                    case "OTDR":
+                        OTDR otdr = new OTDR();
+                        otdr.setId(Integer.valueOf(partes[1]));
+                        otdr.setNombre(nombre);
+                        otdr.setConectadoEntrada(Boolean.valueOf(partes[2]));
+                        otdr.setElementoConectadoEntrada(partes[3]);
+                        otdr.setConectadoSalida(Boolean.valueOf(partes[4]));
+                        otdr.setElementoConectadoSalida(partes[5]);
+                        otdr.setIdOTDR(Integer.valueOf(partes[6]));
+                        con.getElementos().add(otdr);
+
+                        Label dibujo11 = new Label();
+                        dibujo11.setGraphic(new ImageView(new Image("images/dibujo_otdr.png")));
+                        dibujo11.setText(otdr.getNombre() + "_" + otdr.getIdOTDR());
+                        dibujo11.setLayoutX(Double.parseDouble(partes[7]));
+                        dibujo11.setLayoutY(Double.parseDouble(partes[8]));
+                        dibujo11.setContentDisplay(ContentDisplay.TOP);
+
+                        ElementoGrafico elem11 = new ElementoGrafico();
+                        elem11.setComponente(otdr);
+                        elem11.setDibujo(dibujo11);
+                        elem11.setId(Integer.valueOf(partes[1]));
+                        con.getDibujos().add(elem11);
+                        dibujo11.setVisible(true);
+
+                        Pane1.getChildren().add(dibujo11);
+                        eventosOsciloscopio(elem11);
+                        idOsciloscopio = otdr.getIdOTDR() + 1;
+                        break;
+                    case "Spectrum_Analyzer":
+                        AnalizadorEspectro analizadorEspectro = new AnalizadorEspectro();
+                        analizadorEspectro.setId(Integer.valueOf(partes[1]));
+                        analizadorEspectro.setNombre(nombre);
+                        analizadorEspectro.setConectadoEntrada(Boolean.valueOf(partes[2]));
+                        analizadorEspectro.setElementoConectadoEntrada(partes[3]);
+                        analizadorEspectro.setConectadoSalida(Boolean.valueOf(partes[4]));
+                        analizadorEspectro.setElementoConectadoSalida(partes[5]);
+                        analizadorEspectro.setIdAnalizador(Integer.valueOf(partes[6]));
+                        con.getElementos().add(analizadorEspectro);
+
+                        Label dibujo12 = new Label();
+                        dibujo12.setGraphic(new ImageView(new Image("images/dibujo_espectro.png")));
+                        dibujo12.setText(analizadorEspectro.getNombre() + "_" + analizadorEspectro.getIdAnalizador());
+                        dibujo12.setLayoutX(Double.parseDouble(partes[7]));
+                        dibujo12.setLayoutY(Double.parseDouble(partes[8]));
+                        dibujo12.setContentDisplay(ContentDisplay.TOP);
+
+                        ElementoGrafico elem12 = new ElementoGrafico();
+                        elem12.setComponente(analizadorEspectro);
+                        elem12.setDibujo(dibujo12);
+                        elem12.setId(Integer.valueOf(partes[1]));
+                        con.getDibujos().add(elem12);
+                        dibujo12.setVisible(true);
+
+                        Pane1.getChildren().add(dibujo12);
+                        eventosOsciloscopio(elem12);
+                        idOsciloscopio = analizadorEspectro.getIdAnalizador() + 1;
+                        break;
                     default:
                         con.setContadorElemento(Integer.valueOf(partes[0]));
                 }
             }
             controlador = con;
+
+
+            // Pasa los datos
+            for(ElementoGrafico element : controlador.getDibujos()) {
+                if (element.getComponente().getNombre().equals("source")){
+                    Fuente fuente = (Fuente) element.getComponente();
+                    for (ElementoGrafico e : controlador.getDibujos()) {
+                        if (!e.getComponente().getNombre().equals("source") && fuente.getElementoConectadoSalida().equals(e.getDibujo().getText())) {
+                            e.getComponente().setDatos(fuente.getDatos());
+                        } else {
+                            for (ElementoGrafico eg : controlador.getDibujos()) {
+                                if (e.getComponente().isConectadoSalida() && !e.getComponente().getNombre().equals("source") &&
+                                        e.getComponente().getElementoConectadoSalida().equals(eg.getDibujo().getText())) {
+                                    eg.getComponente().setDatos(e.getComponente().getDatos());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             redibujarLinea();
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();

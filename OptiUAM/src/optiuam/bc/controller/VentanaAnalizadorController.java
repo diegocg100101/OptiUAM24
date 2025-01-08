@@ -945,14 +945,6 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
 
     // Getters y Setters
 
-    public static int getIdAnalizador() {
-        return idAnalizador;
-    }
-
-    public static void setIdAnalizador(int idAnalizador) {
-        VentanaOsciloscopioController.idOsciloscopio = idAnalizador;
-    }
-
     public ControladorGeneral getControlador() {
         return controlador;
     }

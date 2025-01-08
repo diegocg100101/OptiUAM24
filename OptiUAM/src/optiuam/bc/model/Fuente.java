@@ -792,7 +792,7 @@ public class Fuente extends Componente {
     public String toString() {
         return super.toString() + "," + tipo + "," + potencia + "," + anchura + ","
                 + velocidad + "," + longitudOnda + "," + A0 + "," + T0 + ","
-                + Fc + "," + C + "," + M + "," + idFuente;
+                + Fc + "," + C + "," + M + "," + idFuente + "," + span;
     }
 
 }

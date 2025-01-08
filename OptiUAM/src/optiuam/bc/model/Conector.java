@@ -4,8 +4,9 @@ package optiuam.bc.model;
 import java.util.LinkedList;
 
 /**
- * Clase Conector la cual contiene los atributos principales de un conector 
+ * Clase Conector la cual contiene los atributos principales de un conector
  * optico
+ *
  * @author Arturo Borja
  * @author Karen Cruz
  * @author Daniel Hernandez
@@ -18,19 +19,27 @@ public class Conector extends Componente {
      */
     private double perdidaInsercion;
 
-    /**Longitud de onda*/
+    /**
+     * Longitud de onda
+     */
     private int longitudOnda;
 
     /*Modo del conector. Puede ser monomodo o multimodo*/
     private int modo;
 
-    /**Identificador del conector. Es diferente al identificador del componente*/
+    /**
+     * Identificador del conector. Es diferente al identificador del componente
+     */
     private int idConector;
 
-    /**Posicion en el eje X del conector*/
+    /**
+     * Posicion en el eje X del conector
+     */
     private double posX;
 
-    /**Posicion en el eje Y del conector*/
+    /**
+     * Posicion en el eje Y del conector
+     */
     private double posY;
 
     /**
@@ -46,14 +55,15 @@ public class Conector extends Componente {
 
     /**
      * Metodo constructor con parametros
-     * @param nombre Nombre del componente
-     * @param id Identificador del componente
+     *
+     * @param nombre            Nombre del componente
+     * @param id                Identificador del componente
      * @param elementoConectado Nombre del componente el cual se encuentra
-     * conectado con el conector
-     * @param conectado Indica si el componente esta conectado
-     * @param longitudOnda Longitud de onda del conector
-     * @param modo Modo del conector
-     * @param perdidaInsercion Perdida de insercion del conector
+     *                          conectado con el conector
+     * @param conectado         Indica si el componente esta conectado
+     * @param longitudOnda      Longitud de onda del conector
+     * @param modo              Modo del conector
+     * @param perdidaInsercion  Perdida de insercion del conector
      */
     public Conector(String nombre, int id, String elementoConectado,
                     boolean conectado, int longitudOnda, int modo,
@@ -67,6 +77,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que muestra la perdida de insercion del conector
+     *
      * @return perdidaInsercion
      */
     public double getPerdidaInsercion() {
@@ -75,6 +86,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que modifica la perdida de insercion del conector
+     *
      * @param perdidaInsercion Perdida de insercion
      */
     public void setPerdidaInsercion(double perdidaInsercion) {
@@ -83,6 +95,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que muestra la longitud de onda del conector
+     *
      * @return longitudOnda
      */
     public int getLongitudOnda() {
@@ -91,6 +104,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que modifica la longitud de onda del conector
+     *
      * @param longitudOnda Longitud de onda
      */
     public void setLongitudOnda(int longitudOnda) {
@@ -99,6 +113,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que muestra el modo del conector
+     *
      * @return modo
      */
     public int getModo() {
@@ -107,6 +122,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que modifica el modo del conector
+     *
      * @param modo Modo del conector. Puede ser monomodo o multimodo
      */
     public void setModo(int modo) {
@@ -115,6 +131,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que muestra el identificador del conector, no el del componente
+     *
      * @return idConector
      */
     public int getIdConector() {
@@ -123,6 +140,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que modifica el identificador del conector, no el del componente
+     *
      * @param idConector Identificador del conector
      */
     public void setIdConector(int idConector) {
@@ -131,6 +149,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que muestra la posicion en el eje X del conector
+     *
      * @return posX
      */
     public double getPosX() {
@@ -139,6 +158,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que modifica la posicion en el eje X del conector
+     *
      * @param posX Posicion en el eje X del conector
      */
     public void setPosX(double posX) {
@@ -147,6 +167,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que muestra la posicion en el eje Y del conector
+     *
      * @return posY
      */
     public double getPosY() {
@@ -155,6 +176,7 @@ public class Conector extends Componente {
 
     /**
      * Metodo que muestra la posicion en el eje Y del conector
+     *
      * @param posY Posicion en el eje Y del conector
      */
     public void setPosY(double posY) {
@@ -172,14 +194,15 @@ public class Conector extends Componente {
     /**
      * Metodo que multiplica los valores de la señal actual con la atenuacion del
      * conector
+     *
      * @param valores Valores de la señal actual
      * @return Valores con la atenuacion del conector
      */
-    public LinkedList<Listas> valorMagnitudPerdida(LinkedList<Listas> valores){
-        int n=0;
-        while(n<valores.size()){
-            NumeroComplejo aux= valores.get(n).getComplejo();
-            aux=aux.producto(aux, (float) Math.pow(10, (-perdidaInsercion/10)));
+    public LinkedList<Listas> valorMagnitudPerdida(LinkedList<Listas> valores) {
+        int n = 0;
+        while (n < valores.size()) {
+            NumeroComplejo aux = valores.get(n).getComplejo();
+            aux = aux.producto(aux, (float) Math.pow(10, (-perdidaInsercion / 10)));
             valores.get(n).setComplejo(aux);
             valores.get(n).setMagnitud(aux.magnitud());
             n++;
@@ -189,14 +212,15 @@ public class Conector extends Componente {
 
     /**
      * Metodo toString que retorna los atributos de un conector
-     * @return nombre, id, conectadoEntrada, elementoConectadoEntrada, 
-     * conectadoSalida, elementoConectadoSalida, longitudOnda, 
+     *
+     * @return nombre, id, conectadoEntrada, elementoConectadoEntrada,
+     * conectadoSalida, elementoConectadoSalida, longitudOnda,
      * modo, perdidaInsercion, idConector
      */
     @Override
     public String toString() {
         return super.toString() + "," + longitudOnda +
-                "," + modo+ "," + perdidaInsercion +","+idConector;
+                "," + modo + "," + perdidaInsercion + "," + idConector;
     }
 
 }
