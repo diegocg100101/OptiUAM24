@@ -1949,25 +1949,15 @@ public class VentanaPrincipal implements Initializable {
             }
             controlador = con;
 
-
-            // Pasa los datos
-            for(ElementoGrafico element : controlador.getDibujos()) {
-                if (element.getComponente().getNombre().equals("source")){
+            for (ElementoGrafico element : controlador.getDibujos()) {
+                if ("source".equals(element.getComponente().getNombre())) {
                     Fuente fuente = (Fuente) element.getComponente();
-                    for (ElementoGrafico e : controlador.getDibujos()) {
-                        if (!e.getComponente().getNombre().equals("source") && fuente.getElementoConectadoSalida().equals(e.getDibujo().getText())) {
-                            e.getComponente().setDatos(fuente.getDatos());
-                        } else {
-                            for (ElementoGrafico eg : controlador.getDibujos()) {
-                                if (e.getComponente().isConectadoSalida() && !e.getComponente().getNombre().equals("source") &&
-                                        e.getComponente().getElementoConectadoSalida().equals(eg.getDibujo().getText())) {
-                                    eg.getComponente().setDatos(e.getComponente().getDatos());
-                                }
-                            }
-                        }
-                    }
+                    propagarDesdeFuente(fuente);
+                    propagarEntreElementos();
                 }
             }
+
+
 
             redibujarLinea();
         } catch (IOException | NumberFormatException e) {
@@ -2003,6 +1993,30 @@ public class VentanaPrincipal implements Initializable {
             //en cancelar o se cierra la ventana para cargar/guardar trabajo
         }
     }
+
+    private void propagarDesdeFuente(Fuente fuente) {
+        controlador.getDibujos().stream()
+                .filter(e -> !"source".equals(e.getComponente().getNombre()))
+                .filter(e -> fuente.getElementoConectadoSalida().equals(e.getDibujo().getText()))
+                .forEach(e -> {
+                    e.getComponente().setDatos(fuente.getDatos());
+                    e.getComponente().setSeries(fuente.getSeries());
+                });
+    }
+
+    private void propagarEntreElementos() {
+        controlador.getDibujos().stream()
+                .filter(e -> e.getComponente().isConectadoSalida() && !"source".equals(e.getComponente().getNombre()))
+                .forEach(e -> {
+                    controlador.getDibujos().stream()
+                            .filter(eg -> e.getComponente().getElementoConectadoSalida().equals(eg.getDibujo().getText()))
+                            .forEach(eg -> {
+                                eg.getComponente().setDatos(e.getComponente().getDatos());
+                                eg.getComponente().setSeries(e.getComponente().getSeries());
+                            });
+                });
+    }
+
 
     /**
      * Metodo que permite visualizar la conexion hacia delante del medidor de
