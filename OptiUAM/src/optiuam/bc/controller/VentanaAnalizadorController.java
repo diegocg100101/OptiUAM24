@@ -34,8 +34,10 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import optiuam.bc.model.*;
@@ -94,6 +96,12 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     public Label yLabel;
     public Label xLabel;
     public Button btnGraficarNuevamente;
+    public Button btnMarcador1;
+    // Variable para controlar el estado del puntero
+    private Circle puntero; // El puntero
+    private Text textoPuntero; // El texto para mostrar las coordenadas
+    private boolean punteroActivo = false; // Estado del puntero
+
 
     /**
      * Lista desplegable de elementos para conectar
@@ -259,6 +267,30 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         grafica.setOnMousePressed(this::iniciarArrastreZoom);
         grafica.setOnMouseDragged(this::arrastrarZoom);
         grafica.setOnMouseReleased(this::soltarArrastreZoom);
+
+        //Iniciar punteros
+        // Crear el puntero
+        puntero = new Circle(4); // Un círculo de radio 5
+        puntero.setFill(Color.RED); // Color del puntero
+
+        // Crear el texto para los valores
+        textoPuntero = new Text();
+        textoPuntero.setFill(Color.BLACK);
+        textoPuntero.setStyle("-fx-font-size: 12px;");
+
+        // Añadir el puntero y el texto al contenedor de la gráfica
+        pane.getChildren().addAll(puntero, textoPuntero);
+
+        // Configurar el botón
+        btnMarcador1.setOnAction(event -> {
+            punteroActivo = !punteroActivo;  // Cambiar el estado del puntero
+            if (punteroActivo) {
+                activarPuntero();  // Activar el puntero
+            } else {
+                desactivarPuntero();  // Desactivar el puntero
+            }
+        });
+
     }
 
     /**
@@ -936,6 +968,77 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         alert.setTitle("Spectrum Analyzer");
         alert.setHeaderText(null);
         alert.showAndWait();
+    }
+
+
+    // Activar la actualización del puntero
+    private void activarPuntero() {
+        // Hacer visible el puntero
+        puntero.setVisible(true);
+        textoPuntero.setVisible(true);
+
+        // Activar el movimiento del ratón para actualizar la posición del puntero
+        grafica.setOnMouseMoved(this::moverPuntero);
+    }
+
+    // Desactivar el puntero
+    private void desactivarPuntero() {
+        // Ocultar el puntero y el texto
+        puntero.setVisible(false);
+        textoPuntero.setVisible(false);
+
+        // Desactivar el movimiento del ratón
+        grafica.setOnMouseMoved(null);
+    }
+
+    // Límites manuales del área visible
+    private final double LIMITE_MIN_X = 55;  // Límite izquierdo
+    private final double LIMITE_MAX_X = 865.55; // Límite derecho
+    private final double LIMITE_MIN_Y = 29;  // Límite superior
+    private final double LIMITE_MAX_Y = 533.33; // Límite inferior
+
+
+    private void moverPuntero(MouseEvent event) {
+        if (punteroActivo) {
+            // Obtener la posición del ratón
+            double xPos = event.getX();
+            double yPos = event.getY();
+
+            // Aplicar los límites manuales
+            double xBound = Math.max(LIMITE_MIN_X, Math.min(xPos, LIMITE_MAX_X));
+            double yBound = Math.max(LIMITE_MIN_Y, Math.min(yPos, LIMITE_MAX_Y));
+
+            // Establecer la posición del puntero dentro de los límites
+            puntero.setCenterX(xBound);
+            puntero.setCenterY(yBound);
+
+            // Calcular proporciones dentro del área visible
+            double proporcionX = (xBound - LIMITE_MIN_X) / (LIMITE_MAX_X - LIMITE_MIN_X);
+            double proporcionY = (yBound - LIMITE_MIN_Y) / (LIMITE_MAX_Y - LIMITE_MIN_Y);
+
+            // Convertir proporciones a valores en el gráfico
+            double valorX = x.getLowerBound() + proporcionX * (x.getUpperBound() - x.getLowerBound());
+            double valorY = y.getUpperBound() - proporcionY * (y.getUpperBound() - y.getLowerBound());
+
+            // Ajustar precisión de valores
+            valorX = Math.round(valorX * 100.0) / 100.0; // Redondear a 2 decimales
+            valorY = Math.round(valorY * 100.0) / 100.0;
+
+            // Actualizar el texto del puntero
+            textoPuntero.setText(String.format("X: %.2f, Y: %.2f", valorX, valorY));
+
+            // Ajustar la posición del texto para que no salga del área visible
+            double textoX = xBound + 10; // Desplazar texto ligeramente hacia la derecha
+            double textoY = yBound - 10; // Desplazar texto ligeramente hacia arriba
+
+            // Evitar que el texto salga de los límites visibles
+            textoX = Math.min(textoX, LIMITE_MAX_X - textoPuntero.getLayoutBounds().getWidth() - 5);
+            textoY = Math.max(textoY, LIMITE_MIN_Y + textoPuntero.getLayoutBounds().getHeight() + 5);
+
+            // Establecer nuevas posiciones para el texto
+            textoPuntero.setX(textoX);
+            textoPuntero.setY(textoY);
+        }
     }
 
 

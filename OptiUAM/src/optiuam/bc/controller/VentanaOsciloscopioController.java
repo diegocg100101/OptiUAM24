@@ -101,6 +101,10 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     public Label yLabel;
     public Label xLabel;
     public Button btnApuntador;
+    // Variable para controlar el estado del puntero
+    private Circle puntero; // El puntero
+    private Text textoPuntero; // El texto para mostrar las coordenadas
+    private boolean punteroActivo = false; // Estado del puntero
 
     /**
      * Lista desplegable de elementos para conectar
@@ -1028,11 +1032,6 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         alert.showAndWait();
     }
 
-    // Variable para controlar el estado del puntero
-    private Circle puntero; // El puntero
-    private Text textoPuntero; // El texto para mostrar las coordenadas
-    private boolean punteroActivo = false; // Estado del puntero
-
 
     // Activar la actualización del puntero
     private void activarPuntero() {
@@ -1054,43 +1053,58 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         grafica.setOnMouseMoved(null);
     }
 
-    // Manejar el movimiento del ratón
+    // Límites manuales del área visible
+
+    private final double LIMITE_MIN_X = 55;  // Límite izquierdo
+    private final double LIMITE_MAX_X = 865.55; // Límite derecho
+    private final double LIMITE_MIN_Y = 29;  // Límite superior
+    private final double LIMITE_MAX_Y = 533.33; // Límite inferior
+
+
     private void moverPuntero(MouseEvent event) {
         if (punteroActivo) {
-            // Obtener la posición del ratón dentro del gráfico
+            // Obtener la posición del ratón
             double xPos = event.getX();
             double yPos = event.getY();
 
-            // Obtener los límites del gráfico
-            double minX = 0;
-            double minY = 0;
-            double maxX = grafica.getWidth();
-            double maxY = grafica.getHeight();
+            // Aplicar los límites manuales
+            double xBound = Math.max(LIMITE_MIN_X, Math.min(xPos, LIMITE_MAX_X));
+            double yBound = Math.max(LIMITE_MIN_Y, Math.min(yPos, LIMITE_MAX_Y));
 
-            // Limitar las coordenadas del puntero dentro del gráfico
-            double xBound = Math.max(minX, Math.min(xPos, maxX));
-            double yBound = Math.max(minY, Math.min(yPos, maxY));
-
-            // Establecer la posición del puntero
+            // Establecer la posición del puntero dentro de los límites
             puntero.setCenterX(xBound);
             puntero.setCenterY(yBound);
 
-            // Convertir las coordenadas a valores de la gráfica
-            double valorX = x.getValueForDisplay(xBound).doubleValue(); // Coordenada X en valores del gráfico
-            double valorY = y.getValueForDisplay(yBound).doubleValue(); // Coordenada Y en valores del gráfico
+            // Calcular proporciones dentro del área visible
+            double proporcionX = (xBound - LIMITE_MIN_X) / (LIMITE_MAX_X - LIMITE_MIN_X);
+            double proporcionY = (yBound - LIMITE_MIN_Y) / (LIMITE_MAX_Y - LIMITE_MIN_Y);
 
-            // Actualizar el texto del puntero, asegurándote de que no salga del área visible
+            // Convertir proporciones a valores en el gráfico
+            double valorX = x.getLowerBound() + proporcionX * (x.getUpperBound() - x.getLowerBound());
+            double valorY = y.getUpperBound() - proporcionY * (y.getUpperBound() - y.getLowerBound());
+
+            // Ajustar precisión de valores
+            valorX = Math.round(valorX * 100.0) / 100.0; // Redondear a 2 decimales
+            valorY = Math.round(valorY * 100.0) / 100.0;
+
+            // Actualizar el texto del puntero
             textoPuntero.setText(String.format("X: %.2f, Y: %.2f", valorX, valorY));
 
-            // Ajustar la posición del texto del puntero
-            double textoX = Math.min(xBound + 10, maxX - textoPuntero.getLayoutBounds().getWidth() - 5);
-            double textoY = Math.max(yBound - 10, textoPuntero.getLayoutBounds().getHeight() + 5);
+            // Ajustar la posición del texto para que no salga del área visible
+            double textoX = xBound + 10; // Desplazar texto ligeramente hacia la derecha
+            double textoY = yBound - 10; // Desplazar texto ligeramente hacia arriba
 
+            // Evitar que el texto salga de los límites visibles
+            textoX = Math.min(textoX, LIMITE_MAX_X - textoPuntero.getLayoutBounds().getWidth() - 5);
+            textoY = Math.max(textoY, LIMITE_MIN_Y + textoPuntero.getLayoutBounds().getHeight() + 5);
+
+            // Establecer nuevas posiciones para el texto
             textoPuntero.setX(textoX);
             textoPuntero.setY(textoY);
         }
-
     }
+
+
 
     // Getters y Setters
 
