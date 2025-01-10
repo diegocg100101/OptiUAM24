@@ -118,7 +118,7 @@ public class AnalizadorEspectro extends Componente {
      */
     @Override
     public String toString() {
-        return super.toString() + "," + idAnalizador;
+        return super.toString() + "," + idAnalizador + "," + Fc;
     }
 
 }

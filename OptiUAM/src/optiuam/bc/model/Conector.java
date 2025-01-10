@@ -220,7 +220,7 @@ public class Conector extends Componente {
     @Override
     public String toString() {
         return super.toString() + "," + longitudOnda +
-                "," + modo + "," + perdidaInsercion + "," + idConector;
+                "," + modo + "," + perdidaInsercion + "," + idConector + "," + Fc;
     }
 
 }
