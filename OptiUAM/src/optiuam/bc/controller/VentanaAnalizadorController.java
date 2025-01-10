@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +43,7 @@ import javafx.stage.Stage;
 import optiuam.bc.model.*;
 
 import static optiuam.bc.controller.VentanaConectorController.afectarDatos;
+import static optiuam.bc.model.Componente.tiempo;
 
 import org.apache.commons.math3.transform.*;
 import org.apache.commons.math3.complex.Complex;
@@ -175,6 +177,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     VentanaAnalizadorController analizadorControl;
 
     private ArrayList<Double> limitesX = new ArrayList<>();
+
     private ArrayList<Double> limitesY = new ArrayList<>();
     private Rectangle zoomRect;
     private Point2D dragStart;
@@ -291,7 +294,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * @param analizador Objeto de tipo analizador
+     * @param analizador Objeto de tipo osciloscopio
      */
     public void guardarAnalizador(AnalizadorEspectro analizador) {
         analizador.setId(controlador.getContadorElemento());
@@ -329,7 +332,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Inicializa una instancia del analizador
+     * Inicializa una instancia del osciloscopio
      *
      * @param event Eventos del sistema
      * @throws RuntimeException
@@ -370,7 +373,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Método para la conexión del Analizador
+     * Método para la conexión del osciloscopio
      */
     public void conexion() {
         for (int elemento2 = 0; elemento2 < controlador.getDibujos().size(); elemento2++) {
@@ -393,9 +396,10 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
             } else if (analizadorControl.cboxConectarA.getSelectionModel().getSelectedItem().toString()
                     .equals(controlador.getDibujos().get(elemento2).getDibujo().getText())
                     && controlador.getElementos().get(elemento2).getNombre().equals("mux") ){
-
+                // eg = mux
                 ElementoGrafico eg = controlador.getDibujos().get(elemento2);
 
+                // elemento = osciloscopio
                 elemento.getComponente().setElementoConectadoEntrada(eg.getDibujo().getText());
                 elemento.getComponente().setConectadoEntrada(true);
                 eg.getComponente().setElementoConectadoSalida(elemento.getDibujo().getText());
@@ -434,7 +438,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Método para gestionar eventos del Analizador
+     * Método para gestionar eventos del osciloscopio
      *
      * @param elemento
      */
@@ -621,7 +625,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Método para cerrar la ventana del analizador
+     * Método para cerrar la ventana del conector
      *
      * @param event Representa cualquier tipo de accion
      */
@@ -701,6 +705,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
         limitesY.add(y.getLowerBound());
         limitesY.add(y.getUpperBound());
 
+
         centroX.setMin(x.getLowerBound());
         centroX.setMax(x.getUpperBound());
         centroX.setValue((x.getLowerBound() + x.getUpperBound()) / 2);
@@ -723,6 +728,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
 
         xLabel.setVisible(true);
         yLabel.setVisible(true);
+
         btnLimitesX.setVisible(true);
         btnLimitesY.setVisible(true);
     }
@@ -833,7 +839,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Método para desconectar el analizador
+     * Método para desconectar la fuente
      *
      * @param event Representa cualquier tipo de acción
      */
@@ -925,7 +931,7 @@ public class VentanaAnalizadorController extends ControladorGeneral implements I
     }
 
     /**
-     * Metodo que duplica el analizador
+     * Metodo que duplica una fuente
      *
      * @param analizador Fuente a duplicar
      * @param el     Elemento grafico de la fuente a duplicar

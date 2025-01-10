@@ -28,17 +28,6 @@ public class OTDR extends Componente{
     public OTDR(){
     }
 
-    public int getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(int tipo) {
-        this.tipo = tipo;
-    }
-
-    private int tipo;
-
-
     /**
      * Metodo constructor con parametros
      *

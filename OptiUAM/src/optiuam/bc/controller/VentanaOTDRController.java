@@ -298,7 +298,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     /**
-     * Inicializa una instancia del otdr
+     * Inicializa una instancia del osciloscopio
      *
      * @param event Eventos del sistema
      * @throws RuntimeException
@@ -505,7 +505,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     /**
-     * Metodo que permite visualizar la conexion hacia atras del otdr
+     * Metodo que permite visualizar la conexion hacia atras del conector
      * con otro elemento
      *
      * @param elem Elemento grafico del conector
@@ -570,7 +570,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     /**
-     * Método para cerrar la ventana del otdr
+     * Método para cerrar la ventana del conector
      *
      * @param event Representa cualquier tipo de accion
      */
@@ -748,7 +748,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     /**
-     * Método para desconectar el otdr
+     * Método para desconectar la fuente
      *
      * @param event Representa cualquier tipo de acción
      */
@@ -774,7 +774,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
 
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "\nDisconnected OTDR!",
+                "\nDisconnected oscilloscope!",
                 aceptar);
         alert.setTitle("Success");
         alert.setHeaderText(null);
@@ -791,14 +791,14 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         menuItem1.setOnAction(e -> {
             for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
                 if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
-                    OTDR otdrAux = new OTDR();
-                    OTDR otdrAux1 = (OTDR) controlador.getElementos().get(elemento);
-                    otdrAux.setIdOTDR(idOTDR);
-                    otdrAux.setNombre("OTDR");
-                    otdrAux.setTipo(otdrAux1.getTipo());
+                    AnalizadorEspectro analizadorAux = new AnalizadorEspectro();
+                    AnalizadorEspectro analizadorAux1 = (AnalizadorEspectro) controlador.getElementos().get(elemento);
+                    analizadorAux.setIdAnalizador(idOTDR);
+                    analizadorAux.setNombre("osciloscopio");
+                    analizadorAux.setTipo(analizadorAux1.getTipo());
 
 
-                    duplicarOTDR(otdrAux, dibujo);
+                    duplicarAnalizador(analizadorAux, dibujo);
                     idOTDR++;
                     break;
                 }
@@ -819,7 +819,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
             }
             for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
                 if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
-                    OTDR aux = (OTDR) controlador.getElementos().get(elemento);
+                    Osciloscopio aux = (Osciloscopio) controlador.getElementos().get(elemento);
                     controlador.getDibujos().remove(dibujo);
                     controlador.getElementos().remove(aux);
                 }
@@ -827,7 +827,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
             dibujo.getDibujo().setVisible(false);
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "\nOTDR removed!",
+                    "\nOscilloscope removed!",
                     aceptar);
             alert.setTitle("Succes");
             alert.setHeaderText(null);
@@ -840,27 +840,27 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     }
 
     /**
-     * Metodo que duplica el otdr
+     * Metodo que duplica una fuente
      *
-     * @param otdr Fuente a duplicar
+     * @param analizador Fuente a duplicar
      * @param el     Elemento grafico de la fuente a duplicar
      */
-    public void duplicarOTDR(OTDR otdr, ElementoGrafico el) {
-        otdr.setId(controlador.getContadorElemento());
-        controlador.getElementos().add(otdr);
+    public void duplicarAnalizador(AnalizadorEspectro analizador, ElementoGrafico el) {
+        analizador.setId(controlador.getContadorElemento());
+        controlador.getElementos().add(analizador);
         Label dibujo = new Label();
         ElementoGrafico elem = new ElementoGrafico();
 
-        otdr.setPosX(dibujo.getLayoutX());
-        otdr.setPosY(dibujo.getLayoutY());
-        setPosX(otdr.getPosX());
-        setPosY(otdr.getPosY());
+        analizador.setPosX(dibujo.getLayoutX());
+        analizador.setPosY(dibujo.getLayoutY());
+        setPosX(analizador.getPosX());
+        setPosY(analizador.getPosY());
 
-        elem.setComponente(otdr);
+        elem.setComponente(analizador);
         elem.setId(controlador.getContadorElemento());
 
-        dibujo.setGraphic(new ImageView(new Image("images/dibujo_otdr.png")));
-        dibujo.setText(otdr.getNombre() + "_" + otdr.getIdOTDR());
+        dibujo.setGraphic(new ImageView(new Image("images/dibujo_osciloscopio2.png")));
+        dibujo.setText(analizador.getNombre() + "_" + analizador.getIdAnalizador());
         dibujo.setContentDisplay(ContentDisplay.TOP);
         dibujo.setLayoutX(el.getDibujo().getLayoutX() + 35);
         dibujo.setLayoutY(el.getDibujo().getLayoutY() + 20);
@@ -872,9 +872,9 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
 
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "\n OTDR duplicated!",
+                "\nAnalyzer duplicated!",
                 aceptar);
-        alert.setTitle("OTDR");
+        alert.setTitle("Spectrum Analyzer");
         alert.setHeaderText(null);
         alert.showAndWait();
     }
