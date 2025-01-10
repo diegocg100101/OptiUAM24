@@ -993,7 +993,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
     }
 
     /**
-     * Metodo que duplica una fuente
+     * Metodo que duplica un oasciloscopio
      *
      * @param osciloscopio Fuente a duplicar
      * @param el     Elemento grafico de la fuente a duplicar
