@@ -1437,14 +1437,15 @@ public class VentanaPrincipal implements Initializable {
                         conector.setModo(Integer.valueOf(partes[7]));
                         conector.setPerdidaInsercion(Double.valueOf(partes[8]));
                         conector.setIdConector(Integer.valueOf(partes[9]));
+                        conector.setFc(Double.valueOf(partes[10]));
                         con.getElementos().add(conector);
 
                         Label dibujo = new Label();
                         dibujo.setGraphic(new ImageView(new Image("images/dibujo_conectorR.png")));
                         dibujo.setText(conector.getNombre() + "_" + conector.getIdConector());
                         conector.setNombreid(conector.getNombre() + "_" + conector.getIdConector());
-                        dibujo.setLayoutX(Double.parseDouble(partes[10]));
-                        dibujo.setLayoutY(Double.parseDouble(partes[11]));
+                        dibujo.setLayoutX(Double.parseDouble(partes[11]));
+                        dibujo.setLayoutY(Double.parseDouble(partes[12]));
                         dibujo.setContentDisplay(ContentDisplay.TOP);
 
                         ElementoGrafico elem = new ElementoGrafico();
@@ -1923,6 +1924,7 @@ public class VentanaPrincipal implements Initializable {
                         analizadorEspectro.setConectadoSalida(Boolean.valueOf(partes[4]));
                         analizadorEspectro.setElementoConectadoSalida(partes[5]);
                         analizadorEspectro.setIdAnalizador(Integer.valueOf(partes[6]));
+                        analizadorEspectro.setFc(Double.valueOf(partes[7]));
                         con.getElementos().add(analizadorEspectro);
 
                         Label dibujo12 = new Label();
@@ -1956,9 +1958,6 @@ public class VentanaPrincipal implements Initializable {
                     propagarEntreElementos();
                 }
             }
-
-
-
             redibujarLinea();
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
