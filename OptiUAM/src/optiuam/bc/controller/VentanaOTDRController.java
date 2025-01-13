@@ -791,14 +791,12 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         menuItem1.setOnAction(e -> {
             for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
                 if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
-                    AnalizadorEspectro analizadorAux = new AnalizadorEspectro();
-                    AnalizadorEspectro analizadorAux1 = (AnalizadorEspectro) controlador.getElementos().get(elemento);
-                    analizadorAux.setIdAnalizador(idOTDR);
-                    analizadorAux.setNombre("osciloscopio");
-                    analizadorAux.setTipo(analizadorAux1.getTipo());
+                    OTDR otdr = new OTDR();
+                    OTDR otdr1 = (OTDR) controlador.getElementos().get(elemento);
+                    otdr.setIdOTDR(idOTDR);
+                    otdr.setNombre("OTDR");
 
-
-                    duplicarAnalizador(analizadorAux, dibujo);
+                    duplicarOTDR(otdr, dibujo);
                     idOTDR++;
                     break;
                 }
@@ -819,7 +817,7 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
             }
             for (int elemento = 0; elemento < controlador.getElementos().size(); elemento++) {
                 if (dibujo.getId() == controlador.getElementos().get(elemento).getId()) {
-                    Osciloscopio aux = (Osciloscopio) controlador.getElementos().get(elemento);
+                    OTDR aux = (OTDR) controlador.getElementos().get(elemento);
                     controlador.getDibujos().remove(dibujo);
                     controlador.getElementos().remove(aux);
                 }
@@ -827,9 +825,9 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
             dibujo.getDibujo().setVisible(false);
             ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "\nOscilloscope removed!",
+                    "\nOTDR removed!",
                     aceptar);
-            alert.setTitle("Succes");
+            alert.setTitle("Success");
             alert.setHeaderText(null);
             alert.showAndWait();
         });
@@ -842,25 +840,25 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     /**
      * Metodo que duplica una fuente
      *
-     * @param analizador Fuente a duplicar
+     * @param otdr Fuente a duplicar
      * @param el     Elemento grafico de la fuente a duplicar
      */
-    public void duplicarAnalizador(AnalizadorEspectro analizador, ElementoGrafico el) {
-        analizador.setId(controlador.getContadorElemento());
-        controlador.getElementos().add(analizador);
+    public void duplicarOTDR(OTDR otdr, ElementoGrafico el) {
+        otdr.setId(controlador.getContadorElemento());
+        controlador.getElementos().add(otdr);
         Label dibujo = new Label();
         ElementoGrafico elem = new ElementoGrafico();
 
-        analizador.setPosX(dibujo.getLayoutX());
-        analizador.setPosY(dibujo.getLayoutY());
-        setPosX(analizador.getPosX());
-        setPosY(analizador.getPosY());
+        otdr.setPosX(dibujo.getLayoutX());
+        otdr.setPosY(dibujo.getLayoutY());
+        setPosX(otdr.getPosX());
+        setPosY(otdr.getPosY());
 
-        elem.setComponente(analizador);
+        elem.setComponente(otdr);
         elem.setId(controlador.getContadorElemento());
 
-        dibujo.setGraphic(new ImageView(new Image("images/dibujo_osciloscopio2.png")));
-        dibujo.setText(analizador.getNombre() + "_" + analizador.getIdAnalizador());
+        dibujo.setGraphic(new ImageView(new Image("images/dibujo_otdr.png")));
+        dibujo.setText(otdr.getNombre() + "_" + otdr.getIdOTDR());
         dibujo.setContentDisplay(ContentDisplay.TOP);
         dibujo.setLayoutX(el.getDibujo().getLayoutX() + 35);
         dibujo.setLayoutY(el.getDibujo().getLayoutY() + 20);
@@ -872,9 +870,9 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
 
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "\nAnalyzer duplicated!",
+                "\nOTDR duplicated!",
                 aceptar);
-        alert.setTitle("Spectrum Analyzer");
+        alert.setTitle("OTDR");
         alert.setHeaderText(null);
         alert.showAndWait();
     }
