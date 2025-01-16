@@ -134,16 +134,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     public Button btnCrear;
 
     /**
-     * Bara para el zoom del eje "y" (amplitud)
-     */
-    public Slider zoomY;
-
-    /**
-     * Bara para el zoom del eje "x" (tiempo)
-     */
-    public Slider zoomX;
-
-    /**
      * Controlador del simulador
      */
     ControladorGeneral controlador;
@@ -238,10 +228,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
 
         xLabel.setVisible(false);
         yLabel.setVisible(false);
-
-        zoomX.setMin(1);
-        zoomX.setMax(100);
-        zoomX.setValue(1);
 
         // Iniciar implementación de zoom por recuadro
         // Crear rectángulo de selección
@@ -588,9 +574,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
     private void graficarPotencias() {
         limitesX.clear();
         limitesY.clear();
-        zoomY.setMin(0.01);
-        zoomY.setMax(2);
-        zoomY.setValue(1);
         grafica.getData().clear();
 
         x.setLabel("Distancia [km]");
@@ -629,8 +612,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         centroY.setValue((y.getLowerBound() + y.getUpperBound()) / 2);
         centroX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroX());
         centroY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarCentroY());
-        zoomX.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomX(newVal.doubleValue()));
-        zoomY.valueProperty().addListener((obs, oldVal, newVal) -> ajustarZoomYmW(newVal.doubleValue()));
         grafica.getData().add(elemento.getComponente().getSeries());
 
         lowerBoundX.setVisible(true);
@@ -691,31 +672,6 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
         y.setUpperBound(limitesY.get(1));
     }
 
-    /**
-     * Método para ajustar los límites del eje "x" y permitir el zoom
-     *
-     * @param factor Factor por el que se dividirá la ventana
-     */
-    private void ajustarZoomX(double factor) {
-        double center = (x.getUpperBound() + x.getLowerBound()) / 2;
-        double nuevoRango = Collections.max(tiempo) / factor;
-        x.setLowerBound(center - nuevoRango);
-        x.setUpperBound(center + nuevoRango);
-        x.setTickUnit(nuevoRango / 10);
-    }
-
-    /**
-     * Método para ajustar los límites del eje "y" y permitir el zoom en la gráfica de miliWatts
-     *
-     * @param factor Factor por el que se dividirá la ventana
-     */
-    private void ajustarZoomYmW(double factor) {
-        double centro = (y.getUpperBound() + y.getLowerBound()) / 2;
-        double nuevoRango = Collections.max(elemento.getComponente().getDatos()) / factor;
-        y.setLowerBound(centro - nuevoRango);
-        y.setUpperBound(centro + nuevoRango);
-        y.setTickUnit(nuevoRango / 10);
-    }
 
     /**
      * Método para ajustar los límites dependiendo el centro en el eje "x" indicado con el Slider
