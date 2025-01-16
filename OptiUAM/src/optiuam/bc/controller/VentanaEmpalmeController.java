@@ -642,6 +642,9 @@ public class VentanaEmpalmeController extends ControladorGeneral implements Init
                     // Pasa la longitud hasta el momento
                     eg.getComponente().setLongitudTotal(aux.getLongitudTotal());
 
+                    // Pasa la frecuencia
+                    eg.getComponente().setFc(aux.getFc());
+
                     // Pasa el Series para la gráfica
                     atenuar(aux);
                     eg.getComponente().setSeries(aux.getSeries());
