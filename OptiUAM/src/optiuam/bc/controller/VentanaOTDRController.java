@@ -601,12 +601,16 @@ public class VentanaOTDRController extends ControladorGeneral implements Initial
                 elemento.getComponente().getSeries().getData().size() - 1
         ).getXValue().toString());
 
+        double lowerY = Double.parseDouble(elemento.getComponente().getSeries().getData().get(
+                elemento.getComponente().getSeries().getData().size() - 1
+        ).getYValue().toString());
+
         grafica.getStylesheets().add(getClass().getResource("/Static/CSS/style.css").toExternalForm());
         x.setAutoRanging(false);
         y.setAutoRanging(false);
         x.setLowerBound(0);
         x.setUpperBound(upperX);
-        y.setLowerBound(0);
+        y.setLowerBound(lowerY);
         y.setUpperBound(upperY);
 
         limitesX.add(x.getLowerBound());
