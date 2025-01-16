@@ -444,6 +444,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
         conexion();
         seleccionarUnidades();
         btnConectar.setVisible(false);
+        btnUnidades.setVisible(true);
     }
 
     /**
@@ -508,6 +509,7 @@ public class VentanaOsciloscopioController extends ControladorGeneral implements
                         osciloscopioController.btnGraficar2.setVisible(true);
                         osciloscopioController.btnDesconectado.setVisible(true);
                         osciloscopioController.cboxConectarA.setVisible(false);
+                        osciloscopioController.btnUnidades.setVisible(true);
                     } else {
                         osciloscopioController.connect.setVisible(true);
                         osciloscopioController.cboxConectarA.setVisible(true);
