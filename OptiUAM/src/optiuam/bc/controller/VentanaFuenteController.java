@@ -833,7 +833,11 @@ public class VentanaFuenteController extends ControladorGeneral implements Initi
                     fuenteAux.setConectadoEntrada(false);
                     fuenteAux.setConectadoSalida(false);
                     fuenteAux.setPulso(fuenteAux1.getA0(), fuenteAux1.getT0(), fuenteAux1.getFc(), fuenteAux1.getC(), fuenteAux1.getM());
+                    fuenteAux.graficas();
+
+                    // Calcula el buffer de datos con todos los datos previamente especificados
                     duplicarFuente(fuenteAux, dibujo);
+                    fuenteAux.calcularDatos();
                     idFuente++;
                     break;
                 }
