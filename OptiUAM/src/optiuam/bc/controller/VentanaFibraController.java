@@ -524,9 +524,9 @@ public class VentanaFibraController extends ControladorGeneral implements Initia
 
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "\nDuplicate fiber!",
+                "\nFiber duplicated!",
                 aceptar);
-        alert.setTitle("Succes");
+        alert.setTitle("Success");
         alert.setHeaderText(null);
         alert.showAndWait();
     }

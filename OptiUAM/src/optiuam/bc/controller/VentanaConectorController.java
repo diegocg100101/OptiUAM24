@@ -371,9 +371,9 @@ public class VentanaConectorController extends ControladorGeneral implements Ini
         controlador.setContadorElemento(controlador.getContadorElemento() + 1);
         ButtonType aceptar = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "\nDuplicate connector!",
+                "\nConnector duplicated!",
                 aceptar);
-        alert.setTitle("Succes");
+        alert.setTitle("Success");
         alert.setHeaderText(null);
         alert.showAndWait();
     }
