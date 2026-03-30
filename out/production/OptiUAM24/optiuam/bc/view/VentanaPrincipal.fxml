@@ -18,16 +18,16 @@
 
 <AnchorPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="975.0" style="-fx-background-color: lightskyblue; -fx-border-color: darkblue;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="optiuam.bc.controller.VentanaPrincipal">
    <children>
-      <TitledPane fx:id="componentMenu" animated="false" layoutX="1.0" layoutY="24.0" maxHeight="-Infinity" minHeight="154.0" minWidth="900.0" text="Components" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <TitledPane fx:id="componentMenu" animated="false" layoutX="1.6" layoutY="24.0" maxHeight="-Infinity" minHeight="154.0" minWidth="257.0" prefHeight="256.0" prefWidth="257.0" text="Components" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0">
         <content>
-          <AnchorPane fx:id="desplegable" focusTraversable="false" prefHeight="161.0" prefWidth="972.0" style="-fx-background-color: lavender;">
+          <AnchorPane fx:id="desplegable" prefHeight="161.0" prefWidth="971.0" styleClass="componentesMenu" stylesheets="/Static/CSS/style.css">
                <children>
                   <Label fx:id="lbl_fibra" layoutX="39.0" layoutY="80.0" text="Fiber">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_fuente" layoutX="100.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaFuente" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_fuente" layoutX="100.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaFuente" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewFuente" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -40,13 +40,14 @@
                      </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></Button>
+                     </cursor>
+                  </Button>
                   <Label fx:id="lbl_fuente" layoutX="115.0" layoutY="80.0" text="Source">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_splitter" layoutX="179.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaSplitter" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_splitter" layoutX="179.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaSplitter" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewSplitter" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -59,13 +60,14 @@
                      </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></Button>
+                     </cursor>
+                  </Button>
                   <Label fx:id="lbl_splitter" layoutX="192.0" layoutY="80.0" text="Splitter">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_conector" layoutX="258.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaConector" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_conector" layoutX="258.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaConector" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewConector" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -78,13 +80,14 @@
                      </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></Button>
+                     </cursor>
+                  </Button>
                   <Label fx:id="lbl_conector" layoutX="264.0" layoutY="80.0" text="Connector">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_empalme" layoutX="337.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaEmpalme" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_empalme" layoutX="337.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaEmpalme" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewEmpalme" fitHeight="62.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -97,13 +100,14 @@
                      </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></Button>
+                     </cursor>
+                  </Button>
                   <Label fx:id="lbl_empalme" layoutX="354.0" layoutY="80.0" text="Splice">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_potencia" layoutX="417.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearPotencia" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_potencia" layoutX="417.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearPotencia" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewPotencia" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -116,7 +120,8 @@
                      </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></Button>
+                     </cursor>
+                  </Button>
                   <Label fx:id="lbl_potencia" layoutX="434.0" layoutY="80.0" text="Power">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
@@ -127,7 +132,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_espectro" layoutX="497.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearEspectro" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_espectro" layoutX="497.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaAnalizador" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewEspectro" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                             <effect>
@@ -140,7 +145,8 @@
                      </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></Button>
+                     </cursor>
+                  </Button>
                   <Label fx:id="lbl_espectro" layoutX="505.0" layoutY="80.0" text="Spectrum">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
@@ -151,7 +157,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_fibra" layoutX="20.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaFibra" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_fibra" layoutX="20.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaFibra" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewFibra" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -164,8 +170,9 @@
                      </graphic>
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></Button>
-                  <Button fx:id="btn_mux" layoutX="577.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaMux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btn_mux" layoutX="577.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaMux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewMux" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -185,7 +192,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_demux" layoutX="658.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaDemux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_demux" layoutX="658.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaDemux" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewDemux" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -205,7 +212,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btn_fbg" layoutX="739.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearFBG" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;">
+                  <Button fx:id="btn_fbg" layoutX="739.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#crearFBG" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent;" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewFBG" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
                            <effect>
@@ -225,7 +232,7 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Separator layoutX="840.0" layoutY="4.0" orientation="VERTICAL" prefHeight="128.0" prefWidth="11.0" />
+                  <Separator layoutX="840.0" layoutY="4.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="11.0" />
                   <Label fx:id="lbl_espectro2" layoutX="888.0" layoutY="140.0" text="Press to">
                      <font>
                         <Font name="Candara Bold Italic" size="12.0" />
@@ -236,20 +243,21 @@
                         <Font name="Candara Bold Italic" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btnRun" layoutX="876.0" layoutY="11.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#start" prefHeight="64.0" prefWidth="64.0" style="-fx-border-color: transparent; -fx-background-color: transparent;">
+                  <Button fx:id="btnRun" layoutX="876.0" layoutY="72.0" maxHeight="73.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#start" prefHeight="73.0" prefWidth="64.0" style="-fx-border-color: transparent; -fx-background-color: transparent;">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="20.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOsciloscopio" prefHeight="64.0" prefWidth="64.0">
+                  <Button fx:id="btnOsciloscopio" accessibleRole="IMAGE_VIEW" layoutX="20.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOsciloscopio" prefHeight="64.0" prefWidth="64.0" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewOsciloscopio" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
                   </Button>
-                  <Label layoutX="32.0" layoutY="172.0" prefHeight="34.0" prefWidth="70.0" text="Osciloscope" AnchorPane.leftAnchor="13.0">
+                  <Label layoutX="32.0" layoutY="172.0" prefHeight="34.0" prefWidth="70.0" text="Oscilloscope" AnchorPane.leftAnchor="13.0">
                      <font>
                         <Font name="Javanese Text" size="12.0" />
-                     </font></Label>
+                     </font>
+                  </Label>
                   <ImageView fx:id="viewRun" fitHeight="55.0" fitWidth="55.0" layoutX="881.0" layoutY="81.0" pickOnBounds="true" preserveRatio="true">
                      <effect>
                         <InnerShadow color="#b2b2b2" />
@@ -261,7 +269,7 @@
                         <Image url="@../../../images/upload.PNG" />
                      </image>
                   </ImageView>
-                  <Button fx:id="btnOTDR" layoutX="101.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOTDR" prefHeight="64.0" prefWidth="64.0">
+                  <Button fx:id="btnOTDR" layoutX="101.0" layoutY="109.0" maxHeight="64.0" maxWidth="64.0" minHeight="64.0" minWidth="64.0" mnemonicParsing="false" onAction="#abrirVentanaOTDR" prefHeight="64.0" prefWidth="64.0" styleClass="btnComponente" stylesheets="/Static/CSS/style.css">
                      <graphic>
                         <ImageView fx:id="viewOTDR" fitHeight="62.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
@@ -272,23 +280,14 @@
                      </font>
                   </Label>
                </children>
-               <effect>
-                  <InnerShadow color="#264275" height="9.14" radius="2.5875000000000004" width="3.21" />
-               </effect>
             </AnchorPane>
         </content>
-         <effect>
-            <InnerShadow choke="0.09" color="#1f2f8d" height="35.83" radius="19.6375" width="44.72" />
-         </effect>
       </TitledPane>
-      <ScrollPane fx:id="scroll" depthTest="ENABLE" hmax="2.0" layoutX="-3.2" layoutY="261.6" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="339.0" prefWidth="973.0" style="-fx-background-color: lightblue;" vmax="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-4.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="261.0">
+      <ScrollPane fx:id="scroll" depthTest="ENABLE" hmax="2.0" layoutY="263.2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="335.0" prefWidth="983.0" style="-fx-background-color: lightblue;" vmax="2.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="262.0">
          <content>
             <Pane id="Pane1" fx:id="Pane1" prefHeight="3534.0" prefWidth="3878.0" style="-fx-background-color: White;">
                <children>
                   <ImageView fx:id="panel" accessibleText="Area de Trabajo." fitHeight="3000.0" fitWidth="3000.0" layoutX="-194.0" pickOnBounds="true" smooth="false">
-                     <effect>
-                        <InnerShadow color="#101c7c" />
-                     </effect>
                      <image>
                         <Image url="@../../../images/fondo.png" />
                      </image>
@@ -328,7 +327,7 @@
             <Cursor fx:constant="CLOSED_HAND" />
          </cursor>
       </ScrollPane>
-      <MenuBar maxHeight="27.0" style="-fx-background-color: lightblue;" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="0.0">
+      <MenuBar maxHeight="27.0" style="-fx-background-color: #beafe8;" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="0.0">
          <menus>
             <Menu fx:id="menuFile1" mnemonicParsing="false" text="File">
                <items>
@@ -348,9 +347,6 @@
                </items>
             </Menu>
          </menus>
-         <effect>
-            <InnerShadow choke="0.08" color="#0e5cc3" radius="24.085" width="77.34" />
-         </effect>
       </MenuBar>
    </children>
 </AnchorPane>

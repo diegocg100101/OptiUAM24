@@ -42,7 +42,7 @@ public class OptiUAM24 extends Application {
      * @throws java.lang.Exception Proporciona diferentes excepciones lanzadas 
      * bajo el paquete java lang
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         launch(args);
     }
     
